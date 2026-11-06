@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { SideButton, PageHead, MissionIcon, Stat, Achievement, Toast } from './features/shared/ui';
+import { SideButton, PageHead, MissionIcon, Toast } from './features/shared/ui';
 import type { FormEvent } from 'react';
 import type { Tab, Room, Profile, Game, Player, Item, DirectMessage, AppNotification, DailyMission } from './features/shared/types';
 import { AudioLines, Award, Bell, Bot, Check, ChevronDown, ChevronLeft, Crown, Flame, Gamepad2, Gem, Gift, Headphones, Home, Lock, LogOut, Medal, MessageCircle, Mic, MicOff, Plus, Send, ShieldCheck, ShoppingBag, Sparkles, Star, Swords, Trophy, Users, Wallet, X, Zap, ClipboardList, Globe } from 'lucide-react';
 import { hasSupabaseConfig, supabase } from './lib/supabase';
 import { games } from './features/games/registry';
 import GameCard from './features/games/GameCard';
-import { xpForNext, xpProgress } from './features/profile/progression';
 
 import { prettyError } from './lib/errors';
 import { SetupRequiredScreen, AuthScreen, PasswordRecoveryScreen } from './features/auth/AuthScreens';
