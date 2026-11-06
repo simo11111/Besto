@@ -20,6 +20,8 @@ type ConnectFourGameProps = {
   firstPlayerName: string;
   secondPlayerName: string;
   busy: boolean;
+  canRematch: boolean;
+  onRematch: () => void;
   onMove: (column: number) => void;
 };
 
@@ -29,6 +31,8 @@ export default function ConnectFourGame({
   firstPlayerName,
   secondPlayerName,
   busy,
+  canRematch,
+  onRematch,
   onMove
 }: ConnectFourGameProps) {
   const active = !state.winner_user_id && !state.is_draw;
@@ -90,7 +94,7 @@ export default function ConnectFourGame({
       </div>
       {active && !myTurn && <p className="connect-four-hint">كنستناو {currentName} يلعب…</p>}
       {active && myTurn && <p className="connect-four-hint">اختار العمود اللي بغيتي تهبط فيه القطعة.</p>}
-      {!active && <p className="connect-four-result">{state.is_draw ? '🤝 تعادل زوين! عاودو مباراة جديدة.' : '🏆 ' + winnerName + ' ربح المباراة!'}</p>}
+      {!active && <><p className="connect-four-result">{state.is_draw ? '🤝 تعادل زوين!' : '🏆 ' + winnerName + ' ربح المباراة!'}</p>{canRematch?<button type="button" className="duel-rematch-btn" disabled={busy} onClick={onRematch}>↻ عاود المباراة</button>:<small className="connect-four-hint">كنستناو صاحب الغرفة يعاود المباراة.</small>}</>}
       <small className="connect-four-secure-note">كل نقلة كتتحقق فالخادم؛ ما يمكنش تبدل الدور أو النتيجة من المتصفح.</small>
     </section>
   );

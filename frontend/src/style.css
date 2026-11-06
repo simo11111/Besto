@@ -718,3 +718,8 @@ body{background:radial-gradient(ellipse at 80% 0%,rgba(57,127,115,.16),transpare
 .dama-rules-note{font-size:10px;text-align:center;color:var(--mx-muted,#888)}
 @media(max-width:520px){.dama-game{padding:12px;border-radius:16px}.dama-board{border-width:5px}}
 @media(prefers-reduced-motion:reduce){.dama-square,.dama-piece{transition:none}}
+
+.duel-rematch-btn{align-self:center;border:1px solid #75d7b4;background:linear-gradient(135deg,#237b67,#155748);color:#fff;font:inherit;font-weight:800;padding:11px 20px;border-radius:12px;cursor:pointer;box-shadow:0 5px 16px #0002;transition:transform .18s,filter .18s}
+.duel-rematch-btn:not(:disabled):hover{transform:translateY(-2px);filter:brightness(1.08)}
+.duel-rematch-btn:disabled{opacity:.55;cursor:wait}
+@media(prefers-reduced-motion:reduce){.duel-rematch-btn{transition:none}}
