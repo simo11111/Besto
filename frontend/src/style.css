@@ -197,3 +197,29 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--lime);outline-offse
 @media(max-width:560px){.auth-shell{padding:0 16px 35px}.auth-topbar{height:70px}.auth-brand{font-size:18px}.auth-card{margin:7vh auto 20px;padding:28px 21px 23px;border-radius:22px}.auth-card h1{font-size:30px}.auth-secure{font-size:10px}}
 
 .google-g{display:grid;place-items:center;width:21px;height:21px;border-radius:50%;background:#fff;color:#4285f4;font:800 17px Arial,sans-serif;text-shadow:1px 0 #34a853,-1px 0 #ea4335;}
+
+/* MIMOX mobile-first room flows, avatars and safe-area layout */
+:root{--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
+html,body,#root{min-height:100%;padding:0;margin:0}
+body{padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}
+.shell{padding-bottom:calc(88px + var(--safe-bottom))}
+.topbar{padding-top:max(10px,var(--safe-top));}
+.room-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.room-action-card{display:grid;justify-items:center;gap:9px;padding:22px 14px;border:1px solid #c6ee7030;border-radius:18px;background:linear-gradient(145deg,#1c2b22,#121b16);color:var(--paper);font:inherit;cursor:pointer;min-height:132px}
+.room-action-card svg{width:28px;height:28px;color:var(--lime)}
+.room-action-card b{font-size:15px}.room-action-card small{font-size:11px;color:#9eac9f}
+.room-action-card.create{background:linear-gradient(145deg,#29351d,#172118);border-color:#c6ee7060}
+.modal-backdrop{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:18px;padding-top:max(18px,var(--safe-top));padding-bottom:max(18px,var(--safe-bottom));background:#050906cc;backdrop-filter:blur(10px)}
+.room-modal{position:relative;width:min(100%,440px);max-height:calc(100dvh - 36px - var(--safe-top) - var(--safe-bottom));overflow:auto;padding:28px 23px 24px;border:1px solid #c6ee7050;border-radius:24px;background:linear-gradient(155deg,#202e24,#111a14);box-shadow:0 25px 90px #0009;display:grid;gap:13px}
+.room-modal h2{margin:0;color:#f3f6ed;font-size:25px}.room-modal p{margin:0;color:#aab7a8;font-size:13px;line-height:1.8}.room-modal label{color:#cbd5c5;font-size:12px}
+.modal-close{position:absolute;top:16px;left:16px;width:36px;height:36px;border:1px solid #ffffff20;border-radius:11px;background:#ffffff0c;color:#fff;display:grid;place-items:center}
+.modal-input{width:100%;min-height:49px;padding:12px 14px;border:1px solid #ffffff24;border-radius:12px;background:#0d1711;color:#f4f6ef;font:inherit}
+.room-code-input{text-align:center;direction:ltr;letter-spacing:4px;font-weight:800;font-size:20px}
+.room-mode-picker{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.room-mode-picker button{padding:12px;border:1px solid #ffffff22;border-radius:12px;background:#ffffff08;color:#cbd5c5;font:inherit}
+.room-mode-picker button.selected{border-color:var(--lime);background:#c6ee7017;color:var(--lime)}
+.profile-avatar-button{border:0;padding:0;cursor:pointer;overflow:hidden}
+.profile-avatar-button img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.avatar-photo{width:38px;height:38px;object-fit:cover;border-radius:50%}
+@media(max-width:600px){.room-action-grid{gap:10px}.room-action-card{min-height:120px;padding:17px 10px}.room-modal{padding:25px 18px 20px;border-radius:21px}.main-layout{padding-bottom:10px}.mobile-nav{padding-bottom:var(--safe-bottom);height:calc(64px + var(--safe-bottom))}.mobile-nav .side-button{padding-bottom:calc(8px + var(--safe-bottom))}.hero-actions{flex-wrap:wrap}.hero-actions button{flex:1 1 140px}}
+@media(min-width:851px){.mobile-nav{display:none}}
