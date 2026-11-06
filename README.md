@@ -15,6 +15,8 @@
 - لائحة الغرف العامة وتحديث لائحة الأعضاء مباشرة.
 - دردشة الغرفة مع تحديث فوري وحدود للرسائل.
 - صوت مباشر مع كتم الميكروفون، وSTUN fallback. TURN ما زال يحتاج إعداد مفاتيح Cloudflare Realtime.
+- رفع صور البروفايل وتخزينها في Supabase Storage بصلاحيات لكل مستخدم.
+- ألعاب نصية مناسبة لشخصين أو أكثر (شكون فينا؟ وتحدي 10 ثواني) بدون فرض الميكروفون.
 - خمس ألعاب جماعية: شفتي الديب؟، شكون فينا؟، شكون الكذاب؟، ممنوع تقولها، وتحدي 10 ثواني.
 - احتساب النقاط وXP والعملات في PostgreSQL، مع تخزين نتائج الجولات.
 - مهمات يومية ومكافأة يومية وسلسلة الدخول.
@@ -42,6 +44,7 @@
 16. `database/016_expand_party_game_prompts.sql`
 17. `database/017_game_round_progress.sql`
 18. `database/018_room_owner_handoff.sql`
+19. `database/019_profile_avatars_and_two_player_games.sql`
 
 لا تفتح schema `private` للـ Data API، ولا تضع service-role أو TURN secrets في الواجهة أو GitHub.
 
