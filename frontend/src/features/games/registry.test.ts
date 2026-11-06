@@ -20,4 +20,14 @@ describe('party game registry', () => {
     const keys: string[] = games.map((game) => game.key);
     expect(keys).not.toContain('rps');
   });
+  it('keeps online duels two-player and separate from party matchmaking', () => {
+    const duels = games.filter((game) => game.mode === 'duel');
+    expect(duels.map((game) => game.key).sort()).toEqual(['connect4', 'dama']);
+    for (const game of duels) {
+      expect(game.minPlayers).toBe(2);
+      expect(game.maxPlayers).toBe(2);
+    }
+    expect(games.filter((game) => game.mode === 'party').every((game) => game.maxPlayers >= game.minPlayers)).toBe(true);
+  });
+
 });
