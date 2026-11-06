@@ -48,7 +48,7 @@ export default function ConnectFourGame({
 
   return (
     <section className="connect-four-game" aria-label="لعبة أربعة فالسطر">
-      <div className="connect-four-status">
+      <div className="connect-four-status"><div className="connect-four-match-label"><span>⚡ LIVE DUEL</span><span>4 IN A ROW</span></div>
         <div className="connect-four-turn">
           <span className={'connect-four-turn-dot ' + (state.current_player === state.first_player ? 'first' : 'second')} />
           <div>
@@ -59,7 +59,7 @@ export default function ConnectFourGame({
         <span className="connect-four-move-count">{state.move_count}/42 نقلة</span>
       </div>
 
-      <div className="connect-four-board-wrap">
+      <div className="connect-four-board-wrap"><div className="connect-four-board-glow"/>
         <div className="connect-four-column-actions" dir="ltr">
           {Array.from({ length: 7 }, (_, column) => (
             <button

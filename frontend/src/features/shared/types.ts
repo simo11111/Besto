@@ -5,5 +5,5 @@ export type Game={id:string;game_key:string;status:string;created_by:string;resu
 export type Player={user_id:string;score:number};
 export type Item={id:string;name:string;category:string;price:number;currency:'coins'|'gems';rarity:string;preview:string};
 export type DirectMessage={id:string;sender_id:string;recipient_id:string;body:string;created_at:string;read_at?:string|null};
-export type AppNotification={id:string;actor_id?:string;kind:string;title:string;body:string;payload:{room_id?:string;room_code?:string;game_key?:string;status?:string;[key:string]:unknown};created_at:string;read_at?:string|null};
+export type AppNotification={id:string;actor_id?:string;kind:string;title:string;body:string;payload:{room_id?:string;room_code?:string;game_key?:string;cosmetic_id?:string;cosmetic_name?:string;status?:string;[key:string]:unknown};created_at:string;read_at?:string|null};
 export type DailyMission={mission_key:string;name:string;description:string;icon:string;progress:number;target_count:number;coins_reward:number;xp_reward:number;claimed:boolean};
