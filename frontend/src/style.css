@@ -266,3 +266,57 @@ body{color:var(--mx-text);background:radial-gradient(ellipse at 15% 5%,#30144e66
 }
 @media(max-width:380px){.hero.hero-new{grid-template-columns:1fr .65fr}.hero-art{height:145px}.hero-portal{width:105px;height:105px}.hero-character{font-size:54px}.hero-copy h1{font-size:20px}.game-grid{gap:6px}.game-card{padding:8px;min-height:128px}.home-shortcuts button{font-size:8px}}
 @media(min-width:761px){.mobile-nav{display:none}}
+
+/* Reference-matched MIMOX screens: cinematic welcome, anime banner, neon arcade */
+:root{--mx-lime:#baff4d;--mx-purple:#a64bff;--mx-violet:#6731b8;--mx-cyan:#35d6e0}
+body{background:#070914;color:#f8f7ff}
+.auth-shell{width:100%;max-width:560px;min-height:100svh;margin:0 auto;padding:0 22px 28px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;overflow:hidden}
+.auth-scene{height:47svh;min-height:310px;max-height:490px;position:relative;margin:0 -22px 22px;overflow:hidden;background:linear-gradient(180deg,#090b18aa 0%,#090b18aa 70%,#080a13 100%),url('/mimox-hero.svg') center 44%/cover no-repeat}
+.auth-scene:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,#070914 100%)}
+.auth-scene-moon{position:absolute;width:80px;height:80px;border-radius:50%;top:55px;right:14%;background:radial-gradient(circle at 35% 30%,#fff,#d6b8f3 65%,#8e6bab);box-shadow:0 0 40px #d4aaff55}
+.auth-scene-logo{position:absolute;top:27%;left:50%;transform:translateX(-50%);font-size:clamp(90px,24vw,150px);line-height:1;color:#baff4d;text-shadow:0 0 12px #baff4d,0 0 38px #8dff3b;filter:drop-shadow(0 5px 5px #111)}
+.auth-scene-word{position:absolute;top:61%;left:50%;transform:translateX(-50%);font:900 clamp(36px,10vw,54px) Inter,sans-serif;letter-spacing:3px;color:#fff;text-shadow:0 4px 20px #a65aff88}
+.auth-scene-copy{position:absolute;bottom:4px;left:0;right:0;text-align:center}.auth-scene-copy h1{font-size:25px;margin:0 0 4px;color:#fff}.auth-scene-copy p{font-size:14px;color:#c9bfdc;margin:0}
+.auth-card{width:100%;margin:0 auto;padding:0 14px 8px;background:transparent;border:0;box-shadow:none;overflow:visible;text-align:center}
+.auth-card:before{display:none}.auth-kicker{font:700 10px Inter,sans-serif;letter-spacing:2px;color:#c5ff63;margin-bottom:9px}.auth-card h2{font-size:23px;margin:0 0 5px;color:white}.auth-intro{font-size:12px;margin:0 0 15px;color:#aaa6bd}
+.auth-card .google-auth{width:100%;height:54px;display:flex;flex-direction:row-reverse;justify-content:center;gap:12px;border-radius:15px;background:#fff;color:#141414;border:1px solid #fff;font:700 15px Changa;box-shadow:0 8px 24px #0005;margin:0 0 13px}.google-g{font:900 23px Arial;background:conic-gradient(from -45deg,#4285f4 0 25%,#34a853 0 48%,#fbbc05 0 72%,#ea4335 0);color:transparent;background-clip:text}
+.auth-divider{display:flex;align-items:center;gap:12px;color:#8e89a4;font-size:11px;margin:9px 0 12px}.auth-divider:before,.auth-divider:after{content:"";height:1px;background:#ffffff1b;flex:1}
+.auth-form{display:grid;gap:10px;text-align:right}.auth-form label{font-size:11px;color:#d7d3e4;gap:5px}.auth-form input{height:48px;width:100%;border:1px solid #5d527b;border-radius:13px;background:#171629;color:#fff;padding:0 13px;font:13px Changa;outline:none}.auth-form input:focus{border-color:#baff4d;box-shadow:0 0 0 3px #baff4d18}
+.auth-form .auth-submit{height:52px;justify-content:center;border-radius:14px;font-size:15px;margin-top:2px;background:linear-gradient(100deg,#baff4d,#42d95c);color:#111b0d;box-shadow:0 0 22px #a9ff4a44}
+.auth-reset,.auth-resend{display:inline-block;font-size:11px;margin:7px 6px 0;color:#c3ff64}.auth-switch{font-size:12px;margin-top:12px;color:#c9c3d8}.auth-switch button{color:#baff4d;font-weight:700}
+.auth-benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0 0;text-align:center}.auth-benefits div{display:grid;justify-items:center;gap:7px;color:#9e98b4;font-size:11px}.auth-benefits svg{width:25px;height:25px;color:#baff4d;filter:drop-shadow(0 0 7px #baff4d55)}
+.hero.hero-new{background:linear-gradient(90deg,#100c23a8,#170d2b38),url('/mimox-hero.svg') center/cover no-repeat;border-color:#a84aff;min-height:260px}
+.hero.hero-new:before{background:linear-gradient(90deg,#0b0d19 0%,#0b0d19b8 36%,transparent 78%)}
+.hero-art{background:radial-gradient(ellipse,#a13bdb44,transparent 68%)}
+.hero-portal{background:transparent;border:0;box-shadow:none}
+.hero-portal:before{inset:-12px;border:2px solid #c5ff5b;box-shadow:0 0 22px #baff4d88;transform:rotate(0)}
+.hero-portal:after{inset:-22px;border:1px solid #bb5dff;transform:rotate(0)}
+.hero-character{font-size:92px;filter:drop-shadow(0 0 12px #d58cff)}
+.hero-brand-art{display:none}
+.home-shortcuts button{min-height:75px}
+.section-head{align-items:center}
+.room-modal{width:min(100%,460px);padding:25px 22px 22px;border-radius:26px}
+.room-modal h2{font-size:23px}
+.room-modal .modal-input{height:52px;border-radius:14px}
+.room-mode-picker button{min-height:76px;font-size:14px}
+.room-mode-picker button.selected{background:linear-gradient(145deg,#baff4d2b,#1b3520);box-shadow:0 0 16px #baff4d22}
+@media(max-width:600px){
+ .auth-shell{max-width:440px;padding:0 18px calc(18px + env(safe-area-inset-bottom));min-height:100svh}
+ .auth-scene{height:42svh;min-height:285px;max-height:385px;margin:0 -18px 15px;background-position:center 45%}
+ .auth-scene-moon{width:64px;height:64px;top:50px}
+ .auth-scene-logo{top:25%;font-size:clamp(90px,26vw,125px)}
+ .auth-scene-word{top:60%;font-size:40px}
+ .auth-scene-copy h1{font-size:22px}.auth-scene-copy p{font-size:12px}
+ .auth-card{padding:0 2px}.auth-card h2{font-size:20px}.auth-intro{font-size:11px;margin-bottom:12px}
+ .auth-card .google-auth{height:52px;font-size:14px}
+ .auth-form{gap:8px}.auth-form input{height:46px}
+ .auth-benefits{margin-top:17px;gap:6px}.auth-benefits div{font-size:10px}
+ .hero.hero-new{background-position:57% center;min-height:210px}
+ .hero.hero-new:before{background:linear-gradient(90deg,#0b0d19 0%,#0b0d19c9 42%,#0b0d1930 100%)}
+ .hero-art{background:none}
+}
+@media(min-width:761px){
+ .auth-shell{max-width:520px;padding-top:0}
+ .auth-scene{height:400px;min-height:400px}
+ .auth-card{max-width:440px}
+}
