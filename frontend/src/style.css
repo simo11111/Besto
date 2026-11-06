@@ -363,3 +363,14 @@ body{background:#070914;color:#f8f7ff}
 .leaderboard{background:linear-gradient(145deg,#151629,#101720);border:1px solid #a855f744;border-radius:21px;padding:16px}.podium-person{background:#17172b;border:1px solid #b8ff4233;border-radius:16px;padding:15px}.leader-row{border-bottom:1px solid #ffffff12}.leader-row .rank{color:#b8ff42}
 .room-columns{gap:16px}.room-box{border:1px solid #a855f744;background:linear-gradient(145deg,#171629,#101720);border-radius:19px}.chat-box{position:relative}.messages{scrollbar-width:thin;scrollbar-color:#8546b8 #101321}.message{background:linear-gradient(120deg,#25203b,#192433);border:1px solid #ffffff12;border-radius:14px 14px 14px 4px;padding:10px 13px}.message.mine{background:linear-gradient(120deg,#33234f,#17352e);border-color:#b8ff4233;border-radius:14px 14px 4px 14px}.message small{color:#c6ff67}.chat-form input{border-color:#a855f744;background:#090f1b}.chat-form .primary{background:linear-gradient(100deg,#b8ff42,#4cda5e);color:#10200d}
 @media(max-width:760px){.public-room-grid{grid-template-columns:1fr}.public-room-card{grid-template-columns:58px 1fr auto;gap:9px;padding:9px}.public-room-art{height:58px}.public-room-card .primary{padding:8px 10px}.friend-search{padding:10px}.friend-row{gap:8px;padding:10px}.friend-row button{padding:7px 9px}.profile-hero{padding:18px;gap:13px}.profile-avatar{width:75px;height:75px}.profile-main h2{font-size:19px}.profile-hero .coin-display{font-size:11px}.cosmetic-preview{min-height:108px}.shop-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}}
+
+.brand-icon{width:37px;height:37px;object-fit:contain;filter:drop-shadow(0 0 10px #b8ff4288)}
+.hero-art-image{position:relative;overflow:hidden;border-radius:20px;isolation:isolate}
+.hero-art-image:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 70% 35%,#a855f755,transparent 55%)}
+.hero-art-image>img{width:100%;height:100%;max-height:270px;object-fit:cover;object-position:60% center;border:1px solid #b84cff77;border-radius:18px;box-shadow:0 0 30px #9d42ff44}
+.hero-art-image .float-card{z-index:2}
+.auth-scene{position:relative;overflow:hidden;border:1px solid #a855f755;border-radius:24px;background:#090d19;min-height:250px;box-shadow:0 0 35px #a855f722}
+.auth-art-img{width:100%;height:100%;min-height:250px;max-height:360px;object-fit:cover;object-position:center}
+.auth-scene-copy{position:absolute;inset:auto 0 0;padding:20px;background:linear-gradient(transparent,#080b16ed);text-align:center}
+.auth-scene-copy h1{font-size:clamp(22px,4vw,34px);margin:5px}.auth-scene-copy p{font-size:12px;color:#d5c9e9}
+@media(max-width:760px){.hero-art-image{height:145px;min-height:145px}.hero-art-image>img{height:100%;min-height:145px;object-position:60% center}.hero-art-image .card-one{top:5px;right:5px}.hero-art-image .card-two{bottom:5px;left:5px}.auth-scene{min-height:200px}.auth-art-img{min-height:200px;max-height:220px}.auth-scene-copy{padding:12px}}
