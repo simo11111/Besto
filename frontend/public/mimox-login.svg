@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1200">
+<defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#080a18"/><stop offset=".52" stop-color="#211039"/><stop offset="1" stop-color="#080d1a"/></linearGradient><radialGradient id="moon"><stop stop-color="#fff7ff"/><stop offset="1" stop-color="#bba1e5"/></radialGradient><linearGradient id="neon" x2="0" y2="1"><stop stop-color="#eaff91"/><stop offset="1" stop-color="#66ff43"/></linearGradient><linearGradient id="cloak" x2="1" y2="1"><stop stop-color="#2a294b"/><stop offset="1" stop-color="#080b17"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="18"/></filter></defs>
+<rect width="800" height="1200" fill="url(#sky)"/>
+<circle cx="610" cy="180" r="135" fill="#b85cff" opacity=".3" filter="url(#glow)"/><circle cx="610" cy="180" r="105" fill="url(#moon)"/>
+<path d="M0 550 120 390l120 125 150-230 170 260 120-165 120 170v650H0Z" fill="#25153f"/>
+<path d="m0 700 140-130 120 100 160-185 155 190 125-105 100 110v520H0Z" fill="#12172d"/>
+<path d="M0 980q180-130 350-20t450-10v250H0Z" fill="#080c18"/>
+<path d="M0 1100q200-100 400-30t400-25v155H0Z" fill="#682887" opacity=".4" filter="url(#glow)"/>
+<!-- lone anime silhouette -->
+<g transform="translate(420 350)">
+ <path d="M170 170q-20-150 95-165 122-10 145 126l-15 150-200 10Z" fill="#070b17"/>
+ <path d="M190 105q25-100 110-95 75 0 108 90l-60-25-42 30-54-25-48 40Z" fill="#16172e"/>
+ <path d="M205 165q60-40 125-5l-8 58q-62 33-117 0Z" fill="#0c1422"/>
+ <path d="M236 185h26m30 0h25" stroke="#aaff57" stroke-width="8" stroke-linecap="round"/>
+ <path d="M165 300q-110 60-135 220l-35 300h520l-40-310q-30-160-140-210Z" fill="url(#cloak)" stroke="#32234f" stroke-width="6"/>
+ <path d="m250 315 70 80 75-80" fill="none" stroke="#55406c" stroke-width="12"/>
+ <path d="m285 510 35-42 35 42-35 55Z" fill="none" stroke="url(#neon)" stroke-width="13"/>
+</g>
+<!-- logo -->
+<g transform="translate(220 115)" fill="none" stroke="url(#neon)" stroke-width="18" stroke-linejoin="round"><path d="m20 170 28-140 90 92 90-92 28 140h-60l-18-78-40 44-40-44-18 78Z"/><path d="m83 207 55-40 55 40" stroke-width="13"/></g>
+<text x="400" y="850" fill="#fff" text-anchor="middle" font-family="Arial,sans-serif" font-size="100" font-weight="900" letter-spacing="12">MIMOX</text>
+<text x="400" y="910" fill="#d9c9ef" text-anchor="middle" font-family="Arial,sans-serif" font-size="31">PLAY · CHALLENGE · CONNECT</text>
+</svg>
