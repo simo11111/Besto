@@ -1,0 +1,1 @@
+-- Applied live: see migration 030_room_modes_and_join_metadata.

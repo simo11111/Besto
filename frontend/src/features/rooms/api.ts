@@ -40,6 +40,7 @@ export async function fetchOpenRooms(client: Client): Promise<{ rooms: Room[]; e
     .from('rooms')
     .select('id,code,name,is_private,max_players,status,game_key')
     .eq('status', 'open')
+    .eq('is_private', false)
     .order('last_activity_at', { ascending: false })
     .limit(30);
   return { rooms: (data ?? []) as Room[], error };
