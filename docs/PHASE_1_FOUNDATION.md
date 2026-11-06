@@ -28,6 +28,18 @@ Migrations 020–024 were applied to the connected Supabase project on 2026-11-0
 - Friendship, direct-message and notification policies exist with the intended table-specific access.
 - The duplicate friendship SELECT policy and duplicate notifications inbox index were removed; the Supabase performance advisor no longer reports the social-policy init-plan or duplicate-index findings.
 
+## Local verification
+
+From the repository root:
+
+```bash
+npm install
+npm test --workspace frontend
+npm run build:frontend
+```
+
+CI runs the frontend unit tests before the production build. Cloudflare Pages previews are built from `mimox-phase1-foundation`; production remains on `main` until review and two-account validation.
+
 ## Test checklist
 
 1. Sign in with two accounts.
