@@ -1,14 +1,29 @@
 # Mimox
 
-منصة ألعاب اجتماعية مغربية بالدارجة، بتصميم Dark Gaming وتجربة Mobile-first وPWA.
+منصة ألعاب اجتماعية مغربية بالدارجة، بتصميم Gaming داكن وتجربة Mobile-first وPWA.
 
-## Stack
-- React + TypeScript + Vite + Tailwind
-- Supabase Auth + PostgreSQL + RLS + Realtime
-- WebRTC صوت مباشر (STUN مبدئي؛ TURN مطلوب للإنتاج)
+## المنصة والتقنيات
+- React 18 + TypeScript + Vite.
+- Supabase Auth + PostgreSQL + RLS + Realtime.
+- Cloudflare Pages للنشر.
+- WebRTC للصوت المباشر داخل الغرف (mesh للمجموعات الصغيرة).
 
-## إعداد قاعدة البيانات
-شغّل ملفات SQL بالترتيب في Supabase SQL Editor:
+## الوظائف الموجودة
+- تسجيل الدخول بالبريد وكلمة المرور، وإنشاء حساب مع تأكيد البريد.
+- تسجيل Google OAuth في الواجهة؛ يلزم إعداد Google Client ID وClient Secret في Supabase قبل استعماله.
+- إنشاء غرف عامة وخاصة، والانضمام بكود، ومغادرة الغرفة.
+- لائحة الغرف العامة وتحديث لائحة الأعضاء مباشرة.
+- دردشة الغرفة مع تحديث فوري وحدود للرسائل.
+- صوت مباشر مع كتم الميكروفون، وSTUN fallback. TURN ما زال يحتاج إعداد مفاتيح Cloudflare Realtime.
+- خمس ألعاب جماعية: شفتي الديب؟، شكون فينا؟، شكون الكذاب؟، ممنوع تقولها، وتحدي 10 ثواني.
+- احتساب النقاط وXP والعملات في PostgreSQL، مع تخزين نتائج الجولات.
+- مهمات يومية ومكافأة يومية وسلسلة الدخول.
+- متجر إطارات وألقاب، شراء وتجهيز العناصر.
+- بروفايل، إحصائيات، إنجازات ولوحة المتصدرين.
+- PWA قابلة للتثبيت على الهاتف.
+
+## قاعدة البيانات
+المigrations مطبقة على مشروع Supabase المرتبط. عند إعداد نسخة جديدة، طبّق الملفات بالترتيب:
 1. `database/001_initial.sql`
 2. `database/002_rooms_chat_voice.sql`
 3. `database/003_competitive_games.sql`
@@ -20,41 +35,30 @@
 9. `database/009_security_rls_hardening.sql`
 10. `database/010_impostor_vote_tie.sql`
 11. `database/011_restore_party_game_scoring.sql`
+12. `database/012_daily_missions.sql`
+13. `database/013_expand_cosmetic_shop.sql`
+14. `database/014_gameplay_completion.sql`
+15. `database/015_room_presence_realtime_index.sql`
+16. `database/016_expand_party_game_prompts.sql`
 
-إذا كان Data API عندك مضبوطاً على قائمة schemas/tables محددة، تأكد أن `public` exposed وأن صلاحيات SELECT الممنوحة في migrations مفعلة. لا تفتح private schema للـ Data API.
+لا تفتح schema `private` للـ Data API، ولا تضع service-role أو TURN secrets في الواجهة أو GitHub.
 
-## إعداد التطبيق
-1. انسخ `.env.example` إلى `.env` في جذر المشروع.
-2. ضع `VITE_SUPABASE_URL` و`VITE_SUPABASE_PUBLISHABLE_KEY` من Project Connect.
-3. فعّل Email Auth وتأكيد البريد، واضبط SMTP قبل الإطلاق العام.
-4. في Supabase → Authentication → URL Configuration، اجعل Site URL هو `https://mimox-c5a.pages.dev` وأضف `https://mimox-c5a.pages.dev/**` إلى Redirect URLs. التطبيق يوجّه روابط تأكيد البريد وتسجيل Google إلى عنوان الموقع المنشور، وليس `localhost`.
-5. لتفعيل Google فعلياً: Authentication → Providers → Google، فعّل المزود وأدخل Google OAuth Client ID وClient Secret، ثم أضف رابط Callback الذي يعرضه Supabase داخل Google Cloud Console. زر Google ظاهر في الواجهة، لكنه لن يعمل قبل إكمال هذه الإعدادات.
-4. شغّل `npm install` ثم `npm run dev`.
+## إعداد وتشغيل الواجهة
+1. انسخ `.env.example` إلى `.env`.
+2. ضع `VITE_SUPABASE_URL` و`VITE_SUPABASE_PUBLISHABLE_KEY`.
+3. فعّل Email Auth واضبط SMTP لتأكيد البريد.
+4. في Supabase → Authentication → URL Configuration، اجعل Site URL هو `https://mimox-c5a.pages.dev` وأضف `https://mimox-c5a.pages.dev/**` إلى Redirect URLs.
+5. لتفعيل Google: Authentication → Providers → Google، أدخل Google OAuth Client ID وClient Secret، ثم أضف Supabase Callback URL إلى Google Cloud Console.
+6. شغّل `npm install` ثم `npm run dev`.
 
-## الألعاب
-- **شفتي الديب؟** أدوار سرية وتصويت لاكتشاف الذئب.
-- **شكون فينا؟** سؤال اجتماعي وتصويت على اللاعب الأكثر انطباقاً.
-- **شكون الكذاب؟** كلمة سرية يعرفها الجميع إلا لاعب واحد. كل لاعب يطرح سؤالاً شفوياً على لاعب آخر؛ اللاعبون الذين توجّهت إليهم الأسئلة يردّون بتلميح غير مباشر عبر الصوت. بعد اكتمال الأسئلة والتلميحات يصوت الجميع لكشف الكذاب.
+## الصوت
+WebRTC mesh مناسب للمجموعات الصغيرة، لكن STUN وحده لا يضمن الاتصال عبر جميع أنواع NAT والشبكات. خدمة Worker تتحقق من جلسة Supabase وتصدر بيانات TURN مؤقتة، لكن يلزم إعداد `TURN_KEY_ID` وsecret باسم `TURN_API_TOKEN` داخل Worker. لا تضع هذه القيم في Vite env أو GitHub. إذا لم تكن مفاتيح TURN متوفرة، سيحاول التطبيق الاتصال المباشر عبر STUN وقد يفشل الصوت على بعض الشبكات.
 
-الألعاب الاجتماعية تعتمد على الكلام والصوت داخل الغرفة؛ لا توجد خانات لكتابة أجوبة لعبة الكذاب. التصويت يتم من الواجهة.
-
-احتساب النتائج وXP والعملات يتم داخل PostgreSQL RPC وليس من متصفح اللاعب. المستويات والإنجازات والمتجر والمكافأة اليومية ولوحة المتصدرين مرتبطة بقاعدة البيانات.
-
-## Voice
-WebRTC mesh مناسب للمجموعات الصغيرة فقط. STUN وحده لا يضمن الاتصال عبر جميع أنواع NAT والشبكات؛ أضف TURN service موثوقاً وبيانات اعتماد قصيرة الأجل عبر خادم آمن قبل الإنتاج. لا تضع TURN secrets في Vite env.
-
-## Security / release checklist
-- RLS مفعّل على جداول public.
-- أدوار الذئب وكلمات اللعبة السرية في schema غير مكشوفة.
-- RPCs تتحقق من auth.uid وعضوية الغرفة وصلاحية صاحب الغرفة.
-- عمليات العملات والمكافآت ونتائج الجولات تُحسب في قاعدة البيانات.
-- راجع Supabase Security/Performance Advisors بعد تطبيق migrations.
-- اختبر تسجيل الدخول، إنشاء/الانضمام/الخروج، الغرف الخاصة، chat، الصوت على شبكات مختلفة، وتزامن لاعبين متعددين.
-- CI يبني TypeScript frontend/backend ويفشل عند ثغرات npm عالية الخطورة.
-- لم يُجر اختبار اختراق مستقل؛ لا يوجد ادعاء بأن التطبيق خالٍ 100% من الثغرات.
-- ممنوع رفع service-role/secret keys أو كلمات مرور قاعدة البيانات أو TURN credentials إلى GitHub.
-
-
-### Voice TURN service
-
-The Cloudflare Worker `dima-play-turn-api` issues short-lived ICE credentials after validating the Supabase user session. Set the Worker secret `TURN_API_TOKEN` to the secret from a newly created Cloudflare Realtime TURN key, and set the plain-text variable `TURN_KEY_ID` to that key's ID. Never commit the TURN secret. The frontend uses the Worker endpoint `/ice` and falls back to STUN if TURN is not configured.
+## النشر والاختبار
+- Cloudflare Pages project: `mimox`.
+- Production URL: https://mimox-c5a.pages.dev
+- GitHub: https://github.com/simo11111/Besto
+- CI يبني TypeScript frontend/backend ويجري فحص npm audit.
+- يجب اختبار التسجيل والغرف والألعاب والصوت بحسابين أو أكثر وعلى شبكات مختلفة قبل اعتبار الإصدار جاهزاً للإطلاق العام.
+- لم يُجر اختبار اختراق مستقل، ولا يمكن ضمان خلو التطبيق من كل الثغرات.
+- مجلد backend يحتوي حالياً API scaffold تجريبياً ولا تعتمد عليه الواجهة في الإنتاج؛ عمليات التطبيق الأساسية تنفذ عبر Supabase RPC.
