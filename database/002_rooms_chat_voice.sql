@@ -261,3 +261,12 @@ create policy "room members receive voice signals" on realtime.messages for sele
 using (public.is_room_member(nullif(split_part(realtime.topic(), ':', 2), '')::uuid));
 create policy "room members send voice signals" on realtime.messages for insert to authenticated
 with check (public.is_room_member(nullif(split_part(realtime.topic(), ':', 2), '')::uuid));
+
+-- Publish persisted chat inserts for authenticated room members.
+do $$
+begin
+  alter publication supabase_realtime add table public.chat_messages;
+exception when duplicate_object then
+  null;
+end;
+$$;
