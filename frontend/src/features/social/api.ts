@@ -71,7 +71,7 @@ export async function fetchDirectMessages(client: Client, userId: string, friend
 export async function fetchNotifications(client: Client, userId: string): Promise<AppNotification[]> {
   const { data, error } = await client
     .from('notifications')
-    .select('id,kind,title,body,payload,created_at,read_at')
+    .select('id,actor_id,kind,title,body,payload,created_at,read_at')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .limit(30);

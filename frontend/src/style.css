@@ -727,3 +727,23 @@ body{background:radial-gradient(ellipse at 80% 0%,rgba(57,127,115,.16),transpare
 .duel-rating{font-size:10px;color:var(--mx-muted,#999);background:#ffffff0d;border-radius:99px;padding:3px 7px;white-space:nowrap}
 .connect-four-legend span{gap:6px}
 .dama-score-strip span{gap:6px}
+
+/* Global room invitation modal */
+.invite-overlay{position:fixed;inset:0;z-index:5000;display:grid;place-items:center;padding:18px;background:#070914c9;backdrop-filter:blur(9px);animation:invite-fade-in .18s ease-out}
+.invite-modal{position:relative;width:min(100%,420px);padding:30px 24px 22px;border:1px solid #ffffff24;border-radius:26px;background:linear-gradient(155deg,var(--mx-surface,#211d36),var(--mx-bg,#101221));box-shadow:0 28px 90px #0009;text-align:center;color:var(--mx-text,#fff);animation:invite-pop-in .22s ease-out}
+.invite-countdown{position:absolute;top:15px;inset-inline-end:15px;display:flex;align-items:center;justify-content:center;gap:2px;width:42px;height:42px;border:1px solid #f0c76b77;border-radius:50%;background:#f0c76b18;color:#f3d58d;font-weight:900;font-variant-numeric:tabular-nums}
+.invite-countdown small{font-size:10px}
+.invite-avatar{width:88px;height:88px;margin:8px auto 14px;border-radius:28px;padding:4px;background:linear-gradient(135deg,#f2d38d,#8e65d8,#75d8b7);box-shadow:0 8px 28px #0005}
+.invite-avatar img,.invite-avatar span{width:100%;height:100%;display:grid;place-items:center;object-fit:cover;border-radius:24px;background:#27243c;font-size:30px;font-weight:900}
+.invite-eyebrow{font-size:11px;letter-spacing:.06em;color:#b8a6ec;font-weight:800}
+.invite-modal h2{font-size:22px;margin:7px 0}
+.invite-modal p{font-size:13px;line-height:1.7;color:var(--mx-muted,#b9b5c7);margin:8px 0 14px}
+.invite-game-chip{display:inline-flex;padding:7px 13px;border-radius:99px;background:#ffffff10;border:1px solid #ffffff18;font-size:12px;font-weight:800;margin-bottom:18px}
+.invite-modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.invite-modal-actions button{min-height:46px;border-radius:13px;font:inherit;font-weight:800}
+.invite-later{margin-top:12px;background:transparent;border:0;color:var(--mx-muted,#aaa);padding:8px 14px;font:inherit;cursor:pointer}
+.invite-validity{display:block;color:var(--mx-muted,#888);font-size:10px;margin-top:7px}
+@keyframes invite-fade-in{from{opacity:0}to{opacity:1}}
+@keyframes invite-pop-in{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:480px){.invite-modal{padding:26px 18px 18px;border-radius:22px}.invite-avatar{width:78px;height:78px}}
+@media(prefers-reduced-motion:reduce){.invite-overlay,.invite-modal{animation:none}}
