@@ -658,3 +658,7 @@ body{background:radial-gradient(ellipse at 80% 0%,rgba(57,127,115,.16),transpare
 .brand-mascot-mark{animation:mimox-float 4s ease-in-out infinite}
 .auth-art-img{animation:mimox-float 5s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.brand-mascot-mark,.auth-art-img{animation:none}}
+
+
+/* Room invitation actions */
+.notification-entry{border-bottom:1px solid var(--line,rgba(255,255,255,.08));padding:4px 0 10px}.notification-entry .notification-row{width:100%;border:0;background:transparent;text-align:start}.notification-actions{display:flex;align-items:center;gap:8px;padding:0 12px 0 52px;flex-wrap:wrap}.notification-actions button{font:inherit;font-size:12px;padding:7px 12px;border-radius:9px}.notification-actions small{font-size:11px;color:var(--muted,#999)}
