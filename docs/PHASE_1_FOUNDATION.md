@@ -11,7 +11,8 @@
 - Split the login, signup, password-recovery and Supabase setup screens into `features/auth/AuthScreens.tsx`.
 - Moved shared UI primitives into `features/shared/ui.tsx`, shared application types into `features/shared/types.ts`, and localized error mapping into `lib/errors.ts`.
 - Extracted friendship, direct-message and notification reads into `features/social/api.ts`; `App.tsx` now delegates those queries to the social feature module.
-- Added Vitest and focused unit tests for XP progression and the party-game registry; CI now runs tests before the production build.
+- Extracted lobby and room snapshot queries into `features/rooms/api.ts`, keeping Supabase data access out of the main UI orchestrator.
+- Added Vitest and focused unit tests for XP progression, the party-game registry and localized error handling; CI now runs tests before the production build.
 - Added migration 020 to make friendships, direct messages and notifications reproducible, with RLS and column-level grants that preserve current app operations.
 - Added migration 021 to fix Ten Seconds multiple-choice scoring.
 - Added migration 022 to version the social and quick-match RPCs already used by the frontend (`send_friend_request`, `accept_friend_request`, `remove_friend`, `quick_match_room`), with explicit authentication checks and grants.
