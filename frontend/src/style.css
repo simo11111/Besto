@@ -498,3 +498,41 @@ body{background:radial-gradient(ellipse at 50% -12%,#32124c 0,transparent 42%),l
 @keyframes ring-float{0%,100%{transform:translateY(0) rotate(-25deg)}50%{transform:translateY(-5px) rotate(-15deg)}}@keyframes ring-spin{to{filter:drop-shadow(0 0 12px currentColor)}}@keyframes core-pulse{0%,100%{transform:scale(.94);filter:drop-shadow(0 0 8px currentColor)}50%{transform:scale(1.06);filter:drop-shadow(0 0 18px currentColor)}}@keyframes cosmic-turn{to{transform:rotate(360deg)}}@keyframes royal-glow{0%,100%{filter:brightness(1);box-shadow:0 0 0 3px #ffd66c33,0 0 20px #ffcb4d88}50%{filter:brightness(1.22);box-shadow:0 0 0 5px #ffd66c44,0 0 34px #ffcb4dcc}}
 @media(max-width:600px){.missions-launcher{padding:12px}.missions-modal .mission-card{flex-wrap:wrap}.missions-modal .mission-claim{margin-right:auto}.public-room-card{grid-template-columns:58px 1fr;gap:9px}.public-room-card>button{grid-column:1/-1;width:100%}.room-filter-tabs button{font-size:11px}.shop-preview.cosmetic-preview{height:116px}}
 @media(prefers-reduced-motion:reduce){.cosmetic-preview:after,.cosmetic-art-ring,.cosmetic-art-core,.profile-avatar.frame_royal,.profile-avatar.frame_crown{animation:none!important}}
+
+/* MIMOX refined mobile UI: compact, image-led, low-cost rendering */
+.cosmetic-preview{min-height:116px;display:grid;place-items:center;overflow:hidden;background:linear-gradient(145deg,#151b2d,#0b101d)!important;border:1px solid #ffffff12}
+.cosmetic-preview:before,.cosmetic-preview .cosmetic-art-ring,.cosmetic-preview .cosmetic-art-core{display:none!important;content:none!important;filter:none!important;box-shadow:none!important}
+.cosmetic-preview img{display:block;width:100%;height:116px;object-fit:contain;padding:8px}
+.shop-item{background:#111827;border:1px solid #ffffff16;box-shadow:none;transition:border-color .15s}
+.shop-item:hover{border-color:#8c6be0}
+.shop-item .rarity{padding:4px 8px;border-radius:7px;background:#ffffff09}
+.shop-item .rarity.legendary{color:#f4d17d;background:#f4d17d12}
+.shop-item .rarity.epic{color:#c99bff;background:#c99bff12}
+.shop-item .rarity.rare{color:#7edbff;background:#7edbff12}
+.quiz-answer-area{display:grid;gap:12px;margin-top:14px}
+.quiz-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.quiz-option{display:flex;align-items:center;gap:10px;min-height:56px;padding:11px 13px;text-align:right;border-radius:13px;border:1px solid #6d5b91;background:linear-gradient(145deg,#19182d,#111827);color:#f6f2ff;font:600 13px inherit}
+.quiz-option span{display:grid;place-items:center;flex:none;width:27px;height:27px;border-radius:8px;background:#9b66db22;color:#d2aaff;font:800 11px Inter}
+.quiz-option.selected{border-color:#baff42;background:#1b2b1e;box-shadow:inset 0 0 0 1px #baff4244}
+.quiz-option:disabled{opacity:.7}
+.profile-form{background:linear-gradient(145deg,#15182a,#101722);border-color:#ffffff18}
+.profile-form input,.profile-form textarea{min-height:46px;border-radius:12px;background:#0b1120;border:1px solid #3d3b57;padding:12px;font-size:14px}
+.profile-form label{gap:8px;color:#ddd8ea}
+.profile-avatar{border:2px solid #baff42;box-shadow:0 0 0 4px #baff4215}
+.room-card{border-radius:18px;background:linear-gradient(145deg,#17182c,#101723);border:1px solid #ffffff16;box-shadow:none}
+.public-room-art{border-radius:13px;background:linear-gradient(145deg,#241c3b,#101c27);border:1px solid #8c62c955;display:grid;place-items:center}
+.room-privacy{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:8px;font-size:10px}
+.room-privacy.private{background:#b08cff12;color:#cba8ff;border:1px solid #b08cff33}
+.room-privacy.public{background:#baff4210;color:#c6ff72;border:1px solid #baff4233}
+.daily-card{background:linear-gradient(110deg,#18251d,#15172a);border-color:#baff4233}
+.daily-card .daily-icon{background:#baff4218;color:#c7ff69}
+.missions-launcher{background:linear-gradient(110deg,#17182b,#111a24);border-color:#8c62c955}
+.missions-launcher .missions-counter{color:#c6ff75}
+.achievement{border-radius:14px;background:#131829;border:1px solid #ffffff13}
+@media(max-width:760px){
+ .cosmetic-preview,.cosmetic-preview img{height:96px;min-height:96px}
+ .quiz-options{grid-template-columns:1fr}
+ .quiz-option{min-height:50px}
+ .profile-form{padding:15px}
+ .room-card{padding:12px}
+}
