@@ -851,3 +851,20 @@ body{background:radial-gradient(ellipse at 80% 0%,rgba(57,127,115,.16),transpare
 .frame-choice{position:relative;min-height:116px;overflow:hidden;background:radial-gradient(circle at 50% 35%,#30264d,#111827 72%);border:1px solid #ffffff16;transition:transform .18s,border-color .18s,box-shadow .18s}
 .frame-choice:hover{transform:translateY(-3px);border-color:#c79cff88}.frame-choice.active{border-color:#baff42;background:radial-gradient(circle at 50% 35%,#3b4428,#111827 75%);box-shadow:0 0 0 2px #baff4222,0 0 22px #baff4214}
 .frame-choice img{width:78px;height:78px;filter:drop-shadow(0 6px 12px #0008)}.profile-avatar-button{cursor:pointer}
+
+/* Full-bleed anime mascot on sign-in */
+.auth-scene{height:clamp(310px,48vh,510px);min-height:310px;background:radial-gradient(circle at 50% 42%,#39235f,#090d1b 72%);border-color:#a77aff66}
+.auth-art-img{display:block;width:100%;height:100%;min-height:100%;max-width:none;max-height:none;object-fit:cover;object-position:center 44%;filter:none}
+.auth-scene-copy{padding:24px;background:linear-gradient(transparent,rgba(7,9,20,.96));}
+.auth-scene-copy h1{color:#fff;text-shadow:0 3px 20px #000;font-size:clamp(24px,3vw,38px)}
+.auth-scene-copy p{color:#d7c7f4}
+@media(max-width:760px){.auth-scene{height:clamp(240px,36vh,330px);min-height:240px}.auth-art-img{min-height:100%;max-height:none;object-fit:cover}.auth-scene-copy{padding:12px}}
+.profile-avatar.frame_dragon{background:conic-gradient(#ffe0a0,#f34c4c,#8f173d,#ff9c4a,#ffe0a0);box-shadow:0 0 0 4px #ff6c7522,0 0 28px #ff6c7566}
+.profile-avatar.frame_aurora{background:conic-gradient(#d6a5ff,#5ce9d7,#6685ff,#b7fff0,#d6a5ff);box-shadow:0 0 0 4px #7be7db22,0 0 28px #7be7db66}
+.profile-avatar.frame_phoenix{background:conic-gradient(#fff0a5,#ff7a32,#b92c28,#ffd36b,#fff0a5);box-shadow:0 0 0 4px #ff9c4d22,0 0 28px #ff9c4d66}
+.profile-avatar.frame_mystic{background:conic-gradient(#e5c8ff,#8d5bdb,#59d9d0,#c39bff,#e5c8ff);box-shadow:0 0 0 4px #b38cff22,0 0 28px #b38cff66}
+.shop-item.rarity-card{border-radius:19px;background:linear-gradient(150deg,#1a1d31,#101724);box-shadow:0 10px 28px #0003;transition:transform .18s,border-color .18s,box-shadow .18s}
+.shop-item.rarity-card:hover{transform:translateY(-3px);border-color:#b88cff88;box-shadow:0 16px 36px #0005}
+.shop-item.rarity-card.legendary{border-color:#e7bc6a55}.shop-item.rarity-card.epic{border-color:#b98aff44}
+.shop-item.rarity-card .shop-preview{height:138px;border-radius:14px;background:radial-gradient(circle,#34264e,#111827 70%)!important}
+.shop-item.rarity-card .shop-preview img{height:100%;width:100%;object-fit:contain;padding:13px}
