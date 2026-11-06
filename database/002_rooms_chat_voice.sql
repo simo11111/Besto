@@ -1,4 +1,29 @@
 -- DIMA PLAY: transactional room operations, chat and private Realtime signaling.
+
+-- Create a safe public profile for every new Auth account.
+create or replace function public.handle_new_user()
+returns trigger language plpgsql security definer set search_path = ''
+as $
+declare v_name text;
+begin
+  v_name := regexp_replace(coalesce(new.raw_user_meta_data ->> 'username', ''), '[^A-Za-z0-9_]', '', 'g');
+  if char_length(v_name) not between 3 and 20 then
+    v_name := 'player_' || substr(replace(new.id::text, '-', ''), 1, 12);
+  end if;
+  begin
+    insert into public.profiles(id, username) values (new.id, v_name);
+  exception when unique_violation then
+    insert into public.profiles(id, username)
+    values (new.id, 'player_' || substr(replace(new.id::text, '-', ''), 1, 12));
+  end;
+  return new;
+end;
+$;
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created after insert on auth.users
+for each row execute procedure public.handle_new_user();
+
+
 -- Run after 001_initial.sql in the Supabase SQL editor.
 create table if not exists public.chat_messages (
   id uuid primary key default gen_random_uuid(),
