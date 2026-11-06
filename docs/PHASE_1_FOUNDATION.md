@@ -38,7 +38,7 @@ npm test --workspace frontend
 npm run build:frontend
 ```
 
-CI runs the frontend unit tests before the production build. Cloudflare Pages previews are built from `mimox-phase1-foundation`; production remains on `main` until review and two-account validation.
+CI and the Cloudflare Pages build command both run the frontend unit tests before the production build. Preview deployments are built from `mimox-phase1-foundation`; production remains on `main` until review and two-account validation.
 
 ## Test checklist
 
