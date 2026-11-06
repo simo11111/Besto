@@ -149,3 +149,16 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--lime);outline-offse
 .toast{animation:toast-in .22s ease-out}
 @keyframes toast-in{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
 @media(max-width:560px){.auth-card{margin:8vh auto 0;padding:22px 18px}.google-auth{min-height:48px}}
+
+/* Mimox daily quests */
+.mission-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.mission-card{display:flex;align-items:center;gap:12px;min-width:0;padding:15px;border:1px solid #ffffff12;border-radius:16px;background:linear-gradient(135deg,#18231e,#131b17)}
+.mission-icon{width:42px;height:42px;display:grid;place-items:center;flex:none;border-radius:13px;background:#c7f36a18;font-size:22px}
+.mission-info{min-width:0;flex:1;display:grid;gap:5px}
+.mission-info b{font-size:13px;color:#f2f6ee}
+.mission-info small{font-size:11px;color:#91a096;line-height:1.5}
+.mission-progress{height:6px;border-radius:99px;background:#ffffff12;overflow:hidden;margin-top:2px}
+.mission-progress span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#a8e65d,#5ac7a3)}
+.mission-claim{padding:9px 12px;white-space:nowrap;flex:none}
+.mission-claim:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:760px){.mission-grid{grid-template-columns:1fr}.mission-card{padding:12px}.mission-claim{font-size:11px}}
