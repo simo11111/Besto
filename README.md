@@ -1,4 +1,4 @@
-# DIMA PLAY
+# Mimox
 
 منصة ألعاب اجتماعية مغربية بالدارجة، بتصميم Dark Gaming وتجربة Mobile-first وPWA.
 
