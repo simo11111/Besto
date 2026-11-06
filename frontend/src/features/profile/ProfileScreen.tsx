@@ -12,7 +12,7 @@ type Props = {
   bio: string;
   busy: boolean;
   avatarBusy: boolean;
-  avatarInputRef: RefObject<HTMLInputElement | null>;
+  avatarInputRef: RefObject<HTMLInputElement>;
   onAvatarUpload: (file?: File) => void;
   onEquipItem: (item: Item) => void;
   onSave: (event: FormEvent<HTMLFormElement>) => void;
