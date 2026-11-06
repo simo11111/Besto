@@ -12,7 +12,16 @@ alter table public.chat_messages enable row level security;
 
 drop policy if exists "room members read chat" on public.chat_messages;
 create policy "room members read chat" on public.chat_messages for select to authenticated
-using (exists (select 1 from public.room_members m where m.room_id = chat_messages.room_id and m.user_id = auth.uid()));
+using (public.is_room_member(chat_messages.room_id));
+
+-- Security-definer membership predicate avoids recursive RLS evaluation.
+create or replace function public.is_room_member(p_room_id uuid)
+returns boolean language sql stable security definer set search_path = ''
+as $
+  select exists(select 1 from public.room_members m where m.room_id = p_room_id and m.user_id = auth.uid());
+$;
+revoke all on function public.is_room_member(uuid) from public, anon;
+grant execute on function public.is_room_member(uuid) to authenticated;
 
 -- Remove permissive client-side mutation paths. All room/chat writes go through checked RPCs.
 drop policy if exists "users create own profile" on public.profiles;
@@ -21,11 +30,9 @@ drop policy if exists "authenticated users view public open rooms" on public.roo
 drop policy if exists "owners view their rooms" on public.rooms;
 drop policy if exists "members view their memberships" on public.room_members;
 create policy "authenticated users view rooms they can access" on public.rooms for select to authenticated
-using ((is_private = false and status <> 'closed') or exists (
-  select 1 from public.room_members m where m.room_id = rooms.id and m.user_id = auth.uid()
-));
+using ((is_private = false and status <> 'closed') or public.is_room_member(rooms.id));
 create policy "room members view room roster" on public.room_members for select to authenticated
-using (exists (select 1 from public.room_members mine where mine.room_id = room_members.room_id and mine.user_id = auth.uid()));
+using (public.is_room_member(room_members.room_id));
 
 create or replace function public.create_room(p_name text, p_private boolean default false, p_max_players integer default 10)
 returns table(room_id uuid, room_code text)
@@ -112,6 +119,6 @@ grant execute on function public.send_room_message(uuid,text) to authenticated;
 drop policy if exists "room members receive voice signals" on realtime.messages;
 drop policy if exists "room members send voice signals" on realtime.messages;
 create policy "room members receive voice signals" on realtime.messages for select to authenticated
-using (exists (select 1 from public.room_members m where m.room_id::text = split_part(realtime.topic(), ':', 2) and m.user_id = auth.uid()));
+using (public.is_room_member(nullif(split_part(realtime.topic(), ':', 2), '')::uuid));
 create policy "room members send voice signals" on realtime.messages for insert to authenticated
-with check (exists (select 1 from public.room_members m where m.room_id::text = split_part(realtime.topic(), ':', 2) and m.user_id = auth.uid()));
+with check (public.is_room_member(nullif(split_part(realtime.topic(), ':', 2), '')::uuid));
