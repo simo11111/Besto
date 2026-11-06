@@ -5,7 +5,7 @@ alter table public.game_sessions add constraint game_sessions_game_key_check
 
 alter table public.game_actions drop constraint if exists game_actions_action_key_check;
 alter table public.game_actions add constraint game_actions_action_key_check
-  check (action_key in ('vote','answer','clue','guess','ask'));
+  check (action_key in ('vote','answer','clue','guess','ask','hint'));
 
 insert into public.game_prompts(game_key,prompt,accepted_answers,forbidden_words) values
  ('impostor','البحر',array['البحر'],array[]::text[]),
@@ -72,7 +72,7 @@ declare
  v_user uuid:=auth.uid(); v_game public.game_sessions%rowtype;
  v_secret private.game_session_secrets%rowtype; v_role text;
  v_player_count integer; v_asks integer; v_votes integer;
- v_asked boolean; v_voted boolean;
+ v_asked boolean; v_voted boolean; v_received integer; v_hinted boolean; v_targets integer; v_hints integer;
 begin
  if v_user is null then raise exception 'AUTH_REQUIRED'; end if;
  select * into v_game from public.game_sessions where id=p_session_id;
@@ -91,6 +91,10 @@ begin
    select count(*) into v_votes from public.game_actions where session_id=p_session_id and action_key='vote';
    select exists(select 1 from public.game_actions where session_id=p_session_id and user_id=v_user and action_key='ask') into v_asked;
    select exists(select 1 from public.game_actions where session_id=p_session_id and user_id=v_user and action_key='vote') into v_voted;
+   select count(*) into v_received from public.game_actions where session_id=p_session_id and action_key='ask' and payload->>'target_user_id'=v_user::text;
+   select exists(select 1 from public.game_actions where session_id=p_session_id and user_id=v_user and action_key='hint') into v_hinted;
+   select count(distinct payload->>'target_user_id') into v_targets from public.game_actions where session_id=p_session_id and action_key='ask';
+   select count(*) into v_hints from public.game_actions where session_id=p_session_id and action_key='hint';
    return jsonb_build_object(
      'game_mode','impostor',
      'role',coalesce(v_role,'knows_word'),
@@ -101,7 +105,11 @@ begin
      'asks_count',v_asks,
      'votes_count',v_votes,
      'has_asked',v_asked,
-     'has_voted',v_voted
+     'has_voted',v_voted,
+     'questions_received',v_received,
+     'has_hint',v_hinted,
+     'targets_count',v_targets,
+     'hints_count',v_hints
    );
  end if;
  return '{}'::jsonb;
@@ -120,7 +128,7 @@ begin
  select * into v_game from public.game_sessions where id=p_session_id and status='active' for update;
  if not found or not private.is_room_member(v_game.room_id) then raise exception 'GAME_NOT_AVAILABLE'; end if;
  if not exists(select 1 from public.game_players where session_id=p_session_id and user_id=v_user) then raise exception 'NOT_A_PLAYER'; end if;
- if p_action_key is null or p_action_key not in ('vote','answer','clue','guess','ask') or p_payload is null or jsonb_typeof(p_payload)<>'object' then raise exception 'INVALID_ACTION'; end if;
+ if p_action_key is null or p_action_key not in ('vote','answer','clue','guess','ask','hint') or p_payload is null or jsonb_typeof(p_payload)<>'object' then raise exception 'INVALID_ACTION'; end if;
  if v_game.game_key='impostor' then
    select * into v_secret from private.game_session_secrets where session_id=p_session_id for update;
    if p_action_key='ask' then
@@ -131,7 +139,16 @@ begin
      insert into public.game_actions(session_id,user_id,action_key,payload) values(p_session_id,v_user,'ask',jsonb_build_object('target_user_id',v_target)) returning id into v_id;
      select count(*) into v_count from public.game_actions where session_id=p_session_id and action_key='ask';
      select count(*) into v_total from public.game_players where session_id=p_session_id;
-     if v_count=v_total then update private.game_session_secrets set phase='voting' where session_id=p_session_id; end if;
+     if v_count=v_total then update private.game_session_secrets set phase='answering' where session_id=p_session_id; end if;
+     return v_id;
+   elsif p_action_key='hint' then
+     if v_secret.phase<>'answering' then raise exception 'HINTING_NOT_OPEN'; end if;
+     if not exists(select 1 from public.game_actions where session_id=p_session_id and action_key='ask' and payload->>'target_user_id'=v_user::text) then raise exception 'NO_QUESTION_FOR_PLAYER'; end if;
+     if exists(select 1 from public.game_actions where session_id=p_session_id and user_id=v_user and action_key='hint') then raise exception 'ACTION_ALREADY_SENT'; end if;
+     insert into public.game_actions(session_id,user_id,action_key,payload) values(p_session_id,v_user,'hint','{}'::jsonb) returning id into v_id;
+     select count(distinct payload->>'target_user_id') into v_count from public.game_actions where session_id=p_session_id and action_key='ask';
+     select count(*) into v_total from public.game_actions where session_id=p_session_id and action_key='hint';
+     if v_total=v_count then update private.game_session_secrets set phase='voting' where session_id=p_session_id; end if;
      return v_id;
    elsif p_action_key='vote' then
      if v_secret.phase<>'voting' then raise exception 'VOTING_NOT_OPEN'; end if;
