@@ -45,7 +45,7 @@ begin
    select v_session,user_id,case when user_id=v_target then 'wolf' else 'villager' end
    from public.game_players where session_id=v_session;
  end if;
- if p_game_key in ('forbidden','ten_seconds','impostor') then
+ if p_game_key in ('who','forbidden','ten_seconds','impostor') then
    select * into v_prompt from public.game_prompts where game_key=p_game_key and active order by random() limit 1;
    if not found then raise exception 'NO_GAME_PROMPTS'; end if;
    if p_game_key='impostor' then
@@ -83,7 +83,8 @@ begin
  if v_game.game_key='forbidden' and v_secret.target_user_id=v_user then
    return jsonb_build_object('prompt',v_secret.prompt,'forbidden_words',to_jsonb(v_secret.forbidden_words),'is_clue_giver',true);
  end if;
- if v_game.game_key='ten_seconds' then return jsonb_build_object('prompt',v_secret.prompt); end if;
+ if v_game.game_key='ten_seconds' then return jsonb_build_object('prompt',v_secret.prompt,'deadline_at',v_secret.deadline_at); end if;
+ if v_game.game_key='who' then return jsonb_build_object('prompt',v_secret.prompt); end if;
  if v_game.game_key='impostor' then
    select count(*) into v_player_count from public.game_players where session_id=p_session_id;
    select count(*) into v_asks from public.game_actions where session_id=p_session_id and action_key='ask';
