@@ -5,8 +5,8 @@
   "dir": "rtl",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#101916",
-  "theme_color": "#101916",
+  "background_color": "#0b0a1b",
+  "theme_color": "#0b0a1b",
   "description": "منصة ألعاب وتحديات اجتماعية مغربية، العب مع صحابك وأنشئ غرفتك.",
   "icons": [
     {
