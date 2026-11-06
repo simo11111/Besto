@@ -41,6 +41,7 @@
 15. `database/015_room_presence_realtime_index.sql`
 16. `database/016_expand_party_game_prompts.sql`
 17. `database/017_game_round_progress.sql`
+18. `database/018_room_owner_handoff.sql`
 
 لا تفتح schema `private` للـ Data API، ولا تضع service-role أو TURN secrets في الواجهة أو GitHub.
 
