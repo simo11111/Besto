@@ -1,23 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SideButton, PageHead, MissionIcon, Stat, Achievement, Toast } from './features/shared/ui';
 import type { FormEvent } from 'react';
+import type { Tab, Room, Profile, Game, Player, Item, DirectMessage, AppNotification, DailyMission } from './features/shared/types';
 import { AudioLines, Award, Bell, Bot, Check, ChevronDown, ChevronLeft, Crown, Flame, Gamepad2, Gem, Gift, Headphones, Home, Lock, LogOut, Medal, MessageCircle, Mic, MicOff, Plus, Send, ShieldCheck, ShoppingBag, Sparkles, Star, Swords, Trophy, Users, Wallet, X, Zap, ClipboardList, Globe } from 'lucide-react';
 import { hasSupabaseConfig, supabase } from './lib/supabase';
 import { games } from './features/games/registry';
 import GameCard from './features/games/GameCard';
 import { xpForNext, xpProgress } from './features/profile/progression';
 
-type Tab='home'|'games'|'room'|'game'|'rooms'|'friends'|'profile'|'leaderboard'|'shop';
-type Room={id:string;code:string;name:string;is_private:boolean;max_players:number;status:string;game_key?:string|null};
-type Profile={id:string;username:string;avatar_url?:string|null;bio:string;xp:number;coins:number;gems:number;level:number;wins:number;games_played:number;total_score:number;streak_days:number;last_daily_claim:string|null;equipped_frame:string;equipped_title:string};
-type Game={id:string;game_key:string;status:string;created_by:string;result?:any};
-type Player={user_id:string;score:number};
-type Item={id:string;name:string;category:string;price:number;currency:'coins'|'gems';rarity:string;preview:string};
-type DirectMessage={id:string;sender_id:string;recipient_id:string;body:string;created_at:string;read_at?:string|null};
-type AppNotification={id:string;kind:string;title:string;body:string;payload:any;created_at:string;read_at?:string|null};
-type DailyMission={mission_key:string;name:string;description:string;icon:string;progress:number;target_count:number;coins_reward:number;xp_reward:number;claimed:boolean};
-
-const prettyError=(e:any)=>{const m=String(e?.message||e||'وقع خطأ');if(m.includes('PLAYER_NOT_FOUND'))return 'ما لقيناش لاعب بهاد الاسم.';if(m.includes('ALREADY_FRIENDS'))return 'راه صديقك من قبل.';if(m.includes('ROOM_FULL'))return 'الغرفة عامرة.';if(m.includes('INVALID_ROOM_PASSWORD'))return 'كلمة سر الغرفة ما صحيحةش.';if(m.includes('ROOM_PASSWORD_REQUIRED'))return 'دخل كلمة سر للغرفة الخاصة (4 حروف على الأقل).';if(m.includes('ROOM_NOT_FOUND'))return 'كود الغرفة ما صحيحش.';if(m.includes('JOIN_RATE_LIMITED'))return 'كثرت المحاولات. تسنى شوية.';if(m.includes('ALREADY_CLAIMED'))return 'خديتي المكافأة اليومية ديالك اليوم.';if(m.includes('NOT_ENOUGH_COINS'))return 'العملات ديالك ما كافياش.';if(m.includes('ALREADY_OWNED'))return 'هاد الزينة راه عندك.';if(m.includes('HOST_ONLY'))return 'غير مول الغرفة يقدر يدير هاد العملية.';if(m.includes('NEED_FOUR_PLAYERS'))return 'لعبة شفتي الديب؟ خاصها 4 لاعبين على الأقل.';if(m.includes('NEED_THREE_PLAYERS'))return 'هاد اللعبة خاصها 3 لاعبين على الأقل.';if(m.includes('NEED_MORE_PLAYERS'))return 'خاص لاعبَين على الأقل.';if(m.includes('TIME_EXPIRED'))return 'سالاو 10 ثواني، الجواب ما تقبلش.';if(m.includes('ACTION_ALREADY_SENT'))return 'صيفطتي الجواب ديالك من قبل.';if(m.includes('MISSION_ALREADY_CLAIMED'))return 'خديتي مكافأة هاد المهمة اليوم.';if(m.includes('MISSION_NOT_COMPLETE'))return 'كمّل شروط المهمة عاد جمع المكافأة.';if(m.includes('WAITING_FOR_VOTES'))return 'تسنى حتى يصوتو جميع اللاعبين.';if(m.includes('WAITING_FOR_GUESSES'))return 'خاص جميع اللاعبين يخمّنو الكلمة قبل النتيجة.';if(m.includes('WAITING_FOR_CLUE'))return 'تسنى الشرح ديال اللاعب المختار.';if(m.includes('TIME_REMAINING'))return 'مازال الوقت ما سالاش.';return m;};
+import { prettyError } from './lib/errors';
 export default function App(){
  const [session,setSession]=useState<any>(null),[passwordRecovery,setPasswordRecovery]=useState(false),[newPassword,setNewPassword]=useState(''),[email,setEmail]=useState(''),[password,setPassword]=useState(''),[username,setUsername]=useState(''),[authMode,setAuthMode]=useState<'login'|'signup'>('login');
  const [roomDialog,setRoomDialog]=useState<'join'|'create'|null>(null),[installPrompt,setInstallPrompt]=useState<any>(null),[avatarBusy,setAvatarBusy]=useState(false);const avatarInputRef=useRef<HTMLInputElement|null>(null);
