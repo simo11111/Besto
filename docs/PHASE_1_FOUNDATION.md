@@ -8,18 +8,24 @@
 - Added calm dark/light CSS design tokens and connected Tailwind colors to the tokens.
 - Added reduced-motion-aware mascot animation.
 - Extracted the game catalog into a typed registry and moved the reusable game card and XP progression calculations into feature modules.
+- Split the login, signup, password-recovery and Supabase setup screens into `features/auth/AuthScreens.tsx`.
+- Moved shared UI primitives into `features/shared/ui.tsx`, shared application types into `features/shared/types.ts`, and localized error mapping into `lib/errors.ts`.
+- Extracted friendship, direct-message and notification reads into `features/social/api.ts`; `App.tsx` now delegates those queries to the social feature module.
+- Added Vitest and focused unit tests for XP progression and the party-game registry; CI now runs tests before the production build.
 - Added migration 020 to make friendships, direct messages and notifications reproducible, with RLS and column-level grants that preserve current app operations.
 - Added migration 021 to fix Ten Seconds multiple-choice scoring.
 - Added migration 022 to version the social and quick-match RPCs already used by the frontend (`send_friend_request`, `accept_friend_request`, `remove_friend`, `quick_match_room`), with explicit authentication checks and grants.
+- Added migrations 023/024 to deduplicate equivalent friendship RLS policies, use scalar-subquery `auth.uid()` predicates, and remove the redundant notifications index.
 - Replaced the live quiz rows' accepted answer letters (A/B/C/D) with the actual option text submitted by the UI.
 - Replaced the real Supabase URL/key in .env.example with placeholders.
 
 ## Database changes applied
 
-Migrations 020 and 021 were executed against the connected Supabase project on 2026-11-06. Verification confirmed:
+Migrations 020–024 were applied to the connected Supabase project on 2026-11-06. Migrations 020/021 were also registered in the migration history after confirming their schema changes were already present. Verification confirmed:
 - Quiz rows 58–65 now store the correct answer text.
 - finish_party_game contains the revised Ten Seconds score multiplier.
 - Friendship, direct-message and notification policies exist with the intended table-specific access.
+- The duplicate friendship SELECT policy and duplicate notifications inbox index were removed; the Supabase performance advisor no longer reports the social-policy init-plan or duplicate-index findings.
 
 ## Test checklist
 
@@ -32,13 +38,13 @@ Migrations 020 and 021 were executed against the connected Supabase project on 2
 7. Wait for the server deadline and verify the host closes the round and the result is persisted.
 8. Check PWA icon, login mascot, app header mascot and profile frame selector on a phone-sized viewport.
 
-## Not included yet
+## Remaining Phase 1 work
 
-- Full App.tsx decomposition and routing.
+- `App.tsx` is still the application orchestrator and needs further decomposition into dedicated rooms, games, shop and profile screens; routing is not yet introduced.
 - Full invitation accept/decline/expiry state machine.
 - Four-in-a-Row and Moroccan Dama online engines.
 - Removal of the local practice mode and RPS code.
 - Rematch, MMR, reconnect, spectators, admin, season pass and the new party games.
-- Automated Vitest/Playwright/SQL integration suites.
+- Automated Playwright two-account and SQL integration suites; current Vitest coverage is limited to the registry and XP progression helpers.
 
 These are intentionally deferred to the next phases; the current branch does not claim those systems are complete.
