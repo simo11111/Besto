@@ -574,3 +574,30 @@ body{background:radial-gradient(ellipse at 50% -12%,#32124c 0,transparent 42%),l
 .rps-choices button{min-height:66px;font-size:15px;border-color:#8061ad66;background:linear-gradient(145deg,#201a35,#121a27)}
 .practice-note{font-size:11px;text-align:center;line-height:1.8}
 @media(max-width:600px){.profile-avatar{width:88px;height:88px;min-width:88px}.frame-selector{padding:13px}.frame-selector-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.frame-choice img{width:58px;height:58px}}
+
+
+/* Focused match arena */
+.active-game{position:fixed!important;inset:0!important;z-index:80!important;overflow-y:auto!important;margin:0!important;padding:18px max(18px,calc((100vw - 1040px)/2)) 32px!important;background:radial-gradient(ellipse at 80% 0%,#283f2c 0,transparent 42%),#080d0b!important;border:0!important;border-radius:0!important;display:block!important}
+.game-arena-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0 18px;border-bottom:1px solid #ffffff18}
+.game-arena-brand{display:flex;align-items:center;gap:9px;font:800 13px Inter,sans-serif;letter-spacing:1px}
+.game-arena-brand small{color:#8f9b91;font:11px Changa,sans-serif;letter-spacing:0}
+.game-arena-players{display:flex;gap:10px;overflow-x:auto;padding:14px 0 20px}
+.arena-player{flex:0 0 92px;display:flex;align-items:center;flex-direction:column;gap:4px;padding:10px 7px;border:1px solid #ffffff16;background:#141d18;border-radius:16px}
+.arena-avatar{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;overflow:hidden;background:#273a2d;border:2px solid #a4e56d}
+.arena-avatar img{width:100%;height:100%;object-fit:cover}
+.arena-player b{font-size:11px;max-width:84px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.arena-player small{font-size:9px;color:#9ba99d}
+.active-game>.section-head{margin:8px 0 14px}
+.active-game .game-play-card{max-width:850px;margin:0 auto;background:linear-gradient(145deg,#1b2c21,#111b17);border:1px solid #a5d37b35;border-radius:24px;padding:clamp(18px,4vw,36px);box-shadow:0 20px 70px #0008}
+.active-game .game-play-card h3{font-size:clamp(22px,4vw,34px);line-height:1.5}
+.arena-communication{max-width:850px;margin:14px auto;display:grid;grid-template-columns:.8fr 1.2fr;gap:12px}
+.arena-voice,.arena-chat{background:#121b16;border:1px solid #ffffff18;border-radius:18px;padding:15px;min-width:0}
+.arena-voice{display:flex;align-items:center;gap:9px;flex-wrap:wrap;align-content:flex-start}
+.arena-voice b,.arena-chat>b{display:flex;align-items:center;gap:7px;width:100%;font-size:13px}
+.arena-voice small{width:100%;color:#9aa99d;font-size:11px}
+.arena-chat-messages{max-height:150px;overflow:auto;margin:9px 0}
+.arena-chat-messages p{margin:5px 0;font-size:12px;color:#d7e1d8;overflow-wrap:anywhere}
+.arena-chat-messages strong{color:#a9dc83}
+.active-game .timer-banner{background:#15342d;border-color:#75d8b44a}
+.active-game .quiz-option{min-height:64px}
+@media(max-width:700px){.active-game{padding:12px 12px 28px!important}.game-arena-brand{font-size:10px}.game-arena-top>.secondary{font-size:10px;padding:8px}.arena-communication{grid-template-columns:1fr}.active-game .game-play-card{padding:17px;border-radius:19px}.active-game .game-play-card h3{font-size:21px}}
