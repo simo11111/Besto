@@ -1,32 +1,46 @@
 # DIMA PLAY
 
-منصة ألعاب اجتماعية مغربية بالدارجة، بتصميم Dark Gaming وتجربة Mobile-first.
+منصة ألعاب اجتماعية مغربية بالدارجة، بتصميم Dark Gaming وتجربة Mobile-first وPWA.
 
 ## Stack
-- Frontend: React + TypeScript + Vite + Tailwind + Supabase JS
-- Backend: Node.js + Express + Zod + Helmet + rate limiting
-- Database/Auth/Realtime: Supabase Postgres + Auth + RLS + private Broadcast
-- Voice: WebRTC audio mesh (experimental; TURN server required for reliable production connectivity)
-- PWA: manifest + service worker
+- React + TypeScript + Vite + Tailwind
+- Supabase Auth + PostgreSQL + RLS + Realtime
+- WebRTC صوت مباشر (STUN مبدئي؛ TURN مطلوب للإنتاج)
 
-## Setup
-1. أنشئ مشروع Supabase.
-2. شغّل database/001_initial.sql ثم database/002_rooms_chat_voice.sql في SQL Editor.
-3. انسخ .env.example إلى .env داخل جذر المشروع وعمّر VITE_SUPABASE_URL و VITE_SUPABASE_ANON_KEY.
-4. فعّل Email Auth في Supabase، واجعل قنوات Realtime private.
-5. شغّل npm install ثم npm run dev.
+## إعداد قاعدة البيانات
+شغّل ملفات SQL بالترتيب في Supabase SQL Editor:
+1. `database/001_initial.sql`
+2. `database/002_rooms_chat_voice.sql`
+3. `database/003_competitive_games.sql`
+4. `database/004_gameplay_hardening.sql`
+5. `database/005_game_authorization_fixes.sql`
 
-## Implemented
-- Email sign-up/sign-in through Supabase Auth.
-- Transactional room creation, join-by-code and leave operations.
-- Persistent rooms: leaving does not delete the room.
-- Room roster and persisted room chat.
-- Private Realtime Broadcast signaling restricted by room membership.
-- WebRTC microphone audio mesh for small rooms (beta).
+إذا كان Data API عندك مضبوطاً على قائمة schemas/tables محددة، تأكد أن `public` exposed وأن صلاحيات SELECT الممنوحة في migrations مفعلة. لا تفتح private schema للـ Data API.
 
-## Production limitations
-- Voice mesh مناسب لغرف صغيرة (4–6 مشاركين كحد عملي). يلزم TURN server وبيانات اعتماد مؤقتة تصدر من الخادم لاجتياز NAT بشكل موثوق.
-- صلاحيات Realtime مبنية على عضوية الغرفة؛ اعتبر أعضاء الغرفة أطرافاً موثوقين. يوصى بخادم signaling موثّق مستقل قبل الإطلاق العام الكبير.
-- اضبط تأكيد البريد، سياسة كلمات المرور، SMTP، النسخ الاحتياطي، مراقبة الإساءة، والتبليغ والحظر.
-- لم يُجرَ اختبار اختراق مستقل، ولا يوجد ادعاء بانعدام الثغرات.
-- ممنوع رفع service-role keys أو كلمات مرور قاعدة البيانات أو TURN secrets إلى GitHub.
+## إعداد التطبيق
+1. انسخ `.env.example` إلى `.env` في جذر المشروع.
+2. ضع `VITE_SUPABASE_URL` و`VITE_SUPABASE_PUBLISHABLE_KEY` من Project Connect.
+3. فعّل Email Auth وتأكيد البريد، واضبط SMTP قبل الإطلاق العام.
+4. شغّل `npm install` ثم `npm run dev`.
+
+## الألعاب
+- **شفتي الديب؟** أدوار سرية وتصويت لاكتشاف الذئب.
+- **شكون فينا؟** سؤال اجتماعي وتصويت على اللاعب الأكثر انطباقاً.
+- **ممنوع تقولها** لاعب يشرح كلمة مع كلمات محظورة، والباقي يخمن.
+- **10 ثواني** إجابات سريعة، بحد أقصى 3 أجوبة صحيحة تحتسب بالنقاط.
+
+احتساب النتائج وXP والعملات يتم داخل PostgreSQL RPC وليس من متصفح اللاعب. المستويات والإنجازات والمتجر والمكافأة اليومية ولوحة المتصدرين مرتبطة بقاعدة البيانات.
+
+## Voice
+WebRTC mesh مناسب للمجموعات الصغيرة فقط. STUN وحده لا يضمن الاتصال عبر جميع أنواع NAT والشبكات؛ أضف TURN service موثوقاً وبيانات اعتماد قصيرة الأجل عبر خادم آمن قبل الإنتاج. لا تضع TURN secrets في Vite env.
+
+## Security / release checklist
+- RLS مفعّل على جداول public.
+- أدوار الذئب وكلمات اللعبة السرية في schema غير مكشوفة.
+- RPCs تتحقق من auth.uid وعضوية الغرفة وصلاحية صاحب الغرفة.
+- عمليات العملات والمكافآت ونتائج الجولات تُحسب في قاعدة البيانات.
+- راجع Supabase Security/Performance Advisors بعد تطبيق migrations.
+- اختبر تسجيل الدخول، إنشاء/الانضمام/الخروج، الغرف الخاصة، chat، الصوت على شبكات مختلفة، وتزامن لاعبين متعددين.
+- CI يبني TypeScript frontend/backend ويفشل عند ثغرات npm عالية الخطورة.
+- لم يُجر اختبار اختراق مستقل؛ لا يوجد ادعاء بأن التطبيق خالٍ 100% من الثغرات.
+- ممنوع رفع service-role/secret keys أو كلمات مرور قاعدة البيانات أو TURN credentials إلى GitHub.
