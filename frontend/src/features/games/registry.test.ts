@@ -17,6 +17,7 @@ describe('party game registry', () => {
   });
 
   it('keeps removed rock-paper-scissors out of the party catalog', () => {
-    expect(games.some((game) => game.key === 'rps')).toBe(false);
+    const keys: string[] = games.map((game) => game.key);
+    expect(keys).not.toContain('rps');
   });
 });
