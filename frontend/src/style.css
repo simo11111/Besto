@@ -601,3 +601,53 @@ body{background:radial-gradient(ellipse at 50% -12%,#32124c 0,transparent 42%),l
 .active-game .timer-banner{background:#15342d;border-color:#75d8b44a}
 .active-game .quiz-option{min-height:64px}
 @media(max-width:700px){.active-game{padding:12px 12px 28px!important}.game-arena-brand{font-size:10px}.game-arena-top>.secondary{font-size:10px;padding:8px}.arena-communication{grid-template-columns:1fr}.active-game .game-play-card{padding:17px;border-radius:19px}.active-game .game-play-card h3{font-size:21px}}
+
+
+/* MIMOX visual foundation — calm Moroccan night palette */
+:root{
+  color-scheme:dark;
+  --mx-bg:#101916;
+  --mx-surface:#19231f;
+  --mx-surface-raised:#202e28;
+  --mx-primary:#397f73;
+  --mx-primary-strong:#2c685f;
+  --mx-secondary:#d5a66d;
+  --mx-accent:#e9c98e;
+  --mx-text:#f4f2e9;
+  --mx-muted:#a9b8ad;
+  --mx-success:#83c6a2;
+  --mx-warning:#e7b96f;
+  --mx-danger:#d98278;
+  --mx-border:rgba(230,239,228,.14);
+  --mx-focus:#f2cf83;
+  --mx-shadow:0 18px 48px rgba(0,0,0,.24);
+}
+[data-theme="light"]{
+  color-scheme:light;
+  --mx-bg:#f4f3ec;
+  --mx-surface:#ffffff;
+  --mx-surface-raised:#e9eee7;
+  --mx-primary:#397f73;
+  --mx-primary-strong:#2c685f;
+  --mx-secondary:#9b6d3e;
+  --mx-accent:#a77d43;
+  --mx-text:#1d2d27;
+  --mx-muted:#61746a;
+  --mx-success:#277c56;
+  --mx-warning:#95651f;
+  --mx-danger:#a64038;
+  --mx-border:rgba(31,57,46,.16);
+  --mx-focus:#8c642c;
+  --mx-shadow:0 18px 48px rgba(31,57,46,.12);
+}
+body{background:radial-gradient(ellipse at 80% 0%,rgba(57,127,115,.16),transparent 36%),var(--mx-bg);color:var(--mx-text)}
+.primary{background:linear-gradient(110deg,var(--mx-primary),var(--mx-primary-strong));color:#fff}
+.secondary{border-color:var(--mx-border)}
+.brand-mascot-mark{width:42px;height:42px;object-fit:contain;flex:0 0 auto;border-radius:14px;filter:drop-shadow(0 5px 10px rgba(44,104,95,.18))}
+.brand{gap:9px}
+.quiz-instruction{margin:0 0 12px;padding:12px 14px;border:1px solid rgba(131,198,162,.25);border-radius:14px;background:rgba(57,127,115,.12);color:var(--mx-text);font-size:14px;line-height:1.8}
+.quiz-option.selected{border-color:var(--mx-success);background:rgba(131,198,162,.14);box-shadow:0 0 0 2px rgba(131,198,162,.12)}
+.auth-art-img{max-width:min(100%,360px);max-height:340px;object-fit:contain;filter:drop-shadow(0 18px 32px rgba(44,104,95,.18))}
+.game-card,.room-box,.game-play-card,.friend-row,.profile-hero{box-shadow:var(--mx-shadow)}
+:focus-visible{outline:3px solid var(--mx-focus);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
