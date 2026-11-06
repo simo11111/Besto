@@ -11,7 +11,7 @@ import ConnectFourGame, { type DuelGameState } from './features/games/ConnectFou
 import DamaGame, { type DamaGameState } from './features/games/DamaGame';
 
 import { prettyError } from './lib/errors';
-import { SetupRequiredScreen, AuthScreen, PasswordRecoveryScreen } from './features/auth/AuthScreens';
+import { SetupRequiredScreen, AuthScreen, PasswordRecoveryScreen, InstallAppBanner } from './features/auth/AuthScreens';
 import { fetchFriendships, fetchDirectMessages, fetchNotifications } from './features/social/api';
 import { fetchOpenRooms, fetchRoomSnapshot } from './features/rooms/api';
 import { fetchProfile, fetchLeaderboard, fetchDailyMissions } from './features/profile/api';
@@ -284,7 +284,7 @@ export default function App(){
  if(!session)return <AuthScreen authMode={authMode} email={email} password={password} username={username} busy={busy} notice={notice} onCloseNotice={()=>setNotice('')} onEmailChange={setEmail} onPasswordChange={setPassword} onUsernameChange={setUsername} onAuthModeChange={setAuthMode} onSubmit={authSubmit} onGoogleSignIn={signInWithGoogle} onPasswordReset={sendPasswordReset} onResendConfirmation={resendConfirmation}/>;
  if(session&&passwordRecovery)return <PasswordRecoveryScreen newPassword={newPassword} busy={busy} notice={notice} onCloseNotice={()=>setNotice('')} onPasswordChange={setNewPassword} onSubmit={saveNewPassword}/>;
  return <main className="shell"><header className="topbar"><button className="brand brand-button" onClick={()=>setTab('home')}><img className="brand-icon" src="/mimox-icon.svg" alt=""/><span>MIMOX</span></button><div className="top-actions"><button className="wallet coin-wallet" onClick={()=>setTab('shop')}><span className="currency-coin">C</span> {profile?.coins??0} <span className="wallet-add">＋</span></button><button className="wallet gem-wallet" onClick={()=>setTab('shop')}><Gem size={15}/> {profile?.gems??0} <span className="wallet-add">＋</span></button><button className="notification-button" onClick={()=>{setNotificationOpen(!notificationOpen);void loadNotifications();}} aria-label="الإشعارات"><Bell size={19}/>{notifications.filter(n=>!n.read_at).length>0&&<i>{notifications.filter(n=>!n.read_at).length}</i>}</button><span className="level-pill">LVL {profile?.level??1}</span><button className="avatar header-avatar" onClick={()=>setTab('profile')} title="البروفايل">{profile?.avatar_url?<img src={profile.avatar_url} alt=""/>:profile?.username?.slice(0,1)||"P"}</button></div></header>
- {pendingInvite&&<div className="invite-overlay" role="presentation"><section className="invite-modal" role="dialog" aria-modal="true" aria-labelledby="invite-modal-title">
+ <InstallAppBanner/>{pendingInvite&&<div className="invite-overlay" role="presentation"><section className="invite-modal" role="dialog" aria-modal="true" aria-labelledby="invite-modal-title">
   <div className="invite-countdown">{inviteCountdown}<small>ث</small></div>
   <div className="invite-avatar" data-frame={inviteActor?.equipped_frame||'default'}>{inviteActor?.avatar_url?<img src={inviteActor.avatar_url} alt={inviteActor.username}/>:<span>{inviteActor?.username?.slice(0,1)||'🎮'}</span>}</div>
   <span className="invite-eyebrow">دعوة جديدة للعب</span>
