@@ -8,7 +8,7 @@ begin
  select * into v_game from public.game_sessions where id=p_session_id and status='active';
  if not found or not private.is_room_member(v_game.room_id) then raise exception 'GAME_NOT_AVAILABLE'; end if;
  if not exists(select 1 from public.game_players where session_id=p_session_id and user_id=v_user) then raise exception 'NOT_A_PLAYER'; end if;
- if p_action_key not in ('vote','answer','clue','guess') or jsonb_typeof(p_payload)<>'object' then raise exception 'INVALID_ACTION'; end if;
+ if p_action_key is null or p_action_key not in ('vote','answer','clue','guess') or p_payload is null or jsonb_typeof(p_payload)<>'object' then raise exception 'INVALID_ACTION'; end if;
  if v_game.game_key='ten_seconds' then
    select * into v_secret from private.game_session_secrets where session_id=p_session_id;
    if now()>v_secret.deadline_at then raise exception 'TIME_EXPIRED'; end if;
