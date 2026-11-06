@@ -27,7 +27,7 @@
 1. انسخ `.env.example` إلى `.env` في جذر المشروع.
 2. ضع `VITE_SUPABASE_URL` و`VITE_SUPABASE_PUBLISHABLE_KEY` من Project Connect.
 3. فعّل Email Auth وتأكيد البريد، واضبط SMTP قبل الإطلاق العام.
-4. في Supabase → Authentication → URL Configuration، اجعل Site URL هو `https://besto-qo4.pages.dev` وأضف `https://besto-qo4.pages.dev/**` إلى Redirect URLs. التطبيق يوجّه روابط تأكيد البريد وتسجيل Google إلى عنوان الموقع المنشور، وليس `localhost`.
+4. في Supabase → Authentication → URL Configuration، اجعل Site URL هو `https://mimox-c5a.pages.dev` وأضف `https://mimox-c5a.pages.dev/**` إلى Redirect URLs. التطبيق يوجّه روابط تأكيد البريد وتسجيل Google إلى عنوان الموقع المنشور، وليس `localhost`.
 5. لتفعيل Google فعلياً: Authentication → Providers → Google، فعّل المزود وأدخل Google OAuth Client ID وClient Secret، ثم أضف رابط Callback الذي يعرضه Supabase داخل Google Cloud Console. زر Google ظاهر في الواجهة، لكنه لن يعمل قبل إكمال هذه الإعدادات.
 4. شغّل `npm install` ثم `npm run dev`.
 
