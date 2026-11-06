@@ -9,4 +9,8 @@ jobs:
         with:
           node-version: 22
       - run: npm install
+      - name: Report dependency advisories
+        run: |
+          npm audit --json > /tmp/dima-audit.json || true
+          node -e "const a=require('/tmp/dima-audit.json'); console.log(JSON.stringify(a.vulnerabilities || {}, null, 2))"
       - run: npm run build
