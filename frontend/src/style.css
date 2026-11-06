@@ -662,3 +662,34 @@ body{background:radial-gradient(ellipse at 80% 0%,rgba(57,127,115,.16),transpare
 
 /* Room invitation actions */
 .notification-entry{border-bottom:1px solid var(--line,rgba(255,255,255,.08));padding:4px 0 10px}.notification-entry .notification-row{width:100%;border:0;background:transparent;text-align:start}.notification-actions{display:flex;align-items:center;gap:8px;padding:0 12px 0 52px;flex-wrap:wrap}.notification-actions button{font:inherit;font-size:12px;padding:7px 12px;border-radius:9px}.notification-actions small{font-size:11px;color:var(--muted,#999)}
+
+
+/* Online Four-in-a-Row */
+.connect-four-game{display:flex;flex-direction:column;gap:16px;width:100%;max-width:620px;margin:0 auto;padding:clamp(14px,3vw,24px);border:1px solid var(--mx-border,#ffffff18);border-radius:22px;background:linear-gradient(145deg,var(--mx-surface,#171629),var(--mx-bg,#0e1020));}
+.connect-four-status{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.connect-four-turn{display:flex;align-items:center;gap:10px}
+.connect-four-turn strong,.connect-four-turn small{display:block}
+.connect-four-turn small{color:var(--mx-muted,#aaa);font-size:12px;margin-top:2px}
+.connect-four-turn-dot{display:inline-block;width:13px;height:13px;border-radius:50%;flex:0 0 auto}
+.connect-four-turn-dot.first{background:#ef6b78;box-shadow:0 0 0 4px #ef6b7825}
+.connect-four-turn-dot.second{background:#f5c65c;box-shadow:0 0 0 4px #f5c65c25}
+.connect-four-move-count{font-size:12px;color:var(--mx-muted,#aaa);background:#ffffff0c;padding:7px 10px;border-radius:99px}
+.connect-four-board-wrap{padding:12px;background:#344e91;border:1px solid #ffffff24;border-radius:18px;box-shadow:inset 0 4px 18px #07122e66}
+.connect-four-column-actions{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:clamp(4px,1.4vw,10px);margin-bottom:8px}
+.connect-four-column-actions button{border:0;border-radius:9px;background:#ffffff18;color:#fff;font-size:22px;font-weight:800;min-height:32px;cursor:pointer;transition:background .18s,transform .18s}
+.connect-four-column-actions button:not(:disabled):hover{background:#ffffff35;transform:translateY(-2px)}
+.connect-four-column-actions button:disabled{opacity:.28;cursor:not-allowed}
+.connect-four-board{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:clamp(4px,1.4vw,10px)}
+.connect-four-cell{aspect-ratio:1;border-radius:50%;background:#17294f;box-shadow:inset 0 3px 8px #050b1b99;display:grid;place-items:center;min-width:0}
+.connect-four-cell span{width:76%;height:76%;border-radius:50%;background:transparent;transition:background .2s,transform .2s}
+.connect-four-cell.disc-first span{background:linear-gradient(145deg,#ff9aa3,#df4d60);box-shadow:0 3px 8px #07122e66}
+.connect-four-cell.disc-second span{background:linear-gradient(145deg,#ffe49a,#e6aa35);box-shadow:0 3px 8px #07122e66}
+.connect-four-cell.winning-cell span{outline:3px solid #ffffff;outline-offset:2px;transform:scale(1.06)}
+.connect-four-legend{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;color:var(--mx-muted,#aaa);font-size:12px}
+.connect-four-legend span{display:flex;align-items:center;gap:7px}
+.connect-four-legend .connect-four-turn-dot{width:10px;height:10px}
+.connect-four-hint,.connect-four-result{margin:0;text-align:center;font-size:13px;color:var(--mx-muted,#aaa)}
+.connect-four-result{font-weight:800;color:var(--mx-text,#fff);font-size:16px}
+.connect-four-secure-note{color:var(--mx-muted,#888);font-size:10px;text-align:center}
+@media(max-width:520px){.connect-four-game{padding:12px;border-radius:16px}.connect-four-board-wrap{padding:8px;border-radius:12px}.connect-four-column-actions button{min-height:28px}.connect-four-status{align-items:flex-start}}
+@media(prefers-reduced-motion:reduce){.connect-four-cell span,.connect-four-column-actions button{transition:none}}
