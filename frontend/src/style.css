@@ -868,3 +868,14 @@ body{background:radial-gradient(ellipse at 80% 0%,rgba(57,127,115,.16),transpare
 .shop-item.rarity-card.legendary{border-color:#e7bc6a55}.shop-item.rarity-card.epic{border-color:#b98aff44}
 .shop-item.rarity-card .shop-preview{height:138px;border-radius:14px;background:radial-gradient(circle,#34264e,#111827 70%)!important}
 .shop-item.rarity-card .shop-preview img{height:100%;width:100%;object-fit:contain;padding:13px}
+
+/* Persistent, responsive PWA install entry point */
+.install-app-banner{position:relative;z-index:8;display:flex;align-items:center;gap:14px;margin:12px auto 18px;padding:12px 16px;max-width:1120px;border:1px solid #a879f477;border-radius:18px;background:linear-gradient(110deg,#24163d 0%,#111a32 58%,#17243a 100%);box-shadow:0 12px 34px #0005,inset 0 1px #ffffff18;color:#f7f1ff}
+.install-app-banner>img{width:52px;height:52px;flex:0 0 auto;border-radius:15px;filter:drop-shadow(0 5px 12px #9b65ff66)}
+.install-app-copy{display:grid;gap:2px;min-width:0;flex:1}.install-app-copy b{font-size:15px;color:#fff}.install-app-copy span{font-size:12px;line-height:1.65;color:#c6bddc}
+.install-app-action{border:1px solid #f4d17b;border-radius:12px;padding:10px 15px;background:linear-gradient(120deg,#ffe39b,#f5a82e);color:#24152c;font:800 12px Changa,sans-serif;white-space:nowrap;cursor:pointer;box-shadow:0 5px 18px #f2a82f33}
+.install-app-help{flex-basis:100%;padding:10px 12px;border-radius:12px;background:#090e1d;border:1px solid #ffffff18;color:#e8def8;font-size:12px;line-height:1.9}
+.install-app-banner:has(.install-app-help){flex-wrap:wrap}
+.auth-shell>.install-app-banner{margin:10px auto 16px}
+@media(max-width:640px){.install-app-banner{align-items:flex-start;gap:10px;margin:9px 10px 14px;padding:10px;border-radius:15px}.install-app-banner>img{width:42px;height:42px}.install-app-copy b{font-size:13px}.install-app-copy span{font-size:10px;line-height:1.55}.install-app-action{padding:9px 10px;font-size:10px;white-space:normal;max-width:132px}.install-app-help{font-size:11px}}
+@media(min-width:761px){.install-app-banner{margin-top:14px;margin-bottom:20px}}
