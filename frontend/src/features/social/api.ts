@@ -1,4 +1,4 @@
-import type { AppNotification, DirectMessage } from './types';
+import type { AppNotification, DirectMessage } from '../shared/types';
 import type { supabase } from '../../lib/supabase';
 
 type Client = NonNullable<typeof supabase>;
