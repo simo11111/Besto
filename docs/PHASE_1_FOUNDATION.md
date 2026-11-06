@@ -10,6 +10,7 @@
 - Extracted the game catalog into a typed registry and moved the reusable game card and XP progression calculations into feature modules.
 - Added migration 020 to make friendships, direct messages and notifications reproducible, with RLS and column-level grants that preserve current app operations.
 - Added migration 021 to fix Ten Seconds multiple-choice scoring.
+- Added migration 022 to version the social and quick-match RPCs already used by the frontend (`send_friend_request`, `accept_friend_request`, `remove_friend`, `quick_match_room`), with explicit authentication checks and grants.
 - Replaced the live quiz rows' accepted answer letters (A/B/C/D) with the actual option text submitted by the UI.
 - Replaced the real Supabase URL/key in .env.example with placeholders.
 
