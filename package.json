@@ -1,0 +1,1 @@
+{"name":"dima-play","private":true,"workspaces":["frontend","backend"],"scripts":{"dev":"concurrently -n api,web -c cyan,magenta \"npm:dev:api\" \"npm:dev:web\"","dev:api":"npm --workspace backend run dev","dev:web":"npm --workspace frontend run dev","build":"npm --workspace frontend run build","start":"npm --workspace backend start"},"devDependencies":{"concurrently":"^9.1.2"}}
