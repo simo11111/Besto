@@ -1,1 +1,50 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520"><defs><linearGradient id="sky" x2="1" y2="1"><stop stop-color="#080a1d"/><stop offset=".55" stop-color="#321052"/><stop offset="1" stop-color="#a32ac7"/></linearGradient><radialGradient id="moon"><stop stop-color="#fff1ff"/><stop offset="1" stop-color="#c5a6ed"/></radialGradient><linearGradient id="coat" x2="1" y2="1"><stop stop-color="#25213d"/><stop offset="1" stop-color="#080b18"/></linearGradient><linearGradient id="lime"><stop stop-color="#e5ff85"/><stop offset="1" stop-color="#6dff3f"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="9"/></filter></defs><rect width="1200" height="520" fill="url(#sky)"/><circle cx="930" cy="110" r="75" fill="url(#moon)" opacity=".85"/><circle cx="930" cy="110" r="92" fill="#d9a8ff" opacity=".22" filter="url(#glow)"/><path d="M0 350 160 190l110 115 140-190 170 220 145-150 160 165 135-170 180 190v150H0Z" fill="#17132e"/><path d="m0 410 170-135 160 120 190-180 190 185 170-120 150 120 170-140v140H0Z" fill="#0c1426"/><path d="M0 475Q250 400 460 470t400-5 340 0v55H0Z" fill="#090d19"/><g transform="translate(700 85)"><path d="M140 155q-4-80 55-102 70-28 100 34l-5 80-40 40-105-8Z" fill="#090d1b"/><path d="M155 80q18-67 82-60 54 6 66 58l-28 25-40-22-44 28Z" fill="#17172c"/><path d="M178 121q46-40 91-8l-6 39q-42 25-84-1Z" fill="#101627"/><path d="M196 135h24m24 0h25" stroke="#baff5a" stroke-width="8" stroke-linecap="round"/><path d="M164 190q-75 35-88 130l-22 115h330l-34-140q-20-75-93-104Z" fill="url(#coat)"/><path d="m190 190 55 45 48-45" fill="none" stroke="#4a315e" stroke-width="12"/><path d="m230 295 28-35 29 35-29 43Z" fill="none" stroke="url(#lime)" stroke-width="10" stroke-linejoin="round"/><path d="m258 260 0 78" stroke="url(#lime)" stroke-width="8"/></g><g transform="translate(85 82)" fill="none" stroke="url(#lime)" stroke-width="17" stroke-linejoin="round"><path d="m80 160 25-130 78 82 78-82 25 130h-54l-15-72-34 37-34-37-15 72Z"/><path d="m140 200 43-35 43 35" stroke-width="11"/></g><text x="88" y="360" fill="#fff" font-family="Arial,sans-serif" font-size="80" font-weight="900" letter-spacing="9">MIMOX</text><text x="90" y="405" fill="#d6c5f1" font-family="Arial,sans-serif" font-size="25">PLAY · CHALLENGE · CONNECT</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520">
+<defs>
+ <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#070916"/><stop offset=".45" stop-color="#25113f"/><stop offset="1" stop-color="#a528c5"/></linearGradient>
+ <radialGradient id="moon"><stop stop-color="#fff7ff"/><stop offset=".65" stop-color="#d8c4ff"/><stop offset="1" stop-color="#9a72c7"/></radialGradient>
+ <linearGradient id="hair" x2=".8" y2="1"><stop stop-color="#fff"/><stop offset=".38" stop-color="#c8c6e9"/><stop offset="1" stop-color="#67618f"/></linearGradient>
+ <linearGradient id="coat" x2="1" y2="1"><stop stop-color="#3a315e"/><stop offset=".45" stop-color="#17152d"/><stop offset="1" stop-color="#080b19"/></linearGradient>
+ <linearGradient id="lime" x2="0" y2="1"><stop stop-color="#eaff8a"/><stop offset="1" stop-color="#5cff42"/></linearGradient>
+ <linearGradient id="violet" x2="1"><stop stop-color="#6d31ad"/><stop offset="1" stop-color="#d53bea"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="14"/></filter>
+ <filter id="soft"><feGaussianBlur stdDeviation="5"/></filter>
+</defs>
+<rect width="1200" height="520" rx="34" fill="url(#bg)"/>
+<circle cx="1000" cy="110" r="105" fill="#c65cff" opacity=".28" filter="url(#glow)"/><circle cx="1000" cy="110" r="76" fill="url(#moon)"/>
+<g fill="#fff" opacity=".6"><circle cx="885" cy="65" r="2"/><circle cx="1102" cy="65" r="2"/><circle cx="940" cy="202" r="2"/><circle cx="760" cy="60" r="2"/><circle cx="1138" cy="230" r="2"/></g>
+<path d="M0 350 100 260 180 300 290 175 385 300 500 170 610 310 720 205 810 300 920 205 1040 300 1135 220 1200 270V520H0Z" fill="#25163f"/>
+<path d="m0 405 140-90 125 78 145-140 130 145 140-120 125 110 145-125 130 105 120-90v242H0Z" fill="#11162d"/>
+<path d="M0 472q180-90 370-12t360 0 470-10v70H0Z" fill="#090d1b"/>
+<path d="M0 520q210-115 400-20t390 0 410-30v50H0Z" fill="#70288f" opacity=".55" filter="url(#soft)"/>
+<!-- neon crown emblem -->
+<g transform="translate(72 65)" fill="none" stroke="url(#lime)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" filter="url(#soft)" opacity=".7"><path d="m20 145 22-115 68 75 68-75 22 115h-46l-12-62-32 35-32-35-12 62Z"/></g>
+<g transform="translate(72 65)" fill="none" stroke="url(#lime)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"><path d="m20 145 22-115 68 75 68-75 22 115h-46l-12-62-32 35-32-35-12 62Z"/><path d="m68 170 42-31 42 31"/></g>
+<!-- anime gamer body -->
+<g transform="translate(635 10)">
+ <path d="M165 215q-112 35-133 155L0 510h485l-37-151q-25-112-126-151Z" fill="url(#coat)" stroke="#57406e" stroke-width="4"/>
+ <path d="m150 230 94 92 93-92" fill="none" stroke="#69517c" stroke-width="13"/>
+ <path d="m210 337 35-40 36 40-36 54Z" fill="none" stroke="url(#lime)" stroke-width="12" stroke-linejoin="round"/>
+ <path d="M125 265q-70 60-95 175l80 30 78-140Z" fill="#17152d" stroke="#49365e" stroke-width="5"/>
+ <path d="M365 260q70 58 92 180l-84 25-76-135Z" fill="#111426" stroke="#49365e" stroke-width="5"/>
+ <!-- neck -->
+ <path d="M190 175h135v100q-65 66-135 0Z" fill="#b98b9c"/>
+ <!-- face -->
+ <path d="M145 82q14-76 113-76 108 0 120 91l-13 110q-18 92-106 98-86-10-108-102Z" fill="#e2b8b4"/>
+ <path d="M145 111q-24-93 62-112 95-35 160 25 45 43 26 125l-24-37-23-63-53 38-83-13-48 62Z" fill="url(#hair)"/>
+ <path d="m170 97-45-35 61 8-30-53 79 43 10-54 37 54 64-40-22 67 59-16-54 58-19-30-49 23-48-19-34 35Z" fill="url(#hair)"/>
+ <!-- eyes -->
+ <path d="M165 155q39-32 77 0-37 34-77 0Z" fill="#fff"/><path d="M279 155q39-32 77 0-37 34-77 0Z" fill="#fff"/>
+ <ellipse cx="207" cy="155" rx="13" ry="18" fill="#8bff62"/><ellipse cx="320" cy="155" rx="13" ry="18" fill="#8bff62"/><circle cx="211" cy="156" r="6" fill="#101527"/><circle cx="324" cy="156" r="6" fill="#101527"/>
+ <path d="M154 143q39-27 86-2M272 141q42-26 84 2" fill="none" stroke="#34243f" stroke-width="9" stroke-linecap="round"/>
+ <!-- mask -->
+ <path d="m153 184 75 13 36-18 43 18 70-13-20 85q-85 47-166 0Z" fill="#111326" stroke="#8d65ad" stroke-width="4"/>
+ <path d="m190 215 31 5m69-5 32-5" stroke="#c7ff68" stroke-width="5" stroke-linecap="round"/>
+ <!-- headphones -->
+ <path d="M126 150q-8-120 122-132 123-8 147 118" fill="none" stroke="#141629" stroke-width="24"/>
+ <rect x="103" y="132" width="47" height="100" rx="18" fill="#17172c" stroke="#9c4cff" stroke-width="7"/>
+ <rect x="371" y="130" width="49" height="104" rx="18" fill="#17172c" stroke="#baff58" stroke-width="7"/>
+ <circle cx="127" cy="181" r="13" fill="#b9ff56"/><circle cx="395" cy="180" r="13" fill="#c25aff"/>
+</g>
+<text x="70" y="405" fill="#fff" font-family="Arial,sans-serif" font-size="75" font-weight="900" letter-spacing="8">MIMOX</text>
+<text x="75" y="448" fill="#eadcfb" font-family="Arial,sans-serif" font-size="24" letter-spacing="2">PLAY · CHALLENGE · CONNECT</text>
+</svg>
