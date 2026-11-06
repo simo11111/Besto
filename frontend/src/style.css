@@ -651,3 +651,10 @@ body{background:radial-gradient(ellipse at 80% 0%,rgba(57,127,115,.16),transpare
 .game-card,.room-box,.game-play-card,.friend-row,.profile-hero{box-shadow:var(--mx-shadow)}
 :focus-visible{outline:3px solid var(--mx-focus);outline-offset:3px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+
+@keyframes mimox-float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-4px) rotate(1deg)}}
+@keyframes mimox-glow{0%,100%{filter:drop-shadow(0 3px 7px rgba(57,127,115,.14))}50%{filter:drop-shadow(0 7px 13px rgba(57,127,115,.3))}}
+.brand-mascot-mark{animation:mimox-float 4s ease-in-out infinite}
+.auth-art-img{animation:mimox-float 5s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.brand-mascot-mark,.auth-art-img{animation:none}}
