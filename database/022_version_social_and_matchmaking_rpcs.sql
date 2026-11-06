@@ -112,7 +112,7 @@ declare
   v_min_players integer;
 begin
   if v_user is null then raise exception 'AUTH_REQUIRED'; end if;
-  if p_game_key not in ('wolf', 'who', 'forbidden', 'ten_seconds', 'impostor') then
+  if p_game_key is null or p_game_key not in ('wolf', 'who', 'forbidden', 'ten_seconds', 'impostor') then
     raise exception 'INVALID_GAME';
   end if;
 
