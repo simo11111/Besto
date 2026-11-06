@@ -747,3 +747,12 @@ body{background:radial-gradient(ellipse at 80% 0%,rgba(57,127,115,.16),transpare
 @keyframes invite-pop-in{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:480px){.invite-modal{padding:26px 18px 18px;border-radius:22px}.invite-avatar{width:78px;height:78px}}
 @media(prefers-reduced-motion:reduce){.invite-overlay,.invite-modal{animation:none}}
+
+/* Chat presence, typing and quick replies */
+.typing-indicator{padding:5px 12px;color:var(--mx-muted,#a8a3b7);font-size:11px;font-style:italic;animation:typing-pulse 1.2s ease-in-out infinite}
+.message-read-status{color:#75d7b4;font-size:10px;margin-inline-start:4px}
+.quick-chat-actions{display:flex;gap:6px;flex-wrap:wrap;padding:7px 0}
+.quick-chat-actions button{border:1px solid var(--mx-border,#ffffff1c);background:var(--mx-surface,#ffffff0a);color:var(--mx-text,#fff);border-radius:99px;padding:5px 10px;font:inherit;font-size:11px;font-weight:800;cursor:pointer;transition:background .16s,border-color .16s}
+.quick-chat-actions button:hover{background:#75d7b418;border-color:#75d7b477}
+@keyframes typing-pulse{0%,100%{opacity:.55}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.typing-indicator{animation:none}.quick-chat-actions button{transition:none}}
