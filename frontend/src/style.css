@@ -162,3 +162,10 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--lime);outline-offse
 .mission-claim{padding:9px 12px;white-space:nowrap;flex:none}
 .mission-claim:disabled{opacity:.55;cursor:not-allowed}
 @media(max-width:760px){.mission-grid{grid-template-columns:1fr}.mission-card{padding:12px}.mission-claim{font-size:11px}}
+
+/* Additional Mimox cosmetic frame effects */
+.profile-avatar.frame_ocean{border:3px solid #58c8ed;box-shadow:0 0 18px #58c8ed66}
+.profile-avatar.frame_shadow{border:3px solid #8b7caa;box-shadow:0 0 18px #8b7caa66}
+.profile-avatar.frame_royal{border:3px solid #ffd36e;box-shadow:0 0 24px #ffd36e88}
+.profile-avatar.frame_emerald{border:3px solid #55d59b;box-shadow:0 0 18px #55d59b66}
+.profile-avatar.frame_sunset{border:3px solid #ff9a69;box-shadow:0 0 18px #ff9a6966}
