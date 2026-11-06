@@ -18,6 +18,7 @@
 7. `database/007_impostor_scoring_fix.sql`
 8. `database/008_foreign_key_indexes.sql`
 9. `database/009_security_rls_hardening.sql`
+10. `database/010_impostor_vote_tie.sql`
 
 إذا كان Data API عندك مضبوطاً على قائمة schemas/tables محددة، تأكد أن `public` exposed وأن صلاحيات SELECT الممنوحة في migrations مفعلة. لا تفتح private schema للـ Data API.
 
