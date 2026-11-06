@@ -320,3 +320,14 @@ body{background:#070914;color:#f8f7ff}
  .auth-scene{height:400px;min-height:400px}
  .auth-card{max-width:440px}
 }
+
+@media(max-width:760px){
+ .mobile-nav{height:calc(72px + env(safe-area-inset-bottom));align-items:center;padding:5px 7px calc(7px + env(safe-area-inset-bottom));border-radius:19px 19px 0 0}
+ .mobile-nav .side-button{height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:9px;border:0;background:transparent}
+ .mobile-nav .side-button svg{width:21px;height:21px}
+ .mobile-nav .side-button.active{background:transparent}
+ .mobile-nav .side-button.active span{color:#caff64}
+ .mobile-nav .side-button.active svg{background:linear-gradient(145deg,#caff65,#43d85b);color:#10190d;border-radius:50%;width:48px;height:48px;padding:12px;margin-top:-25px;box-shadow:0 0 22px #baff4d99}
+ .mobile-nav .side-button.active span{font-weight:800}
+ .shell{padding-bottom:calc(86px + env(safe-area-inset-bottom))}
+}
