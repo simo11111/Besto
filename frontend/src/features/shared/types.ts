@@ -1,0 +1,9 @@
+export type Tab='home'|'games'|'room'|'game'|'rooms'|'friends'|'profile'|'leaderboard'|'shop';
+export type Room={id:string;code:string;name:string;is_private:boolean;max_players:number;status:string;game_key?:string|null};
+export type Profile={id:string;username:string;avatar_url?:string|null;bio:string;xp:number;coins:number;gems:number;level:number;wins:number;games_played:number;total_score:number;streak_days:number;last_daily_claim:string|null;equipped_frame:string;equipped_title:string};
+export type Game={id:string;game_key:string;status:string;created_by:string;result?:any};
+export type Player={user_id:string;score:number};
+export type Item={id:string;name:string;category:string;price:number;currency:'coins'|'gems';rarity:string;preview:string};
+export type DirectMessage={id:string;sender_id:string;recipient_id:string;body:string;created_at:string;read_at?:string|null};
+export type AppNotification={id:string;kind:string;title:string;body:string;payload:any;created_at:string;read_at?:string|null};
+export type DailyMission={mission_key:string;name:string;description:string;icon:string;progress:number;target_count:number;coins_reward:number;xp_reward:number;claimed:boolean};
