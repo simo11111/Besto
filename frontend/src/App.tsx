@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import { AudioLines, Award, Bell, Check, ChevronLeft, Crown, Flame, Gamepad2, Gem, Gift, Headphones, Home, Lock, LogOut, Medal, MessageCircle, Mic, MicOff, Plus, Send, ShieldCheck, ShoppingBag, Sparkles, Star, Swords, Trophy, Users, Wallet, X, Zap, ClipboardList, Globe } from 'lucide-react';
+import { AudioLines, Award, Bell, Bot, Check, ChevronLeft, Crown, Flame, Gamepad2, Gem, Gift, Headphones, Home, Lock, LogOut, Medal, MessageCircle, Mic, MicOff, Plus, Send, ShieldCheck, ShoppingBag, Sparkles, Star, Swords, Trophy, Users, Wallet, X, Zap, ClipboardList, Globe } from 'lucide-react';
 import { hasSupabaseConfig, supabase } from './lib/supabase';
 
 type Tab='home'|'games'|'room'|'rooms'|'friends'|'profile'|'leaderboard'|'shop';
