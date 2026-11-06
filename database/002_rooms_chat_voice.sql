@@ -80,6 +80,8 @@ begin
   if v_user is null then raise exception 'AUTH_REQUIRED' using errcode = '28000'; end if;
   if p_name is null or char_length(btrim(p_name)) not between 2 and 40 then raise exception 'INVALID_ROOM_NAME' using errcode = '22023'; end if;
   if p_max_players is null or p_max_players not between 2 and 16 then raise exception 'INVALID_CAPACITY' using errcode = '22023'; end if;
+  perform 1 from auth.users where id = v_user for update;
+  if (select count(*) from public.rooms where owner_id = v_user and created_at > now() - interval '1 hour') >= 5 then raise exception 'ROOM_CREATE_RATE_LIMITED' using errcode = 'P0001'; end if;
   for attempt in 1..5 loop
     v_code := upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 12));
     begin
@@ -136,6 +138,8 @@ begin
   if v_user is null then raise exception 'AUTH_REQUIRED' using errcode = '28000'; end if;
   if p_body is null or char_length(btrim(p_body)) not between 1 and 500 then raise exception 'INVALID_MESSAGE' using errcode = '22023'; end if;
   if not exists(select 1 from public.room_members where room_id = p_room_id and user_id = v_user) then raise exception 'NOT_ROOM_MEMBER' using errcode = '42501'; end if;
+  perform 1 from auth.users where id = v_user for update;
+  if (select count(*) from public.chat_messages where room_id = p_room_id and user_id = v_user and created_at > now() - interval '1 minute') >= 15 then raise exception 'MESSAGE_RATE_LIMITED' using errcode = 'P0001'; end if;
   insert into public.chat_messages(room_id,user_id,body) values(p_room_id,v_user,btrim(p_body)) returning id into v_id;
   update public.rooms set last_activity_at = now() where id = p_room_id;
   return v_id;
