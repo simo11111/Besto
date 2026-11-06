@@ -19,6 +19,8 @@ type ConnectFourGameProps = {
   currentUserId: string;
   firstPlayerName: string;
   secondPlayerName: string;
+  firstRating: number;
+  secondRating: number;
   busy: boolean;
   canRematch: boolean;
   onRematch: () => void;
@@ -30,6 +32,8 @@ export default function ConnectFourGame({
   currentUserId,
   firstPlayerName,
   secondPlayerName,
+  firstRating,
+  secondRating,
   busy,
   canRematch,
   onRematch,
@@ -89,8 +93,8 @@ export default function ConnectFourGame({
       </div>
 
       <div className="connect-four-legend">
-        <span><i className="connect-four-turn-dot first" />{firstPlayerName}</span>
-        <span><i className="connect-four-turn-dot second" />{secondPlayerName}</span>
+        <span><i className="connect-four-turn-dot first" />{firstPlayerName}<small className="duel-rating">{firstRating} MMR</small></span>
+        <span><i className="connect-four-turn-dot second" />{secondPlayerName}<small className="duel-rating">{secondRating} MMR</small></span>
       </div>
       {active && !myTurn && <p className="connect-four-hint">كنستناو {currentName} يلعب…</p>}
       {active && myTurn && <p className="connect-four-hint">اختار العمود اللي بغيتي تهبط فيه القطعة.</p>}

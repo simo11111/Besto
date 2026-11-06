@@ -723,3 +723,7 @@ body{background:radial-gradient(ellipse at 80% 0%,rgba(57,127,115,.16),transpare
 .duel-rematch-btn:not(:disabled):hover{transform:translateY(-2px);filter:brightness(1.08)}
 .duel-rematch-btn:disabled{opacity:.55;cursor:wait}
 @media(prefers-reduced-motion:reduce){.duel-rematch-btn{transition:none}}
+
+.duel-rating{font-size:10px;color:var(--mx-muted,#999);background:#ffffff0d;border-radius:99px;padding:3px 7px;white-space:nowrap}
+.connect-four-legend span{gap:6px}
+.dama-score-strip span{gap:6px}

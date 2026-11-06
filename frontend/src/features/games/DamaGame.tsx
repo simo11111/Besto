@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getLegalDamaMoves, isDamaDarkSquare, type DamaBoard, type DamaMove, type DamaPiece, type DamaPlayer } from './damaGame';
 export type DamaGameState={session_id:string;board:number[];first_player:string;second_player:string;current_player:string;winner_user_id:string|null;is_draw:boolean;move_count:number;quiet_moves:number;version:number;updated_at:string};
-type Props={state:DamaGameState;currentUserId:string;firstPlayerName:string;secondPlayerName:string;busy:boolean;canRematch:boolean;onRematch:()=>void;onMove:(path:number[])=>void};
+type Props={state:DamaGameState;currentUserId:string;firstPlayerName:string;secondPlayerName:string;firstRating:number;secondRating:number;busy:boolean;canRematch:boolean;onRematch:()=>void;onMove:(path:number[])=>void};
 const ownerOf=(piece:DamaPiece):DamaPlayer|null=>piece===1||piece===3?1:piece===2||piece===4?2:null;
-export default function DamaGame({state,currentUserId,firstPlayerName,secondPlayerName,busy,canRematch,onRematch,onMove}:Props){
+export default function DamaGame({state,currentUserId,firstPlayerName,secondPlayerName,firstRating,secondRating,busy,canRematch,onRematch,onMove}:Props){
  const board=state.board as DamaBoard;
  const myPlayer:DamaPlayer=currentUserId===state.first_player?1:2;
  const active=!state.winner_user_id&&!state.is_draw;
@@ -28,7 +28,7 @@ export default function DamaGame({state,currentUserId,firstPlayerName,secondPlay
  const firstPieces=board.filter(piece=>ownerOf(piece)===1).length,secondPieces=board.filter(piece=>ownerOf(piece)===2).length;
  return <section className="dama-game" aria-label="الضامة المغربية">
   <div className="dama-game-head"><div className="dama-turn-info"><strong>{state.winner_user_id?'المباراة سالات':state.is_draw?'تعادل':myTurn?'دورك دابا':'الدور ديال الخصم'}</strong><small>{active?'الدور الحالي: '+currentName:state.is_draw?'تعادل بعد سلسلة نقلات هادئة':'الفائز: '+winnerName}</small></div><span className="dama-move-count">{state.move_count} نقلة</span></div>
-  <div className="dama-score-strip"><span><i className="dama-piece-dot first"/>{firstPlayerName} <b>{firstPieces}</b></span><span><i className="dama-piece-dot second"/>{secondPlayerName} <b>{secondPieces}</b></span></div>
+  <div className="dama-score-strip"><span><i className="dama-piece-dot first"/>{firstPlayerName} <b>{firstPieces}</b><small className="duel-rating">{firstRating} MMR</small></span><span><i className="dama-piece-dot second"/>{secondPlayerName} <b>{secondPieces}</b><small className="duel-rating">{secondRating} MMR</small></span></div>
   <div className="dama-board" role="grid" aria-label="رقعة الضامة" dir="ltr">{board.map((piece,index)=>{const dark=isDamaDarkSquare(index),selected=selection?.from===index,target=targets.includes(index),king=piece===3||piece===4;return <button type="button" role="gridcell" key={index} aria-label={'المربع '+(index+1)} disabled={!dark||!myTurn||busy} onClick={()=>chooseSquare(index)} className={['dama-square',dark?'dark':'light',selected?'selected':'',target?'legal-target':''].filter(Boolean).join(' ')}>{piece!==0&&<span className={'dama-piece '+(ownerOf(piece)===1?'first':'second')+(king?' king':'')}>{king?'♛':''}</span>}</button>;})}</div>
   {active&&!myTurn&&<p className="dama-hint">كنستناو {currentName} يلعب…</p>}{active&&myTurn&&<p className="dama-hint">{selection?'اختار الخانة المضيئة باش تكمل النقلة.':'اختار قطعة ديالك؛ النقلات القانونية غادي يبانوا.'}</p>}{!active&&<><p className="dama-result">{state.is_draw?'🤝 تعادل! لعبتو مباراة متوازنة.':'🏆 '+winnerName+' ربح الضامة!'}</p>{canRematch?<button type="button" className="duel-rematch-btn" disabled={busy} onClick={onRematch}>↻ عاود المباراة</button>:<small className="dama-hint">كنستناو صاحب الغرفة يعاود المباراة.</small>}</>}
   <small className="dama-rules-note">8×8 · 12 قطعة لكل لاعب · القطعة العادية كتأكل للأمام فقط · الأكل إجباري وأكبر سلسلة كتربح، والدامة كتطير.</small>
