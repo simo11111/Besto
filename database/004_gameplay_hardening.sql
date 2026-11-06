@@ -35,7 +35,9 @@ begin
  if not private.is_room_member(p_room_id) then raise exception 'NOT_ROOM_MEMBER'; end if;
  if not exists(select 1 from public.room_members where room_id=p_room_id and user_id=v_user and role in ('owner','moderator')) then raise exception 'HOST_ONLY'; end if;
  select count(*) into v_player_count from public.room_members where room_id=p_room_id;
- if v_player_count<2 then raise exception 'NEED_MORE_PLAYERS'; end if;
+ if p_game_key='wolf' and v_player_count<4 then raise exception 'NEED_FOUR_PLAYERS'; end if;
+ if p_game_key in ('who','forbidden') and v_player_count<3 then raise exception 'NEED_THREE_PLAYERS'; end if;
+ if p_game_key='ten_seconds' and v_player_count<2 then raise exception 'NEED_MORE_PLAYERS'; end if;
  if exists(select 1 from public.game_sessions where room_id=p_room_id and status='active') then raise exception 'GAME_ALREADY_ACTIVE'; end if;
  insert into public.game_sessions(room_id,game_key,created_by) values(p_room_id,p_game_key,v_user) returning id into v_session;
  insert into public.game_players(session_id,user_id) select v_session,user_id from public.room_members where room_id=p_room_id;
