@@ -13,4 +13,5 @@ jobs:
         run: |
           npm audit --json > /tmp/dima-audit.json || true
           node -e "const a=require('/tmp/dima-audit.json'); console.log(JSON.stringify(a.vulnerabilities || {}, null, 2))"
+      - run: npm audit --audit-level=high
       - run: npm run build
