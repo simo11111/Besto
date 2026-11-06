@@ -3,21 +3,30 @@
 منصة ألعاب اجتماعية مغربية بالدارجة، بتصميم Dark Gaming وتجربة Mobile-first.
 
 ## Stack
-- Frontend: React + TypeScript + Vite + Tailwind
+- Frontend: React + TypeScript + Vite + Tailwind + Supabase JS
 - Backend: Node.js + Express + Zod + Helmet + rate limiting
-- Database/Auth: Supabase (Postgres + Auth + RLS)
+- Database/Auth/Realtime: Supabase Postgres + Auth + RLS + private Broadcast
+- Voice: WebRTC audio mesh (experimental; TURN server required for reliable production connectivity)
 - PWA: manifest + service worker
 
-## التشغيل المحلي
-1. نسخ `.env.example` إلى `.env` وإعداد متغيرات Supabase.
-2. تشغيل `npm install`.
-3. تشغيل `npm run dev`.
+## Setup
+1. أنشئ مشروع Supabase.
+2. شغّل database/001_initial.sql ثم database/002_rooms_chat_voice.sql في SQL Editor.
+3. انسخ .env.example إلى .env داخل جذر المشروع وعمّر VITE_SUPABASE_URL و VITE_SUPABASE_ANON_KEY.
+4. فعّل Email Auth في Supabase، واجعل قنوات Realtime private.
+5. شغّل npm install ثم npm run dev.
 
-الواجهة على المنفذ 5173 والـ API على 4000.
+## Implemented
+- Email sign-up/sign-in through Supabase Auth.
+- Transactional room creation, join-by-code and leave operations.
+- Persistent rooms: leaving does not delete the room.
+- Room roster and persisted room chat.
+- Private Realtime Broadcast signaling restricted by room membership.
+- WebRTC microphone audio mesh for small rooms (beta).
 
-## الحالة الحالية
-هذه نسخة تأسيسية قابلة للتطوير وليست منصة Multiplayer جاهزة للإطلاق. واجهة الألعاب موجودة، لكن إنشاء الغرف وتسجيل الدخول وحفظ الجولات والصوت الجماعي لم تكتمل بعد. API الحالي يتحقق من بيانات الغرفة فقط ولا ينشئها أو يحفظها.
-
-قبل الإطلاق يجب إكمال مصادقة Supabase والتحقق من صلاحيات المستخدم في الخادم، وسياسات RLS وعمليات الغرف والجولات، وإشارات WebRTC مع STUN/TURN، ثم إجراء اختبارات أمنية ووظيفية.
-
-**مهم:** لا تضع Supabase service-role key أو أسرار TURN في كود الواجهة أو GitHub. احتفظ بها في متغيرات بيئة الخادم.
+## Production limitations
+- Voice mesh مناسب لغرف صغيرة (4–6 مشاركين كحد عملي). يلزم TURN server وبيانات اعتماد مؤقتة تصدر من الخادم لاجتياز NAT بشكل موثوق.
+- صلاحيات Realtime مبنية على عضوية الغرفة؛ اعتبر أعضاء الغرفة أطرافاً موثوقين. يوصى بخادم signaling موثّق مستقل قبل الإطلاق العام الكبير.
+- اضبط تأكيد البريد، سياسة كلمات المرور، SMTP، النسخ الاحتياطي، مراقبة الإساءة، والتبليغ والحظر.
+- لم يُجرَ اختبار اختراق مستقل، ولا يوجد ادعاء بانعدام الثغرات.
+- ممنوع رفع service-role keys أو كلمات مرور قاعدة البيانات أو TURN secrets إلى GitHub.
