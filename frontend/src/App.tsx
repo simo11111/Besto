@@ -2,7 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { AudioLines, Award, Bell, Bot, Check, ChevronDown, ChevronLeft, Crown, Flame, Gamepad2, Gem, Gift, Headphones, Home, Lock, LogOut, Medal, MessageCircle, Mic, MicOff, Plus, Send, ShieldCheck, ShoppingBag, Sparkles, Star, Swords, Trophy, Users, Wallet, X, Zap, ClipboardList, Globe } from 'lucide-react';
 import { hasSupabaseConfig, supabase } from './lib/supabase';
-import { games, type GameDefinition } from './features/games/registry';
+import { games } from './features/games/registry';
+import GameCard from './features/games/GameCard';
+import { xpForNext, xpProgress } from './features/profile/progression';
 
 type Tab='home'|'games'|'room'|'game'|'rooms'|'friends'|'profile'|'leaderboard'|'shop';
 type Room={id:string;code:string;name:string;is_private:boolean;max_players:number;status:string;game_key?:string|null};
@@ -14,8 +16,6 @@ type DirectMessage={id:string;sender_id:string;recipient_id:string;body:string;c
 type AppNotification={id:string;kind:string;title:string;body:string;payload:any;created_at:string;read_at?:string|null};
 type DailyMission={mission_key:string;name:string;description:string;icon:string;progress:number;target_count:number;coins_reward:number;xp_reward:number;claimed:boolean};
 
-const xpForNext=(level:number)=>Math.max(100,level*level*100);
-const xpProgress=(xp:number,level:number)=>{const floor=Math.max(0,(level-1)*(level-1)*100),ceiling=xpForNext(level);return Math.max(0,Math.min(100,(xp-floor)/Math.max(1,ceiling-floor)*100));};
 const prettyError=(e:any)=>{const m=String(e?.message||e||'وقع خطأ');if(m.includes('PLAYER_NOT_FOUND'))return 'ما لقيناش لاعب بهاد الاسم.';if(m.includes('ALREADY_FRIENDS'))return 'راه صديقك من قبل.';if(m.includes('ROOM_FULL'))return 'الغرفة عامرة.';if(m.includes('INVALID_ROOM_PASSWORD'))return 'كلمة سر الغرفة ما صحيحةش.';if(m.includes('ROOM_PASSWORD_REQUIRED'))return 'دخل كلمة سر للغرفة الخاصة (4 حروف على الأقل).';if(m.includes('ROOM_NOT_FOUND'))return 'كود الغرفة ما صحيحش.';if(m.includes('JOIN_RATE_LIMITED'))return 'كثرت المحاولات. تسنى شوية.';if(m.includes('ALREADY_CLAIMED'))return 'خديتي المكافأة اليومية ديالك اليوم.';if(m.includes('NOT_ENOUGH_COINS'))return 'العملات ديالك ما كافياش.';if(m.includes('ALREADY_OWNED'))return 'هاد الزينة راه عندك.';if(m.includes('HOST_ONLY'))return 'غير مول الغرفة يقدر يدير هاد العملية.';if(m.includes('NEED_FOUR_PLAYERS'))return 'لعبة شفتي الديب؟ خاصها 4 لاعبين على الأقل.';if(m.includes('NEED_THREE_PLAYERS'))return 'هاد اللعبة خاصها 3 لاعبين على الأقل.';if(m.includes('NEED_MORE_PLAYERS'))return 'خاص لاعبَين على الأقل.';if(m.includes('TIME_EXPIRED'))return 'سالاو 10 ثواني، الجواب ما تقبلش.';if(m.includes('ACTION_ALREADY_SENT'))return 'صيفطتي الجواب ديالك من قبل.';if(m.includes('MISSION_ALREADY_CLAIMED'))return 'خديتي مكافأة هاد المهمة اليوم.';if(m.includes('MISSION_NOT_COMPLETE'))return 'كمّل شروط المهمة عاد جمع المكافأة.';if(m.includes('WAITING_FOR_VOTES'))return 'تسنى حتى يصوتو جميع اللاعبين.';if(m.includes('WAITING_FOR_GUESSES'))return 'خاص جميع اللاعبين يخمّنو الكلمة قبل النتيجة.';if(m.includes('WAITING_FOR_CLUE'))return 'تسنى الشرح ديال اللاعب المختار.';if(m.includes('TIME_REMAINING'))return 'مازال الوقت ما سالاش.';return m;};
 export default function App(){
  const [session,setSession]=useState<any>(null),[passwordRecovery,setPasswordRecovery]=useState(false),[newPassword,setNewPassword]=useState(''),[email,setEmail]=useState(''),[password,setPassword]=useState(''),[username,setUsername]=useState(''),[authMode,setAuthMode]=useState<'login'|'signup'>('login');
@@ -211,7 +211,7 @@ export default function App(){
 function SideButton({active,icon,label,onClick}:{active:boolean;icon:any;label:string;onClick:()=>void}){return <button className={'side-button '+(active?'active':'')} onClick={onClick}>{icon}<span>{label}</span></button>}
 function PageHead({eyebrow,title,subtitle}:{eyebrow:string;title:string;subtitle:string}){return <div className="page-head"><div className="eyebrow">{eyebrow}</div><h1>{title}</h1><p>{subtitle}</p></div>}
 function MissionIcon({mission}:{mission:DailyMission}){const key=mission.mission_key.toLowerCase();if(key.includes('daily')||key.includes('claim'))return <Gift/>;if(key.includes('play')||key.includes('game'))return <Gamepad2/>;if(key.includes('win'))return <Trophy/>;return <Star/>;}
-function GameCard({game,selected,onClick}:{game:GameDefinition;selected?:boolean;onClick:()=>void}){return <button className={'game-card '+(selected?'selected':'')} onClick={onClick}><div className="game-top"><img className="game-icon-image" src={'/games/'+game.key+'.svg'} alt=""/><span className="tag">{game.players} لاعبين</span></div><h3>{game.name}</h3><p>{game.desc}</p><div className="game-bottom"><span><Users size={14}/>{game.players}</span><span className="play-link">التفاصيل ←</span></div></button>}
+
 function Stat({icon,value,label}:{icon:any;value:any;label:string}){return <div className="stat-card">{icon}<b>{value}</b><small>{label}</small></div>}
 function Achievement({icon,name,desc,unlocked}:{icon:any;name:string;desc:string;unlocked:boolean}){return <div className={'achievement '+(unlocked?'unlocked':'locked')}><span>{icon}</span><div><b>{name}</b><small>{desc}</small></div>{unlocked?<Check/>:<ShieldCheck/>}</div>}
 function Toast({message,close}:{message:string;close:()=>void}){useEffect(()=>{const timer=window.setTimeout(close,4500);return()=>window.clearTimeout(timer);},[message,close]);return <div className="toast" role="status" aria-live="polite">{message}<button aria-label="إغلاق الإشعار" onClick={close}><X size={16}/></button></div>}
