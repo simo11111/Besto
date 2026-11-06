@@ -72,8 +72,14 @@ create policy "users update own notifications" on public.notifications for updat
 using (user_id=auth.uid()) with check (user_id=auth.uid());
 
 revoke all on public.friendships,public.direct_messages,public.notifications from anon;
+revoke insert,update,delete on public.friendships from authenticated;
+revoke insert,update on public.direct_messages,public.notifications from authenticated;
 grant select on public.friendships to authenticated;
-grant select,insert,update on public.direct_messages,public.notifications to authenticated;
+grant select on public.direct_messages,public.notifications to authenticated;
+grant insert(sender_id,recipient_id,body) on public.direct_messages to authenticated;
+grant update(read_at) on public.direct_messages to authenticated;
+grant insert(user_id,actor_id,kind,title,body,payload) on public.notifications to authenticated;
+grant update(read_at) on public.notifications to authenticated;
 
 create or replace function public.decline_friend_request(p_request_id uuid)
 returns boolean language plpgsql security definer set search_path = ''
