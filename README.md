@@ -19,6 +19,7 @@
 8. `database/008_foreign_key_indexes.sql`
 9. `database/009_security_rls_hardening.sql`
 10. `database/010_impostor_vote_tie.sql`
+11. `database/011_restore_party_game_scoring.sql`
 
 إذا كان Data API عندك مضبوطاً على قائمة schemas/tables محددة، تأكد أن `public` exposed وأن صلاحيات SELECT الممنوحة في migrations مفعلة. لا تفتح private schema للـ Data API.
 
@@ -50,3 +51,8 @@ WebRTC mesh مناسب للمجموعات الصغيرة فقط. STUN وحده �
 - CI يبني TypeScript frontend/backend ويفشل عند ثغرات npm عالية الخطورة.
 - لم يُجر اختبار اختراق مستقل؛ لا يوجد ادعاء بأن التطبيق خالٍ 100% من الثغرات.
 - ممنوع رفع service-role/secret keys أو كلمات مرور قاعدة البيانات أو TURN credentials إلى GitHub.
+
+
+### Voice TURN service
+
+The Cloudflare Worker `dima-play-turn-api` issues short-lived ICE credentials after validating the Supabase user session. Set the Worker secret `TURN_API_TOKEN` to the secret from a newly created Cloudflare Realtime TURN key, and set the plain-text variable `TURN_KEY_ID` to that key's ID. Never commit the TURN secret. The frontend uses the Worker endpoint `/ice` and falls back to STUN if TURN is not configured.
