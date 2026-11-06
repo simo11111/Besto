@@ -536,3 +536,41 @@ body{background:radial-gradient(ellipse at 50% -12%,#32124c 0,transparent 42%),l
  .profile-form{padding:15px}
  .room-card{padding:12px}
 }
+
+/* Circular profile frames and player customization */
+.profile-avatar,.avatar.big{border-radius:50%!important;overflow:hidden;position:relative;isolation:isolate}
+.profile-avatar{width:104px;height:104px;min-width:104px;padding:5px;background:linear-gradient(145deg,#baff42,#4c9c73,#8f63d8);border:3px solid transparent;box-shadow:0 0 0 4px #baff4218,0 0 24px #baff4233}
+.profile-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2px solid #101827}
+.profile-avatar.frame_emerald{background:conic-gradient(#a9ff70,#1eaa77,#d9ffad,#228b67,#a9ff70)}
+.profile-avatar.frame_shadow{background:conic-gradient(#d1d7e4,#293348,#8b9ab3,#111827,#d1d7e4)}
+.profile-avatar.frame_fire{background:conic-gradient(#ffe18c,#ff633e,#a92b24,#ffb14e,#ffe18c)}
+.profile-avatar.frame_sunset{background:conic-gradient(#ffe0a3,#f28a65,#aa5e9e,#ffc078,#ffe0a3)}
+.profile-avatar.frame_ocean{background:conic-gradient(#a1f3ff,#2a9cce,#175d9a,#8beaff,#a1f3ff)}
+.profile-avatar.frame_neon{background:conic-gradient(#efff73,#7bff42,#21c4a2,#baff42,#efff73)}
+.profile-avatar.frame_royal{background:conic-gradient(#fff0ac,#d9a33d,#fff1b5,#9e6a20,#fff0ac)}
+.profile-avatar.frame_crown{background:conic-gradient(#f0d8ff,#9a62dc,#f7dcff,#57329c,#f0d8ff)}
+.frame-selector{margin:20px 0;padding:18px;border-radius:18px;background:linear-gradient(145deg,#151b2b,#101623);border:1px solid #ffffff16}
+.frame-selector .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.frame-selector h3{margin:2px 0;font-size:18px}
+.frame-selector-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(94px,1fr));gap:12px;margin-top:14px}
+.frame-choice{display:grid;justify-items:center;gap:7px;padding:11px 7px;border-radius:14px;background:#0d1421;border:1px solid #ffffff16;color:#eee;font:inherit;font-size:11px}
+.frame-choice img{width:66px;height:66px;object-fit:contain}
+.frame-choice.active{border-color:#baff42;background:#1c2b21;box-shadow:0 0 0 2px #baff4220}
+.frame-choice small{color:#c9ff78;font-size:10px}
+.practice-modal{width:min(520px,100%);max-height:calc(100dvh - 24px);overflow:auto}
+.practice-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:16px 0}
+.practice-tabs button,.rps-choices button{padding:10px 6px;border-radius:10px;background:#171c2d;border:1px solid #ffffff1c;color:#eee;font-size:12px}
+.practice-tabs button.active{border-color:#baff42;background:#233020;color:#d4ff9a}
+.practice-status{padding:11px 13px;background:#baff4210;border:1px solid #baff4225;border-radius:12px;text-align:center;color:#d5f8ae}
+.xo-board{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(300px,100%);margin:16px auto}
+.xo-board button{aspect-ratio:1;border-radius:15px;border:1px solid #8b6bc455;background:linear-gradient(145deg,#1d2035,#101725);color:#cfff83;font-size:36px;font-weight:800}
+.xo-board button:nth-child(2n){color:#c9a6ff}
+.connect-board{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;padding:10px;background:#17294a;border-radius:15px;margin:14px 0}
+.connect-board>button{grid-row:1;border:0;background:#223c64;color:#dce9ff;border-radius:7px;padding:4px}
+.connect-board>span{aspect-ratio:1;border-radius:50%;background:#0b1425;border:1px solid #ffffff18;box-shadow:inset 0 2px 5px #0008}
+.connect-board>span.red-piece{background:radial-gradient(circle at 35% 30%,#ffb1a2,#f04444 55%,#9d1729);border-color:#ffaaa0}
+.connect-board>span.yellow-piece{background:radial-gradient(circle at 35% 30%,#fff4b1,#f2c94c 55%,#a87a17);border-color:#ffeaa0}
+.rps-choices{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:16px 0}
+.rps-choices button{min-height:66px;font-size:15px;border-color:#8061ad66;background:linear-gradient(145deg,#201a35,#121a27)}
+.practice-note{font-size:11px;text-align:center;line-height:1.8}
+@media(max-width:600px){.profile-avatar{width:88px;height:88px;min-width:88px}.frame-selector{padding:13px}.frame-selector-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.frame-choice img{width:58px;height:58px}}
