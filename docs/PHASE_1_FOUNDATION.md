@@ -13,19 +13,20 @@
 - Extracted friendship, direct-message and notification reads into `features/social/api.ts`; `App.tsx` now delegates those queries to the social feature module.
 - Extracted lobby and room snapshot queries into `features/rooms/api.ts`, keeping Supabase data access out of the main UI orchestrator.
 - Extracted profile, leaderboard and daily-mission reads into `features/profile/api.ts`, and shop catalog/inventory reads into `features/shop/api.ts`.
+- Extracted the profile and shop screens from `App.tsx` into dedicated feature components.
 - Added a secure room-invitation lifecycle: only room members can invite accepted friends; recipients can accept private-room invitations without receiving the room password, decline them, or let them expire after 15 minutes.
 - Added Vitest and focused unit tests for XP progression, the party-game registry and localized error handling; CI now runs tests before the production build.
 - Added migration 020 to make friendships, direct messages and notifications reproducible, with RLS and column-level grants that preserve current app operations.
 - Added migration 021 to fix Ten Seconds multiple-choice scoring.
 - Added migration 022 to version the social and quick-match RPCs already used by the frontend (`send_friend_request`, `accept_friend_request`, `remove_friend`, `quick_match_room`), with explicit authentication checks and grants.
 - Added migrations 023/024 to deduplicate equivalent friendship RLS policies, use scalar-subquery `auth.uid()` predicates, and remove the redundant notifications index.
-- Added migration 025 with authenticated `send_room_invite` and `respond_room_invite` RPCs; room membership and invitation state changes are validated server-side.
+- Added migrations 025/026 with authenticated `send_room_invite` and `respond_room_invite` RPCs; room membership and invitation state changes are validated server-side, duplicate pending invites are collapsed, and per-recipient invite spam is rate-limited.
 - Replaced the live quiz rows' accepted answer letters (A/B/C/D) with the actual option text submitted by the UI.
 - Replaced the real Supabase URL/key in .env.example with placeholders.
 
 ## Database changes applied
 
-Migrations 020–025 were applied to the connected Supabase project on 2026-11-06. Migrations 020/021 were also registered in the migration history after confirming their schema changes were already present. Verification confirmed:
+Migrations 020–026 were applied to the connected Supabase project on 2026-11-06. Migrations 020/021 were also registered in the migration history after confirming their schema changes were already present. Verification confirmed:
 - Quiz rows 58–65 now store the correct answer text.
 - finish_party_game contains the revised Ten Seconds score multiplier.
 - Friendship, direct-message and notification policies exist with the intended table-specific access.
