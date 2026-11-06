@@ -4,7 +4,7 @@ import { AudioLines, Award, Bell, Check, ChevronLeft, Crown, Flame, Gamepad2, Ge
 import { hasSupabaseConfig, supabase } from './lib/supabase';
 
 type Tab='home'|'games'|'room'|'rooms'|'friends'|'profile'|'leaderboard'|'shop';
-type Room={id:string;code:string;name:string;is_private:boolean;max_players:number;status:string};
+type Room={id:string;code:string;name:string;is_private:boolean;max_players:number;status:string;game_key?:string|null};
 type Profile={id:string;username:string;avatar_url?:string|null;bio:string;xp:number;coins:number;gems:number;level:number;wins:number;games_played:number;total_score:number;streak_days:number;last_daily_claim:string|null;equipped_frame:string;equipped_title:string};
 type Game={id:string;game_key:string;status:string;created_by:string;result?:any};
 type Player={user_id:string;score:number};
