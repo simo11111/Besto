@@ -879,3 +879,14 @@ body{background:radial-gradient(ellipse at 80% 0%,rgba(57,127,115,.16),transpare
 .auth-shell>.install-app-banner{grid-column:1/-1;width:100%;margin:10px auto 16px}
 @media(max-width:640px){.install-app-banner{align-items:flex-start;gap:10px;margin:9px 10px 14px;padding:10px;border-radius:15px}.install-app-banner>img{width:42px;height:42px}.install-app-copy b{font-size:13px}.install-app-copy span{font-size:10px;line-height:1.55}.install-app-action{padding:9px 10px;font-size:10px;white-space:normal;max-width:132px}.install-app-help{font-size:11px}}
 @media(min-width:761px){.install-app-banner{margin-top:14px;margin-bottom:20px}}
+
+/* Cohesive anime-purple authentication scene */
+.auth-shell{background:radial-gradient(ellipse at 50% -10%,#7c3aed35,transparent 48%),radial-gradient(ellipse at 12% 65%,#ec489915,transparent 38%),#0b0a1b;color:#f7f1ff}
+.auth-card{background:linear-gradient(155deg,#24183f,#141a30 76%);border:1px solid #b78cff55;box-shadow:0 28px 90px #0008,0 0 34px #8b5cf622}
+.auth-card:before{background:#a855f722}
+.auth-kicker{color:#d7b7ff}.auth-intro{color:#c1b8d5}.auth-divider{color:#aaa0c2}
+.auth-form label{color:#e4dcf3}.auth-form input{background:#0b1021;border:1px solid #76619c;color:#fff}
+.auth-form input:focus{outline:2px solid #a879f4;outline-offset:1px;border-color:#c4a4ff}
+.auth-submit{background:linear-gradient(105deg,#b88cff,#7c3aed);color:#fff}
+.auth-switch button,.text-button{color:#d3adff}
+.auth-benefits{color:#d7b7ff}.auth-benefits svg{color:#d5b3ff}
