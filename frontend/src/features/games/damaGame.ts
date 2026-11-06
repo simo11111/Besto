@@ -20,7 +20,9 @@ function getCaptureSteps(board:readonly DamaPiece[],player:DamaPlayer,position:n
  const piece=board[position],row=Math.floor(position/8),column=position%8,king=isKing(piece);
  const steps:Array<{landing:number;captured:number}>=[];
  if(!king){
+  const forwardRow=player===1?-1:1;
   for(const [dr,dc] of DIRECTIONS){
+   if(dr!==forwardRow)continue;
    const er=row+dr,ec=column+dc,lr=row+dr*2,lc=column+dc*2;
    if(!isInside(er,ec)||!isInside(lr,lc))continue;
    const enemy=indexOf(er,ec),landing=indexOf(lr,lc),enemyPiece=board[enemy];
@@ -46,6 +48,8 @@ function getCaptureSteps(board:readonly DamaPiece[],player:DamaPlayer,position:n
  return steps;
 }
 function getCaptureSequences(board:readonly DamaPiece[],player:DamaPlayer,from:number,position:number,path:readonly number[],captures:readonly number[],capturedKings:number):DamaMove[]{
+ const currentPiece=board[position],currentRow=Math.floor(position/8);
+ if(captures.length>0&&((currentPiece===1&&currentRow===0)||(currentPiece===2&&currentRow===7)))return[{from,path:[...path],captures:[...captures],capturedKings}];
  const steps=getCaptureSteps(board,player,position,captures);
  if(steps.length===0)return captures.length?[{from,path:[...path],captures:[...captures],capturedKings}]:[];
  const sequences:DamaMove[]=[];
