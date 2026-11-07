@@ -1,5 +1,5 @@
-const CACHE='mimox-shell-v7';
-const SHELL=['/','/manifest.webmanifest','/mimox-icon.svg?v=20261107b','/mimox-icon-maskable.svg?v=20261107b','/mimox-icon-192.png?v=20261107b','/mimox-logo.svg','/mimox-login.svg','/mascot-happy.svg'];
+const CACHE='mimox-shell-v8';
+const SHELL=['/','/manifest.webmanifest','/mimox-icon.svg?v=20261107c','/mimox-icon-maskable.svg?v=20261107c','/mimox-icon-192.png?v=20261107c','/mimox-logo.svg','/mimox-login.svg','/mascot-happy.svg'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('mimox-shell-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{
