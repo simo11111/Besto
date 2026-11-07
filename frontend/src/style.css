@@ -890,3 +890,19 @@ body{background:radial-gradient(ellipse at 80% 0%,rgba(57,127,115,.16),transpare
 .auth-submit{background:linear-gradient(105deg,#b88cff,#7c3aed);color:#fff}
 .auth-switch button,.text-button{color:#d3adff}
 .auth-benefits{color:#d7b7ff}.auth-benefits svg{color:#d5b3ff}
+
+/* MIMOX game sound control + larger, safe-area-aware arena */
+.sound-toggle{width:38px;height:38px;display:grid;place-items:center;border:1px solid #b78cff55;border-radius:12px;background:linear-gradient(145deg,#291d48,#151c32);color:#d9bcff;cursor:pointer;transition:transform .18s,border-color .18s,background .18s}
+.sound-toggle:hover{transform:translateY(-2px);border-color:#d6b5ff;background:#39245f}
+.sound-toggle:focus-visible{outline:2px solid #e1c7ff;outline-offset:3px}
+.active-game{min-height:calc(100dvh - 138px)}
+.active-game .game-play-card{min-width:0}
+.active-game .connect-four-board-wrap,.active-game .dama-board-shell{width:min(100%,min(82vh,860px))}
+.active-game .game-arena-players{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.active-game .arena-player{min-width:0}
+.active-game .arena-player b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.active-game .arena-communication{min-width:0}
+.active-game .arena-chat-messages{overscroll-behavior:contain}
+@media(min-width:1200px){.shell:has(.active-game){max-width:100%;padding-inline:clamp(18px,3vw,48px)}.active-game{grid-template-columns:minmax(0,1fr) minmax(320px,370px);column-gap:clamp(18px,2vw,30px)}.active-game .game-play-card{padding:clamp(18px,2vw,30px)}}
+@media(max-width:760px){.sound-toggle{width:34px;height:34px;border-radius:10px}.active-game{min-height:calc(100dvh - 100px);padding-inline:10px!important}.active-game .connect-four-board-wrap,.active-game .dama-board-shell{width:100%;max-width:min(100%,78vh)}.active-game .game-play-card{padding:10px}.active-game .arena-chat{min-height:220px}}
+@media(prefers-reduced-motion:reduce){.sound-toggle{transition:none}}
