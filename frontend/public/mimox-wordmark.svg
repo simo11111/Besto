@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 220" role="img" aria-labelledby="title">
+<title id="title">MIMOX gaming wordmark</title>
+<defs><linearGradient id="silver" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset=".55" stop-color="#d8d1e8"/><stop offset="1" stop-color="#8d80a8"/></linearGradient><linearGradient id="violet" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f36bff"/><stop offset=".52" stop-color="#b54bff"/><stop offset="1" stop-color="#6323d5"/></linearGradient></defs>
+<path d="M16 58 53 20l58 18 45-25 50 24h248l50-24 45 25 58-18 37 38-35 116-77 18-50-22H125l-50 22-77-18z" fill="#10091f" stroke="url(#violet)" stroke-width="8" stroke-linejoin="round"/>
+<text x="380" y="137" text-anchor="middle" font-family="Arial Black,Inter,sans-serif" font-size="116" font-weight="900" letter-spacing="-8" fill="url(#silver)" stroke="#160c27" stroke-width="8" paint-order="stroke">MIMO<tspan fill="url(#violet)">X</tspan></text>
+<path d="M250 166h110m40 0h110" stroke="url(#violet)" stroke-width="7" stroke-linecap="round"/>
+<g transform="translate(340 151)" fill="none" stroke="url(#violet)" stroke-width="7" stroke-linejoin="round"><path d="M18 10h44q10 0 15 8l9 25q4 11-8 12l-16-13H18L2 55q-12-1-8-12l9-25q5-8 15-8z"/><path d="M24 25v16m-8-8h16m27-5h1m8 9h1" stroke-linecap="round"/></g>
+</svg>
