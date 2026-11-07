@@ -70,3 +70,15 @@
 .score-row{border-radius:10px;transition:background .16s ease}
 .score-row:hover{background:#ffffff08}
 @media(max-width:760px){.room-columns{gap:12px}.member{min-height:54px;padding:7px}.room-box{padding:14px}.timer-banner{padding:13px}}
+
+/* Brand palette pass: remove leftover lime/teal accents from the previous identity. */
+.side-button.active,.side-button:hover{color:#e5d3ff;background:linear-gradient(100deg,#a94bff25,#e14bff14);border-color:#b65cff50}
+.side-button.active svg{filter:drop-shadow(0 0 7px #b65cff)}
+.hero-banner-copy .eyebrow{color:#e2baff}
+.hero-banner-copy h1 span{background:linear-gradient(90deg,#f0c8ff,#b36bff,#f36de8);-webkit-background-clip:text;color:transparent}
+.hero.hero-new.hero-banner{border-color:#b65cff88;background:radial-gradient(ellipse at 20% 50%,#51207c,#160c29 70%)}
+.hero-banner-overlay{background:linear-gradient(90deg,#09091605 0%,#09091622 40%,#090916ee 100%),linear-gradient(0deg,#0b0b18a8,transparent 45%)}
+.profile-hero{background:radial-gradient(ellipse at 5% 10%,#6e36a955,transparent 45%),linear-gradient(115deg,#25153f,#12101f);border-color:#b65cff55;box-shadow:0 14px 40px #0003}
+.profile-avatar{border:2px solid #d1a1ff;box-shadow:0 0 0 5px #b65cff20,0 0 28px #a94bff55}
+.profile-avatar-button:hover{transform:translateY(-2px) rotate(-2deg)}
+@media(prefers-reduced-motion:no-preference){.profile-avatar-button{transition:transform .2s ease}.hero-banner-img{animation:brandGlow 12s ease-in-out infinite alternate}@keyframes brandGlow{from{filter:saturate(.9) brightness(.92)}to{filter:saturate(1.2) brightness(1.08)}}}
