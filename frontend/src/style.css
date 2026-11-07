@@ -929,3 +929,8 @@ body{background:radial-gradient(ellipse at 80% 0%,rgba(57,127,115,.16),transpare
 .active-game .score-list{padding:16px;border:1px solid #a78bfa33;border-radius:16px;background:#101629}
 .active-game .finish-button{min-height:44px}
 @media(max-width:600px){.active-game .game-play-card{gap:12px;padding:12px}.active-game .game-play-card>h3{font-size:21px;padding:16px 12px}.active-game .action-row{display:grid;grid-template-columns:minmax(0,1fr)}.active-game .action-row button{width:100%}.active-game .quiz-options{grid-template-columns:1fr}.active-game .quiz-option{min-height:58px}.active-game .secret-word strong{font-size:26px}}
+
+.app-loading{min-height:100dvh;display:flex;align-items:center;justify-content:center;gap:13px;background:#0b0a1b;color:#d9bcff;font:700 14px Changa,sans-serif}
+.app-loading-orb{width:24px;height:24px;border:3px solid #b88cff35;border-top-color:#d6b5ff;border-radius:50%;animation:mimox-load-spin .8s linear infinite}
+@keyframes mimox-load-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.app-loading-orb{animation:none}}
