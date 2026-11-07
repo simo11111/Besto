@@ -1,0 +1,50 @@
+/* Social profile cards and lighter game-room interactions */
+.public-profile-backdrop{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:18px;background:rgba(5,4,13,.78);backdrop-filter:blur(12px);animation:profileFade .18s ease}
+.public-profile-modal{position:relative;width:min(100%,480px);max-height:min(88vh,760px);overflow:auto;border:1px solid rgba(181,143,255,.34);border-radius:25px;background:linear-gradient(155deg,#211638,#11101e 62%);box-shadow:0 28px 90px #000b;animation:profileRise .24s cubic-bezier(.2,.8,.2,1)}
+.public-profile-close{position:absolute;z-index:3;top:13px;left:13px;width:36px;height:36px;display:grid;place-items:center;border:1px solid #ffffff25;border-radius:50%;background:#0b0918aa;color:white}
+.public-profile-cover{height:132px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 72% 10%,#b53bff99,transparent 38%),radial-gradient(ellipse at 20% 80%,#5733c888,transparent 50%),linear-gradient(120deg,#17102c,#34205a)}
+.public-profile-cover:after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 35%,#ffffff09 36%,transparent 37%,transparent 60%,#ffffff08 61%,transparent 62%)}
+.profile-cover-orbit{position:absolute;border:1px solid #d7b8ff45;border-radius:50%;width:190px;height:190px;right:45px;top:-115px}
+.orbit-two{width:270px;height:270px;right:-30px;top:-170px;border-color:#ec70ff35}
+.profile-cover-label{position:absolute;right:20px;bottom:17px;color:#e4d4ff;font:800 10px Inter;letter-spacing:2px}
+.public-profile-identity{display:flex;align-items:center;gap:15px;padding:0 22px;margin-top:-34px;position:relative}
+.public-profile-avatar{width:82px;height:82px;flex:0 0 82px;display:grid;place-items:center;overflow:hidden;border:4px solid #171226;border-radius:25px;background:linear-gradient(145deg,#b45aff,#47228a);box-shadow:0 8px 30px #0007;color:white;font:800 30px Inter}
+.public-profile-avatar img{width:100%;height:100%;object-fit:cover}
+.public-profile-name{min-width:0;padding-top:31px;display:grid;gap:4px}
+.public-profile-name h2{margin:0;font-size:23px;overflow-wrap:anywhere}
+.public-profile-name small{color:#aaa1c2;font-size:11px}
+.public-profile-status{font-size:10px;color:#a69db6}
+.public-profile-status:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#777;margin-left:6px}
+.public-profile-status.online:before{background:#48e6a3;box-shadow:0 0 10px #48e6a3}
+.public-profile-bio{margin:17px 22px 0;color:#c8bfd8;font-size:13px;line-height:1.9}
+.public-profile-xp{margin:20px 22px 0;padding:13px 14px;border:1px solid #ffffff12;border-radius:14px;background:#ffffff07}
+.public-profile-xp>div:first-child{display:flex;justify-content:space-between;gap:10px;color:#a9a0bb;font-size:10px}
+.public-profile-xp b{color:#e8d9ff;font:700 11px Inter}
+.public-profile-xp-track{height:6px;margin-top:10px;border-radius:8px;background:#39304d;overflow:hidden}
+.public-profile-xp-track span{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#9b58ff,#ed69e9)}
+.public-profile-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:18px 22px}
+.public-profile-stats>div{min-width:0;display:grid;justify-items:center;gap:5px;padding:13px 5px;border:1px solid #ffffff12;border-radius:13px;background:#ffffff06}
+.public-profile-stats svg{width:18px;height:18px;color:#c49cff}
+.public-profile-stats b{font:800 17px Inter;color:#fff}
+.public-profile-stats small{font-size:9px;color:#a39ab6}
+.public-profile-actions{display:flex;align-items:center;gap:9px;padding:0 22px 22px}
+.public-profile-actions button{min-height:40px;justify-content:center;flex:1}
+.public-profile-friend{display:flex;align-items:center;gap:6px;color:#77e4b1;font-size:12px}
+.public-profile-state{min-height:230px;display:flex;align-items:center;justify-content:center;gap:12px;color:#c9bce2}
+.public-profile-spinner{width:19px;height:19px;border:2px solid #ffffff30;border-top-color:#c28cff;border-radius:50%;animation:profileSpin .7s linear infinite}
+.profile-open-trigger{padding:0;border:0;background:none;color:inherit;text-align:inherit;font:inherit;cursor:pointer}
+.profile-open-trigger:hover{color:#d4b5ff}
+.member .profile-open-trigger{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.friend-meta .profile-open-trigger,.leader-name .profile-open-trigger{font-weight:700}
+.friend-avatar,.podium-avatar,.leader-row .avatar{cursor:pointer;transition:transform .18s ease,border-color .18s ease}
+.friend-avatar:hover,.podium-avatar:hover,.leader-row .avatar:hover{transform:translateY(-2px);border-color:#c59bff}
+.public-room-card,.room-action-card,.game-card,.room-box{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.public-room-card:hover,.room-action-card:hover,.game-card:hover{transform:translateY(-3px);border-color:#a78bfa66;box-shadow:0 12px 32px #0003}
+.game-play-card{position:relative;overflow:hidden;box-shadow:0 14px 45px #0003}
+.game-play-card:before{content:"";position:absolute;inset:0 0 auto;height:2px;background:linear-gradient(90deg,transparent,#b477ff,#ee72e8,transparent);opacity:.75}
+.room-heading-actions{flex-wrap:wrap}
+@keyframes profileFade{from{opacity:0}to{opacity:1}}
+@keyframes profileRise{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes profileSpin{to{transform:rotate(360deg)}}
+@media(max-width:520px){.public-profile-backdrop{padding:10px;align-items:end}.public-profile-modal{width:100%;max-height:90vh;border-radius:23px 23px 17px 17px}.public-profile-cover{height:112px}.public-profile-stats{gap:6px;padding:15px}.public-profile-stats b{font-size:15px}.public-profile-stats small{font-size:8px}.public-profile-identity{padding:0 17px}.public-profile-xp{margin-right:17px;margin-left:17px}.public-profile-bio{margin-right:17px;margin-left:17px}.public-profile-actions{padding:0 17px 17px}}
+@media(prefers-reduced-motion:reduce){.public-profile-backdrop,.public-profile-modal,.public-profile-spinner,.public-room-card,.room-action-card,.game-card{animation:none;transition:none}}
