@@ -48,3 +48,25 @@
 @keyframes profileSpin{to{transform:rotate(360deg)}}
 @media(max-width:520px){.public-profile-backdrop{padding:10px;align-items:end}.public-profile-modal{width:100%;max-height:90vh;border-radius:23px 23px 17px 17px}.public-profile-cover{height:112px}.public-profile-stats{gap:6px;padding:15px}.public-profile-stats b{font-size:15px}.public-profile-stats small{font-size:8px}.public-profile-identity{padding:0 17px}.public-profile-xp{margin-right:17px;margin-left:17px}.public-profile-bio{margin-right:17px;margin-left:17px}.public-profile-actions{padding:0 17px 17px}}
 @media(prefers-reduced-motion:reduce){.public-profile-backdrop,.public-profile-modal,.public-profile-spinner,.public-room-card,.room-action-card,.game-card{animation:none;transition:none}}
+
+/* Make the room feel like a live lobby, not a plain settings panel. */
+.room-columns{align-items:start;gap:16px}
+.room-box{background:linear-gradient(155deg,#1b1730,#11101e);border-color:#ffffff17;box-shadow:0 12px 34px #0002}
+.room-box h3{padding-bottom:12px;border-bottom:1px solid #ffffff12}
+.member{min-height:58px;margin:5px 0;padding:8px 10px;border:1px solid #ffffff0c;border-radius:13px;background:#ffffff04;transition:background .18s ease,border-color .18s ease}
+.member:hover{background:#9e69ff10;border-color:#a77bff40}
+.member .avatar{width:40px;height:40px;border-radius:14px;overflow:hidden;flex:0 0 40px}
+.member .avatar img{width:100%;height:100%;object-fit:cover}
+.member .profile-open-trigger:not(.avatar){font-size:12px;font-weight:700}
+.member small{font-size:10px}
+.game-launch{padding-top:18px}
+.game-launch .primary{min-height:46px;box-shadow:0 8px 22px #8b5cf633}
+.timer-banner{position:relative;overflow:hidden;border:1px solid #b78cff3d;border-radius:15px;background:linear-gradient(110deg,#291c46,#181326);padding:15px 17px}
+.timer-banner b{font:800 24px Inter;color:#e9d9ff;text-shadow:0 0 20px #bb7bff55}
+.timer-banner:after{content:"";position:absolute;inset:auto 0 0;height:2px;background:linear-gradient(90deg,#a45cff,#ed73e8,#45ded5);opacity:.8}
+.quiz-option{transition:transform .16s ease,border-color .16s ease,background .16s ease}
+.quiz-option:active{transform:scale(.985)}
+.quiz-option.selected{border-color:#bd8aff;background:#9d61ff24;box-shadow:0 0 0 2px #9d61ff20}
+.score-row{border-radius:10px;transition:background .16s ease}
+.score-row:hover{background:#ffffff08}
+@media(max-width:760px){.room-columns{gap:12px}.member{min-height:54px;padding:7px}.room-box{padding:14px}.timer-banner{padding:13px}}
