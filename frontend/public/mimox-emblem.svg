@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+<title id="title">MIMOX cyber fox emblem</title>
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f1eaff"/><stop offset=".48" stop-color="#b76aff"/><stop offset="1" stop-color="#6e24d8"/></linearGradient><linearGradient id="p" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f26bff"/><stop offset="1" stop-color="#7c2cff"/></linearGradient></defs>
+<path d="M12 42 29 10l25 17h20L99 10l17 32-11 48-41 27-41-27z" fill="#10091f" stroke="url(#g)" stroke-width="5" stroke-linejoin="round"/>
+<path d="m27 31 4-12 18 14-8 15zm74 0-4-12-18 14 8 15z" fill="url(#p)"/>
+<path d="M28 53 50 43l14 8 14-8 22 10-10 30-26 18-26-18z" fill="#201235" stroke="#d9baff" stroke-width="2.8" stroke-linejoin="round"/>
+<path d="m36 58 19-8 9 7 9-7 19 8-16 7-12-2-12 2z" fill="#f4efff"/>
+<path d="m39 68 18 3-9 7zm50 0-18 3 9 7z" fill="url(#p)"/>
+<path d="M48 83q16 8 32 0l-5 14H53z" fill="#0b0715" stroke="#b779ff" stroke-width="2"/>
+<path d="M53 89h22m-11-5v12" stroke="#f4e9ff" stroke-width="2.4" stroke-linecap="round"/>
+<path d="M17 102q15 8 28 4m66-4q-15 8-28 4" fill="none" stroke="url(#p)" stroke-width="4" stroke-linecap="round"/>
+<circle cx="23" cy="83" r="3" fill="#f1a2ff"/><circle cx="105" cy="83" r="3" fill="#f1a2ff"/>
+</svg>
