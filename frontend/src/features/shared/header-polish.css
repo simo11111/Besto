@@ -53,3 +53,19 @@
     min-width: 38px;
   }
 }
+
+
+/* Use the new anime mascot palette consistently in the navigation brand. */
+.topbar .brand-icon {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  border-radius: 13px;
+  filter: drop-shadow(0 0 9px rgba(180, 132, 255, .42));
+}
+@media (max-width: 520px) {
+  .topbar .brand-icon {
+    width: 36px;
+    height: 36px;
+  }
+}
