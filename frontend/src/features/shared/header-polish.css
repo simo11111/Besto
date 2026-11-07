@@ -1,0 +1,55 @@
+/* Header spacing polish: keep the avatar shortcut, remove the adjacent level chip. */
+.topbar .top-actions {
+  gap: clamp(8px, 1.5vw, 16px);
+}
+
+.topbar .level-pill {
+  display: none !important;
+}
+
+.topbar .header-avatar {
+  position: relative;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(190, 165, 255, .48);
+  border-radius: 50%;
+  background: linear-gradient(145deg, #30204f, #171326);
+  color: #fff;
+  cursor: pointer;
+  transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+.topbar .header-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.topbar .header-avatar:active {
+  transform: scale(.96);
+}
+
+.topbar .header-avatar:focus-visible {
+  outline: 2px solid #bba2ff;
+  outline-offset: 3px;
+}
+
+@media (max-width: 520px) {
+  .topbar .top-actions {
+    gap: 7px;
+  }
+  .topbar .header-avatar {
+    flex-basis: 38px;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+  }
+}
