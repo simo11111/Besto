@@ -58,6 +58,11 @@ const SOUND_MAP: Record<GameSound, Tone[]> = {
   notification: [{ frequency: 660, duration: 0.07 }, { frequency: 880, duration: 0.1, delay: 0.09 }]
 };
 
+export function unlockGameAudio(): void {
+  const context = getAudioContext();
+  if (context?.state === 'suspended') void context.resume().catch(() => undefined);
+}
+
 export function playGameSound(name: GameSound): void {
   if (!getSoundEnabled()) return;
   const context = getAudioContext();

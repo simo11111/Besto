@@ -11,7 +11,7 @@ import ConnectFourGame, { type DuelGameState } from './features/games/ConnectFou
 import DamaGame, { type DamaGameState } from './features/games/DamaGame';
 
 import { prettyError } from './lib/errors';
-import { getSoundEnabled, setSoundEnabled as persistSoundEnabled, playGameSound } from './lib/audio';
+import { getSoundEnabled, setSoundEnabled as persistSoundEnabled, playGameSound, unlockGameAudio } from './lib/audio';
 import { SetupRequiredScreen, AuthScreen, PasswordRecoveryScreen, InstallAppBanner } from './features/auth/AuthScreens';
 import { fetchFriendships, fetchDirectMessages, fetchNotifications } from './features/social/api';
 import { fetchOpenRooms, fetchRoomSnapshot } from './features/rooms/api';
@@ -85,7 +85,7 @@ export default function App(){
  }
  async function openRoom(r:Room){playGameSound('join');setRoom(r);setCode(r.code);if(r.game_key)setSelectedGame(r.game_key);setMaxPlayers(r.max_players);setTab('room');await loadRoomData(r.id);}
  async function loadRoomData(id:string){if(!supabase)return;const snapshot=await fetchRoomSnapshot(supabase,id);if(snapshot.memberError)notify(prettyError(snapshot.memberError));else setRoster(snapshot.members.map(member=>({...member,profile:snapshot.profiles.find(profile=>profile.id===member.user_id)})));if(snapshot.chatError)notify(prettyError(snapshot.chatError));else setMessages(snapshot.chat);const latest=snapshot.sessions[0];if(latest){await loadGame(latest);setTab(latest.status==='active'?'game':'room');}else{setGame(null);setGamePlayers([]);setGameResult(null);setTab('room');}} async function postRoomMessage(body:string){if(!supabase||!room||!body.trim())return;const {data,error}=await supabase.rpc('send_room_message',{p_room_id:room.id,p_body:body.trim().slice(0,500)});if(error){notify(prettyError(error));return;}playGameSound('messageSent');const {data:row}=await supabase.from('chat_messages').select('id,user_id,body,created_at').eq('id',data).single();if(row)setMessages(prev=>prev.some(message=>message.id===row.id)?prev:[...prev,row]);}
- async function sendMessage(e:FormEvent){e.preventDefault();if(!chatText.trim())return;const body=chatText.trim();setChatText('');await postRoomMessage(body);}
+ async function sendMessage(e:FormEvent){e.preventDefault();unlockGameAudio();if(!chatText.trim())return;const body=chatText.trim();setChatText('');await postRoomMessage(body);}
  async function sendQuickChat(body:string){await postRoomMessage(body);}
  async function claimDaily(){if(!supabase)return;setBusy(true);const {data,error}=await supabase.rpc('claim_daily_reward');setBusy(false);if(error){notify(prettyError(error));return;}const r=data?.[0];notify('ربحتي '+r.coins_awarded+' عملة و '+(r.streak%3===0?5:2)+' جواهر و '+r.xp_awarded+' XP! سلسلة '+r.streak+' أيام.');await Promise.all([loadProfile(),loadDailyMissions()]);}
  async function claimMission(m:DailyMission){if(!supabase)return;setBusy(true);const {data,error}=await supabase.rpc('claim_daily_mission',{p_mission_key:m.mission_key});setBusy(false);if(error){notify(prettyError(error));return;}notify('المهمة تكملات! +'+data.coins+' عملة و +'+data.xp+' XP');await Promise.all([loadDailyMissions(),loadProfile()]);}
@@ -138,24 +138,24 @@ export default function App(){
   setDuelRatings((ratings||[]) as DuelRating[]);
  }
  async function submitDamaMove(path:number[]){
+  unlockGameAudio();
   if(!supabase||!game||game.game_key!=='dama')return;
   setBusy(true);
   const {data,error}=await supabase.rpc('submit_dama_move',{p_session_id:game.id,p_path:path});
   setBusy(false);
   if(error){notify(prettyError(error));return;}
   const moveResult=data as {winner_user_id?:string|null;is_draw?:boolean}|null;
-  playGameSound(moveResult?.winner_user_id?(moveResult.winner_user_id===userId?'victory':'defeat'):moveResult?.is_draw?'result':'move');
   await loadDamaState(game.id);
   if(moveResult?.winner_user_id||moveResult?.is_draw){await loadProfile();await loadLeaderboard();}
  }
  async function submitDuelMove(column:number){
+  unlockGameAudio();
   if(!supabase||!game||game.game_key!=='connect4')return;
   setBusy(true);
   const {data,error}=await supabase.rpc('submit_duel_move',{p_session_id:game.id,p_column:column});
   setBusy(false);
   if(error){notify(prettyError(error));return;}
   const moveResult=data as {winner_user_id?:string|null;is_draw?:boolean}|null;
-  playGameSound(moveResult?.winner_user_id?(moveResult.winner_user_id===userId?'victory':'defeat'):moveResult?.is_draw?'result':'move');
   await loadDuelState(game.id);
   if(moveResult?.winner_user_id||moveResult?.is_draw){await loadProfile();await loadLeaderboard();}
  }
@@ -170,6 +170,7 @@ export default function App(){
   if(gameKey==='connect4')await loadDuelState(data);else await loadDamaState(data);
  }
  async function startGame(){
+  unlockGameAudio();
   if(!supabase||!room)return;
   setGameResult(null);
   setBusy(true);
@@ -191,7 +192,7 @@ export default function App(){
   setTab('game');
  }
  async function loadGame(g:Game){if(!supabase)return;setGame(g);setGameResult(g.result||null);if(g.game_key==='connect4'){await loadDuelState(g.id);return;}if(g.game_key==='dama'){await loadDamaState(g.id);return;}const [{data:players,error},{data:secret},{data:actions}]=await Promise.all([supabase.from('game_players').select('user_id,score').eq('session_id',g.id).order('score',{ascending:false}),supabase.rpc('get_my_game_secret',{p_session_id:g.id}),supabase.from('game_actions').select('user_id,action_key').eq('session_id',g.id)]);if(error)notify(prettyError(error));setGamePlayers((players||[]) as Player[]);setGameSecret(secret||{});setGameAction((actions||[]).some(a=>a.user_id===userId)?'sent':'');}
- async function submitAction(action:string,payload:any){if(!supabase||!game)return;setBusy(true);const {error}=await supabase.rpc('submit_party_action',{p_session_id:game.id,p_action_key:action,p_payload:payload});setBusy(false);if(error)notify(prettyError(error));else{playGameSound('submit');notify('وصل الجواب ديالك!');setGameAction('sent');await loadGame(game);}}
+ async function submitAction(action:string,payload:any){unlockGameAudio();if(!supabase||!game)return;setBusy(true);const {error}=await supabase.rpc('submit_party_action',{p_session_id:game.id,p_action_key:action,p_payload:payload});setBusy(false);if(error)notify(prettyError(error));else{playGameSound('submit');notify('وصل الجواب ديالك!');setGameAction('sent');await loadGame(game);}}
  async function finishGame(){if(!supabase||!game)return;setBusy(true);const {data,error}=await supabase.rpc(game.game_key==='impostor'?'finish_impostor_game':'finish_party_game',{p_session_id:game.id});setBusy(false);if(error)notify(prettyError(error));else{playGameSound('result');setGameResult(data);setGame({...game,status:'completed'});await loadGame({...game,status:'completed'});await loadProfile();await loadLeaderboard();await loadDailyMissions();}}
  async function exitRoom(){if(!supabase||!room)return;stopVoice();await supabase.rpc('leave_room',{p_room_id:room.id});setRoom(null);setGame(null);setTab('home');await loadRooms();}
  useEffect(()=>{const client=supabase;if(!room||!client)return;let active=true;const beat=async()=>{if(document.visibilityState==='hidden')return;const {data,error}=await client.rpc('heartbeat_room',{p_room_id:room.id});if(active&&!error&&!data){notify('الغرفة تسدات أو سالات الجلسة ديالك.');setRoom(null);setTab('rooms');await loadRooms();}};void beat();const timer=window.setInterval(beat,25000);const onVisible=()=>{if(document.visibilityState==='visible')void beat();};document.addEventListener('visibilitychange',onVisible);return()=>{active=false;window.clearInterval(timer);document.removeEventListener('visibilitychange',onVisible);};},[room?.id,loadRooms]);
@@ -230,7 +231,7 @@ export default function App(){
  useEffect(()=>{if(!gameSecret?.deadline_at){setTimeLeft(10);return;}const update=()=>setTimeLeft(Math.max(0,Math.ceil((new Date(gameSecret.deadline_at).getTime()-Date.now())/1000)));update();const timerId=window.setInterval(update,200);return()=>window.clearInterval(timerId);},[gameSecret?.deadline_at]);
  useEffect(()=>{const client=supabase;if(!client||!game||!['connect4','dama'].includes(game.game_key))return;const channel=client.channel('duel-state:'+game.id).on('postgres_changes',{event:'UPDATE',schema:'public',table:'duel_game_state',filter:'session_id=eq.'+game.id},()=>{if(game.game_key==='connect4')void loadDuelState(game.id);}).on('postgres_changes',{event:'UPDATE',schema:'public',table:'dama_game_state',filter:'session_id=eq.'+game.id},()=>{if(game.game_key==='dama')void loadDamaState(game.id);}).subscribe();return()=>{void client.removeChannel(channel);};},[game?.id,game?.game_key]);
  
- useEffect(()=>{if(!game||game.status!=='active')return;const poll=window.setInterval(()=>void loadGame(game),game.game_key==='connect4'||game.game_key==='dama'?10000:2500);return()=>window.clearInterval(poll);},[game?.id,game?.status]);
+ useEffect(()=>{if(!game||game.status!=='active')return;const poll=window.setInterval(()=>void loadGame(game),game.game_key==='connect4'||game.game_key==='dama'?3000:2500);return()=>window.clearInterval(poll);},[game?.id,game?.status]);
  useEffect(()=>{if(tab!=='rooms')return;void loadRooms();const timer=window.setInterval(()=>void loadRooms(),20000);return()=>window.clearInterval(timer);},[tab,loadRooms]);
  useEffect(()=>{if(!supabase||!room)return;const client=supabase;const ch=client.channel('dima-room-feed:'+room.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:'room_id=eq.'+room.id},p=>{const m=p.new as any;if(m.user_id!==userId)playGameSound('message');setMessages(old=>old.some(x=>x.id===m.id)?old:[...old,m].slice(-60));}).on('postgres_changes',{event:'*',schema:'public',table:'game_sessions',filter:'room_id=eq.'+room.id},()=>void loadRoomData(room.id)).on('postgres_changes',{event:'*',schema:'public',table:'room_members',filter:'room_id=eq.'+room.id},()=>void loadRoomData(room.id)).subscribe();const typing=client.channel('chat:'+room.id,{config:{private:true}}).on('broadcast',{event:'typing'},payload=>{const sender=(payload.payload as {user_id?:string}).user_id;if(!sender||sender===userId)return;setRoomTypingUsers(old=>old.includes(sender)?old:[...old,sender]);const previous=roomTypingTimersRef.current.get(sender);if(previous!==undefined)window.clearTimeout(previous);const timer=window.setTimeout(()=>{setRoomTypingUsers(old=>old.filter(id=>id!==sender));roomTypingTimersRef.current.delete(sender);},1600);roomTypingTimersRef.current.set(sender,timer);}).subscribe();roomChatChannelRef.current=typing;return()=>{roomTypingTimersRef.current.forEach(timer=>window.clearTimeout(timer));roomTypingTimersRef.current.clear();roomChatChannelRef.current=null;setRoomTypingUsers([]);void client.removeChannel(ch);void client.removeChannel(typing);};},[room?.id,userId]);
 
