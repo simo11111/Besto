@@ -1,0 +1,14 @@
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import { rateLimit } from 'express-rate-limit';
+import { z } from 'zod';
+const app=express(),port=Number(process.env.PORT||4000),allowedOrigin=process.env.ALLOWED_ORIGIN||'http://localhost:5173';
+app.disable('x-powered-by');app.use(helmet());app.use(cors({origin:allowedOrigin,methods:['GET','POST']}));app.use(express.json({limit:'16kb',strict:true}));app.use(rateLimit({windowMs:60000,limit:90,standardHeaders:'draft-7',legacyHeaders:false}));
+app.get('/api/health',(_req,res)=>res.json({ok:true,service:'dima-play-api',version:'0.1.0'}));
+const schema=z.object({name:z.string().trim().min(2).max(40),isPrivate:z.boolean().default(false),maxPlayers:z.number().int().min(2).max(16).default(10)}).strict();
+app.post('/api/rooms/validate',(req,res)=>{const parsed=schema.safeParse(req.body);if(!parsed.success)return res.status(400).json({error:'المعلومات ماشي صحيحة',details:parsed.error.flatten()});return res.status(202).json({accepted:true,message:'التحقق ناجح. خاص ربط قاعدة البيانات قبل إنشاء الغرفة.',room:parsed.data});});
+app.use((_req,res)=>res.status(404).json({error:'المسار ما كاينش'}));
+app.use((err:unknown,_req:express.Request,res:express.Response,_next:express.NextFunction)=>{console.error('Unhandled request error');res.status(500).json({error:'وقع مشكل داخلي'});});
+app.listen(port,()=>console.log('DIMA PLAY API listening on '+port));
