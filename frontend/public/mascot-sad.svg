@@ -1,39 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="MIMOX anime gamer mascot">
-<defs>
- <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#21133f"/><stop offset=".55" stop-color="#171b3c"/><stop offset="1" stop-color="#071b2d"/></linearGradient>
- <radialGradient id="halo"><stop stop-color="#b56cff" stop-opacity=".45"/><stop offset="1" stop-color="#8b4dff" stop-opacity="0"/></radialGradient>
- <linearGradient id="hair" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#fffaff"/><stop offset=".48" stop-color="#c9c5ee"/><stop offset="1" stop-color="#7775b4"/></linearGradient>
- <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffe5d4"/><stop offset="1" stop-color="#e8a88f"/></linearGradient>
- <linearGradient id="hood" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8252c8"/><stop offset=".55" stop-color="#3e2c72"/><stop offset="1" stop-color="#171c3b"/></linearGradient>
- <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#edb5ff"/><stop offset="1" stop-color="#8c42ee"/></linearGradient>
- <linearGradient id="eye" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d9a6ff"/><stop offset="1" stop-color="#6336b5"/></linearGradient>
-</defs>
-<rect x="8" y="8" width="496" height="496" rx="128" fill="url(#bg)" stroke="#bd8aff" stroke-width="9"/>
-<circle cx="256" cy="222" r="214" fill="url(#halo)"/>
-<circle cx="256" cy="230" r="185" fill="none" stroke="#d6b7ff" stroke-opacity=".23" stroke-width="4" stroke-dasharray="7 15"/>
-<g fill="#f7d9a1"><path d="m92 126 8 22 22 8-22 8-8 22-8-22-22-8 22-8z"/><path d="m420 178 6 17 17 6-17 6-6 17-6-17-17-6 17-6z"/><circle cx="91" cy="282" r="5"/><circle cx="424" cy="300" r="5"/></g>
-<path d="M75 500q12-112 91-151 39-20 90-20t90 20q79 39 91 151z" fill="url(#hood)" stroke="#a981ed" stroke-width="9"/>
-<path d="M166 365q90 76 180 0l34 135H132z" fill="#211b4c" stroke="#7150ae" stroke-width="6"/>
-<path d="m256 407 25 27-25 27-25-27z" fill="#f0d49a" stroke="#fff0c6" stroke-width="5"/>
-<path d="m256 418 13 16-13 15-13-15z" fill="#7a4cbb"/>
-<path d="M137 202 112 67q-5-25 19-12l105 91z" fill="#252044" stroke="#d4a7ff" stroke-width="12" stroke-linejoin="round"/>
-<path d="m145 151-13-65 62 56z" fill="#a96bd6"/>
-<path d="M375 202 400 67q5-25-19-12l-105 91z" fill="#252044" stroke="#d4a7ff" stroke-width="12" stroke-linejoin="round"/>
-<path d="m367 151 13-65-62 56z" fill="#a96bd6"/>
-<path d="M112 255q-8-161 144-169 152 8 144 169" fill="none" stroke="#211b3f" stroke-width="35" stroke-linecap="round"/>
-<path d="M112 255q-8-161 144-169 152 8 144 169" fill="none" stroke="url(#purple)" stroke-width="11" stroke-linecap="round"/>
-<rect x="86" y="230" width="63" height="119" rx="25" fill="#54358c" stroke="#e1baff" stroke-width="9"/>
-<rect x="363" y="230" width="63" height="119" rx="25" fill="#54358c" stroke="#e1baff" stroke-width="9"/>
-<circle cx="117" cy="289" r="14" fill="#a9f2e5"/><circle cx="395" cy="289" r="14" fill="#a9f2e5"/>
-<path d="M143 214q0-91 113-96 113 5 113 96v112q0 102-113 125-113-23-113-125z" fill="url(#skin)" stroke="#8b5b83" stroke-width="9"/>
-<path d="M142 246q-17-119 83-153 97-34 165 37 27 28 22 112-31-36-57-40-31-4-57 25-7-48-39-60-22 54-117 79z" fill="url(#hair)" stroke="#51436f" stroke-width="8" stroke-linejoin="round"/>
-<path d="M168 191q41-77 105-83-31 34-38 83-27-22-67 0z" fill="#fff" opacity=".75"/>
-<path d="M257 125q63-33 113 20-40-9-61 29-20-28-52-49z" fill="#e8e2ff"/>
-<path d="M160 250q28-12 62 8M288 258q34-12 64-8" fill="none" stroke="#51405f" stroke-width="9" stroke-linecap="round"/>
-<ellipse cx="193" cy="249" rx="13" ry="20" fill="url(#eye)"/><ellipse cx="320" cy="249" rx="13" ry="20" fill="url(#eye)"/>
-<circle cx="197" cy="241" r="5" fill="#fff"/><circle cx="324" cy="241" r="5" fill="#fff"/>
-<path d="M169 221q25-20 49-5M292 216q25-15 50 5" fill="none" stroke="#51405f" stroke-width="8" stroke-linecap="round"/>
-<path d="M226 317q30-30 60 0" fill="none" stroke="#a94f71" stroke-width="7" stroke-linecap="round"/>
-<path d="M180 318q-19 12-32 0M332 318q19 12 32 0" fill="none" stroke="#df8e9c" stroke-width="7" stroke-linecap="round" opacity=".7"/>
-<path d="M203 386v45m106-45v45" stroke="#d3b5ff" stroke-width="7" stroke-linecap="round"/><circle cx="203" cy="436" r="7" fill="#f0d49a"/><circle cx="309" cy="436" r="7" fill="#f0d49a"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Mimox fennec mascot">
+<defs><linearGradient id="fur" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f4c98d"/><stop offset="1" stop-color="#d98b5c"/></linearGradient><linearGradient id="ear" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f4a6a0"/><stop offset="1" stop-color="#c86e77"/></linearGradient><linearGradient id="scarf" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#75b7a5"/><stop offset="1" stop-color="#397c75"/></linearGradient></defs>
+<circle cx="120" cy="120" r="112" fill="#eaf2e8"/>
+<path d="M58 91 31 18Q27 7 39 12L91 51M182 91l27-73q4-11-8-6l-52 39" fill="url(#fur)" stroke="#9d674e" stroke-width="4" stroke-linejoin="round"/>
+<path d="m48 48 34 18-15 20zm144 0-34 18 15 20z" fill="url(#ear)"/>
+<path d="M48 116Q48 66 120 62q72 4 72 54v35q0 59-72 64-72-5-72-64z" fill="url(#fur)" stroke="#9d674e" stroke-width="4"/>
+<path d="M67 151q16-26 53-13 37-13 53 13-5 42-53 47-48-5-53-47" fill="#fff0d9"/>
+<ellipse cx="92" cy="121" rx="9" ry="13" fill="#263b3b"/><ellipse cx="148" cy="121" rx="9" ry="13" fill="#263b3b"/>
+<circle cx="95" cy="116" r="3" fill="white"/><circle cx="151" cy="116" r="3" fill="white"/>
+<path d="M112 145q8-8 16 0-8 10-16 0" fill="#5c4540"/>
+<path d="M106 168q14-15 28 0" fill="none" stroke="#8c4d4a" stroke-width="4" stroke-linecap="round"/>
+<path d="M68 189q52 29 104 0l12 31H56z" fill="url(#scarf)" stroke="#285f5b" stroke-width="3"/>
+<path d="m120 194 7 9-7 9-7-9z" fill="#f1d58a"/><path d="M108 203h24" stroke="#f1d58a" stroke-width="2"/>
+
+
 </svg>
