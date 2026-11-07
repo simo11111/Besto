@@ -44,7 +44,7 @@ export function InstallAppBanner() {
 
   if (installed) return null;
   return <section className="install-app-banner" aria-label="تثبيت تطبيق MIMOX">
-    <img src="/mimox-icon.svg" alt="شعار MIMOX" />
+    <img src="/mimox-icon.svg?v=20261107b" alt="شعار MIMOX" />
     <div className="install-app-copy">
       <b>خلي MIMOX ديما معاك</b>
       <span>ثبّت التطبيق على هاتفك أو حاسوبك، وادخل ليه مباشرة من الشاشة الرئيسية.</span>
@@ -61,7 +61,7 @@ export function InstallAppBanner() {
 }
 
 export function SetupRequiredScreen() {
-  return <main className="shell"><header className="topbar"><div className="brand"><img className="brand-icon" src="/mimox-icon.svg" alt=""/>MIMOX</div></header><section className="setup-card"><ShieldCheck/><h1>خاص ربط Supabase</h1><p>خاصنا Project URL و Publishable Key فـ .env. ما تحطش service-role key فالواجهة.</p></section></main>;
+  return <main className="shell"><header className="topbar"><div className="brand"><img className="brand-icon" src="/mimox-icon.svg?v=20261107b" alt=""/>MIMOX</div></header><section className="setup-card"><ShieldCheck/><h1>خاص ربط Supabase</h1><p>خاصنا Project URL و Publishable Key فـ .env. ما تحطش service-role key فالواجهة.</p></section></main>;
 }
 
 type AuthScreenProps = NoticeProps & {
