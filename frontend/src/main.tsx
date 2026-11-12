@@ -4,6 +4,7 @@ import App from './App';
 import './style.css';
 import './features/shared/header-polish.css';
 import './features/shared/social-polish.css';
+import './features/games/haunted-camp.css';
 import { unlockGameAudio } from './lib/audio';
 ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);
 window.addEventListener('pointerdown', unlockGameAudio, { once: true, passive: true });
