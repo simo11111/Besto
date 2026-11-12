@@ -25,7 +25,7 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const refreshRef = useRef<() => Promise<void>>(async () => undefined);
-  const effectiveGameId = gameId ?? state?.id ?? null;
+  const effectiveGameId = state?.id ?? gameId ?? null;
 
   const refresh = useCallback(async () => {
     if (!supabase || !effectiveGameId || !userId) return;
