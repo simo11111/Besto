@@ -215,7 +215,7 @@ export default function HauntedCampGame(props: Props) {
       if (event.event_type === 'bot_chat' && !event.payload.system && soundOn && event.payload.message) { const botName=event.payload.system?'الراوي':state.players.find(player=>player.user_id===String(event.payload.bot_user_id))?.username||'واحد من البوتات'; speakHauntedAnnouncement(botName+' كيقول: '+String(event.payload.message)); }
       if (event.event_type === 'vote_tied' && soundOn) speakHauntedAnnouncement('وقع تعادل فالتصويت. غادي نعاودو التصويت بين المشتبه فيهم.');
       if (event.event_type === 'vote_tie_resolved' && soundOn) speakHauntedAnnouncement('بقى التعادل، وما خرج حتى واحد من المخيم.');
-      if (event.event_type === 'player_ejected') { playHauntedSound('eject'); const id=String(event.payload.ejected_user_id||''); const name=state.players.find(player=>player.user_id===id)?.username||'واحد من السكان'; if(soundOn)void playHauntedAnnouncementSegment('ejected','تحسم التصويت، وخرج '+name+' من المخيم.').then(()=>speakHauntedAnnouncement(name)); }
+      if (event.event_type === 'player_ejected') { playHauntedSound('eject'); const id=String(event.payload.ejected_user_id||''); const name=state.players.find(player=>player.user_id===id)?.username||'واحد من السكان'; if(soundOn)void playHauntedAnnouncementSegment('ejected','تحسم التصويت، وخرج '+name+' من المخيم.'); }
       if (event.event_type === 'game_ended') { onRewardsUpdated();  }
     });
     previousEventCountRef.current = count;
