@@ -6,6 +6,7 @@ export type HauntedPlayer = {
   username: string;
   avatar_url: string | null;
   is_alive: boolean;
+  is_bot?: boolean;
 };
 export type HauntedEvent = {
   id: string;
