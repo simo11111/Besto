@@ -36,6 +36,7 @@ let announcementAudio: HTMLAudioElement | null = null;
 let announcementFinish: (() => void) | null = null;
 let announcementRun = 0;
 let announcementsUrl: string | null = null;
+let quickAnnouncementsUrl: string | null = null;
 let announcementRequest: Promise<string | null> | null = null;
 let currentSpeechResolve: (()=>void) | null = null;
 export function stopHauntedNarrator() {
@@ -122,7 +123,7 @@ export function speakHauntedAnnouncement(text: string): Promise<void> {
 
 
 
-export type HauntedAnnouncementSegment = 'night' | 'morning_safe' | 'morning_death' | 'discussion' | 'voting' | 'tie' | 'ejected' | 'win_villagers' | 'win_haunter';
+export type HauntedAnnouncementSegment = 'night' | 'night_quick' | 'morning_safe' | 'morning_death' | 'discussion' | 'voting' | 'tie' | 'ejected' | 'win_villagers' | 'win_haunter';
 
 const announcementSegments: Record<HauntedAnnouncementSegment, [number, number]> = {
   night: [30.98, 42.40],
@@ -144,8 +145,9 @@ async function getAnnouncementsUrl(): Promise<string | null> {
       if (!base) return null;
       const response = await fetch(base + '/functions/v1/cache-haunted-announcements', { method: 'GET', cache: 'no-store' });
       if (!response.ok) return null;
-      const result = await response.json() as { ready?: boolean; url?: string };
+      const result = await response.json() as { ready?: boolean; url?: string; quick_url?: string };
       if (result.ready && typeof result.url === 'string') announcementsUrl = result.url;
+      if (result.ready && typeof result.quick_url === 'string') quickAnnouncementsUrl = result.quick_url;
       return announcementsUrl;
     })().catch(() => null).finally(() => { announcementRequest = null; });
   }
@@ -165,8 +167,9 @@ export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncemen
     finishPrevious?.();
   }
 
-  const url = await getAnnouncementsUrl();
+  const masterUrl = await getAnnouncementsUrl();
   if (currentRun !== announcementRun) return;
+  const url = segment === 'night_quick' ? quickAnnouncementsUrl : masterUrl;
   if (!url) {
     await speakHauntedAnnouncement(fallbackText);
     if (afterText) await speakHauntedAnnouncement(afterText);
