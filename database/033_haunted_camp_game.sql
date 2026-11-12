@@ -541,6 +541,7 @@ begin
  select hg.id into v_game
  from public.haunted_games hg
  join public.haunted_players hp on hp.game_id=hg.id
+ join public.room_members rm on rm.room_id=hg.room_id and rm.user_id=v_user
  where hg.room_id=p_room_id and hp.user_id=v_user
  order by hg.created_at desc limit 1;
  return v_game;
