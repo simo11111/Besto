@@ -40,7 +40,10 @@ function speakNext() {
   utterance.rate = 0.86;
   utterance.pitch = 0.92;
   utterance.volume = 1;
+  let begun = false;
   const begin = () => {
+    if (begun) return;
+    begun = true;
     const voices = synth.getVoices();
     const voice = voices.find(item => item.lang.toLowerCase() === 'ar-ma')
       || voices.find(item => item.lang.toLowerCase().startsWith('ar'))
