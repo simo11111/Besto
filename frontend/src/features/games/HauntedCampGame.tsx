@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Shield, Skull, Moon, Sun, Volume2, VolumeX, Clock3, Users, MessageCircle, Mic, MicOff, Trophy, Sparkles, RefreshCw } from 'lucide-react';
 import { useHauntedGame } from '../../hooks/useHauntedGame';
-import { playHauntedSound, startNightAmbience, stopNightAmbience, startMorningAmbience, stopMorningAmbience, preloadHauntedSounds, setHauntedAudioMuted } from '../../lib/hauntedAudio';
+import { playHauntedSound, startNightAmbience, stopNightAmbience, startMorningAmbience, stopMorningAmbience, preloadHauntedSounds, setHauntedAudioMuted, speakHauntedAnnouncement } from '../../lib/hauntedAudio';
 import { getSoundEnabled, setSoundEnabled as persistSoundEnabled } from '../../lib/audio';
 import type { HauntedRole } from '../../types/haunted';
 import { getHauntedBotCount } from './hauntedNpcRoster';
@@ -60,7 +60,7 @@ export default function HauntedCampGame(props: Props) {
     const phase = state?.status ?? null;
     if (!phase || phase === previousPhase) return;
     if (phase === 'night') { startNightAmbience(); onNightMute(true); }
-    else if (phase === 'morning') { stopNightAmbience(); startMorningAmbience(); onNightMute(true); if (state?.events.some(e => e.event_type === 'night_resolved')) { const latest = [...state.events].reverse().find(e => e.event_type === 'night_resolved'); if (latest?.payload.killed_user_id) playHauntedSound('death'); else playHauntedSound('save'); } }
+    else if (phase === 'morning') { stopNightAmbience(); startMorningAmbience(); onNightMute(true); const latest = [...(state?.events ?? [])].reverse().find(e => e.event_type === 'night_resolved'); const killedId = typeof latest?.payload.killed_user_id === 'string' ? latest.payload.killed_user_id : null; if (killedId) { playHauntedSound('death'); const victim = state?.players.find(player => player.user_id === killedId)?.username || 'واحد من السكان'; speakHauntedAnnouncement('طلع الصباح يا سكان الخيمة. لقينا '+victim+' خرج من المخيم هاد الليلة.'); } else { playHauntedSound('save'); speakHauntedAnnouncement('طلع الصباح يا سكان الخيمة. الليلة دازت بسلام، ما مات حتى واحد.'); } }
     else { stopNightAmbience(); stopMorningAmbience(); onNightMute(false); }
     if (phase === 'ended') playHauntedSound(state?.winner === 'villagers' ? 'win' : 'lose');
     setPreviousPhase(phase);
