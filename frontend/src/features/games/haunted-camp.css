@@ -691,3 +691,50 @@
  .haunted-chat-actions>button[type=submit]{min-width:52px;padding-inline:8px}
  .haunted-voice-presence{font-size:9px}
 }
+
+
+/* v34 — compact narrator ribbon; the camp remains visible while the voice speaks. */
+.haunted-narrator-toast{
+  position:relative;z-index:15;display:flex;align-items:center;gap:10px;
+  width:min(100%,820px);min-height:54px;margin:0 auto 8px;padding:8px 12px;
+  border:1px solid rgba(197,155,255,.3);border-radius:15px;
+  background:linear-gradient(105deg,rgba(20,15,32,.96),rgba(7,9,18,.96));
+  box-shadow:0 8px 22px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.045);
+  backdrop-filter:blur(8px)
+}
+.haunted-narrator-toast-icon{width:32px;height:32px;flex:none;display:grid;place-items:center;border-radius:10px;background:rgba(153,91,205,.19);color:#e1c4ff}
+.haunted-narrator-toast>div{min-width:0;flex:1;display:grid;gap:2px}
+.haunted-narrator-toast>div>b{font-size:10px;color:#d8b6ff;font-weight:950}
+.haunted-narrator-toast>div>p{margin:0;color:#f3ebfb;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.haunted-narrator-toast-wave{display:flex;align-items:center;gap:3px;height:22px;flex:none}
+.haunted-narrator-toast-wave i{width:3px;height:8px;border-radius:4px;background:#c99bfa;animation:haunted-voice-pulse .6s ease-in-out infinite alternate}
+.haunted-narrator-toast-wave i:nth-child(2){height:14px;animation-delay:-.16s}
+.haunted-narrator-toast-wave i:nth-child(3){height:18px;animation-delay:-.29s}
+.haunted-narrator-toast-wave i:nth-child(4){height:11px;animation-delay:-.4s}
+.haunted-narrator-toast-wave i:nth-child(5){height:15px;animation-delay:-.22s}
+@keyframes haunted-voice-pulse{to{transform:scaleY(.5);opacity:.6}}
+.haunted-lobby-sound{display:inline-flex;align-items:center;justify-content:center;gap:7px;margin-top:12px;padding:8px 12px;border:1px solid rgba(192,145,255,.28);border-radius:11px;background:rgba(135,76,180,.16);color:#e7d3ff;font:inherit;font-size:11px;font-weight:850}
+.haunted-lobby-sound:hover{background:rgba(135,76,180,.26)}
+/* Layered flame tongues and warm ember core, using only transform/opacity animation. */
+.haunted-campfire i:after,.haunted-campfire b:after{
+  content:"";position:absolute;left:23%;right:23%;top:12%;bottom:9%;
+  border-radius:80% 20% 75% 25%;
+  background:linear-gradient(180deg,rgba(255,255,236,.98),rgba(255,224,127,.94) 34%,rgba(255,153,55,.52) 78%,transparent);
+  transform:scaleX(.58) rotate(-5deg);transform-origin:50% 90%;
+  filter:drop-shadow(0 0 7px rgba(255,244,194,.66));
+  animation:haunted-core-flame .38s ease-in-out infinite alternate
+}
+.haunted-campfire b:after{animation-delay:-.19s;transform:scaleX(.62) rotate(7deg)}
+@keyframes haunted-core-flame{from{transform:scaleX(.52) scaleY(.92) rotate(-5deg);opacity:.76}to{transform:scaleX(.76) scaleY(1.06) rotate(6deg);opacity:1}}
+.haunted-campfire:before{background:radial-gradient(ellipse,rgba(255,181,77,.38),rgba(255,87,30,.13) 46%,transparent 73%)!important}
+.haunted-camp-scene{background-color:#080a13}
+@media(max-width:520px){
+ .haunted-narrator-toast{min-height:48px;margin:0 auto 6px;padding:7px 8px;gap:7px;border-radius:12px}
+ .haunted-narrator-toast-icon{width:28px;height:28px}
+ .haunted-narrator-toast>div>b{font-size:9px}
+ .haunted-narrator-toast>div>p{font-size:10px;line-height:1.4}
+ .haunted-narrator-toast-wave{gap:2px}
+ .haunted-narrator-toast-wave i{width:2px}
+ .haunted-lobby-sound{font-size:10px;padding:7px 10px}
+}
+@media(prefers-reduced-motion:reduce){.haunted-narrator-toast-wave i,.haunted-campfire i:after,.haunted-campfire b:after{animation:none!important}}
