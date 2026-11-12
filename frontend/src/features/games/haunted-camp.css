@@ -31,3 +31,5 @@
 .haunted-end-panel.villagers-win:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.4;background-image:radial-gradient(circle,#e9c4ff 2px,transparent 3px),radial-gradient(circle,#ffd88e 2px,transparent 3px),radial-gradient(circle,#b78aff 2px,transparent 3px);background-size:61px 79px,83px 97px,113px 89px;background-position:0 0,25px 32px,48px 11px;animation:haunted-confetti 5s linear infinite}
 .haunted-end-panel.haunter-win:after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 70%,rgba(20,8,35,.38),transparent 58%);filter:blur(12px);animation:haunted-fog 8s ease-in-out infinite alternate}
 @keyframes haunted-confetti{from{transform:translateY(-12px)}to{transform:translateY(22px)}}
+
+.haunted-end-panel{position:relative;overflow:hidden}.haunted-end-panel>*{position:relative;z-index:1}.haunted-end-panel.villagers-win:before,.haunted-end-panel.haunter-win:after{z-index:0}
