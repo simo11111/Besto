@@ -10,4 +10,5 @@ describe('Haunted Camp NPC roster', () => {
     expect(getHauntedBotCount(4, true)).toBe(0);
   });
   it('returns zero for an empty lobby', () => expect(getHauntedBotCount(0, false)).toBe(0));
+  it('handles invalid counts safely', () => expect(getHauntedBotCount(Number.NaN, false)).toBe(0));
 });
