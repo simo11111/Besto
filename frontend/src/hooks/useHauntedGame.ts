@@ -18,7 +18,7 @@ type HookResult = {
   resolveVote: () => Promise<HauntedPublicResult | null>;
 };
 
-export function useHauntedGame(gameId: string | null, roomId: string, userId: string, isHost: boolean): HookResult {
+export function useHauntedGame(gameId: string | null, roomId: string, userId: string): HookResult {
   const [state, setState] = useState<HauntedState | null>(null);
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -66,14 +66,14 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
   const submitVote = useCallback((target: string) => callBoolean('submit_haunted_vote', { p_target: target }), [callBoolean]);
 
   const callResult = useCallback(async (name: string): Promise<HauntedPublicResult | null> => {
-    if (!supabase || !effectiveGameId || !isHost) return null;
+    if (!supabase || !effectiveGameId) return null;
     setBusy(true); setError('');
     const { data, error: rpcError } = await supabase.rpc(name, { p_game_id: effectiveGameId });
     setBusy(false);
     if (rpcError) { setError(rpcError.message); return null; }
     await refreshRef.current();
     return data as HauntedPublicResult;
-  }, [effectiveGameId, isHost]);
+  }, [effectiveGameId]);
   const resolveNight = useCallback(() => callResult('resolve_haunted_night'), [callResult]);
   const resolveVote = useCallback(() => callResult('resolve_haunted_vote'), [callResult]);
 
@@ -118,7 +118,7 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
   }, [state?.id]);
 
   useEffect(() => {
-    if (!state || !isHost || !state.phase_deadline_at || state.status === 'ended') return;
+    if (!state || !state.phase_deadline_at || state.status === 'ended') return;
     const deadline = new Date(state.phase_deadline_at).getTime();
     const timer = window.setTimeout(() => {
       if (state.status === 'night') void resolveNight();
@@ -126,7 +126,7 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
       else if (state.status === 'day') void resolveVote();
     }, Math.max(0, deadline - Date.now()) + 150);
     return () => window.clearTimeout(timer);
-  }, [state?.id, state?.status, state?.phase_deadline_at, state?.round, state?.vote_round, isHost, resolveNight, advanceMorning, resolveVote]);
+  }, [state?.id, state?.status, state?.phase_deadline_at, state?.round, state?.vote_round, resolveNight, advanceMorning, resolveVote]);
 
   return { state, loading, busy, error, refresh, start, submitKill, submitProtection, resolveNight, advanceMorning, submitVote, resolveVote };
 }
