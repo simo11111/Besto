@@ -55,3 +55,12 @@ WebRTC mesh مناسب للمجموعات الصغيرة. STUN وحده لا ي�
 - CI كيشغل الاختبارات، TypeScript/Vite build، و`npm audit --audit-level=high`.
 
 **ملاحظة:** الصوت والصورة والـRealtime خاصهم اختبار يدوي بحسابات مستقلة؛ CI ما كيقدرش يعوض اختبار 4–10 لاعبين أو فحص WebRTC عبر شبكات مختلفة.
+
+
+## تحسين صوت وأنيميشن «ليلة فالخيمة»
+- `audioManager.ts` كيشغّل MP3 محلية من `public/sounds` مع fade-in/fade-out للمؤثرات المحيطية، وWeb Audio fallback إلا الملف مازال ما توفرش.
+- `hauntedAudio.ts` كيربط أصوات الليل والصباح والقتل والحماية والتصويت والطرد والنهاية.
+- preload كيتدار ملي كتفتح اللعبة، وService Worker v13 كيخزّن ملفات الصوت اللي كتتحمّل باش تبقى متاحة Offline.
+- Framer Motion كيتحكم فـ flip ديال الدور، انتقالات الليل والصباح، وهزة الموت وglow النجاة وconfetti الفوز؛ `useReducedMotion` كيعطّل الحركة الثقيلة.
+- PWA manifest تحدّث بالهوية اللونية الجديدة، وcache version تزاد باش يتفرض تحديث Service Worker.
+- ملفات MP3 الأصلية خاصها تضاف بأسماء الملفات الموجودة فـ `frontend/public/sounds/README.md`، مع توثيق المصدر والرخصة فـ `ATTRIBUTION.md`. ما ضفتش ملفات صامتة أو مزيفة.

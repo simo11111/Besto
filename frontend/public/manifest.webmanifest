@@ -3,16 +3,17 @@
   "short_name": "ليلة فالخيمة",
   "lang": "ar-MA",
   "dir": "rtl",
-  "start_url": "/",
+  "id": "/",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
-  "background_color": "#111026",
-  "theme_color": "#21133f",
+  "background_color": "#0a0618",
+  "theme_color": "#8b5cf6",
   "description": "لعبة اجتماعية مغربية: الفقيه والمسكون. جمع صحابك، كشف المسكون ونجّي المخيم.",
   "icons": [
-    { "src": "/night-camp-icon.svg?v=20261112a", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "/night-camp-icon.svg?v=20261112a", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+    { "src": "/night-camp-icon.svg?v=20261112b", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/night-camp-icon.svg?v=20261112b", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
   ],
   "prefer_related_applications": false
 }
