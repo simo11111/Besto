@@ -738,3 +738,10 @@
  .haunted-lobby-sound{font-size:10px;padding:7px 10px}
 }
 @media(prefers-reduced-motion:reduce){.haunted-narrator-toast-wave i,.haunted-campfire i:after,.haunted-campfire b:after{animation:none!important}}
+
+
+/* Microphone status: a quiet green plus is the closed/off state. */
+.haunted-inline-mic.is-off{border-color:rgba(113,230,147,.45)!important;background:rgba(33,123,72,.2)!important;color:#b9ffd0!important}
+.haunted-mic-off-icon{position:relative;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px}
+.haunted-mic-off-icon>svg:last-child{position:absolute;right:-5px;top:-5px;width:10px;height:10px;padding:1px;border-radius:50%;background:#8be6a5;color:#0b2516;stroke-width:3}
+.haunted-inline-mic.is-active{border-color:rgba(255,169,169,.46)!important;background:rgba(144,47,63,.22)!important;color:#ffd5dc!important}
