@@ -1,5 +1,5 @@
 import type { FormEvent, RefObject } from 'react';
-import { ChevronLeft, Flame, Gamepad2, Gem, Star, Trophy } from 'lucide-react';
+import { ChevronLeft, Flame, Gamepad2, Star, Trophy } from 'lucide-react';
 import { Achievement, PageHead, Stat } from '../shared/ui';
 import type { Item, Profile } from '../shared/types';
 import { xpForNext, xpProgress } from './progression';
@@ -42,7 +42,6 @@ export default function ProfileScreen({ profile, items, inventory, profileName, 
       </div>
       <div className="profile-currencies">
         <span><b className="currency-coin">C</b>{profile.coins.toLocaleString('en-US')}</span>
-        <span><Gem size={16} />{(profile.gems || 0).toLocaleString('en-US')}</span>
       </div>
     </div>
     <section className="frame-selector">
@@ -68,7 +67,7 @@ export default function ProfileScreen({ profile, items, inventory, profileName, 
       <Achievement icon={<Gamepad2 />} name="أول لعيبة" desc="كمل أول لعبة" unlocked={profile.games_played > 0} />
       <Achievement icon={<Trophy />} name="أول فوز" desc="ربح أول مباراة" unlocked={profile.wins > 0} />
       <Achievement icon={<Flame />} name="مواظب" desc="دخل 3 أيام متتابعة" unlocked={profile.streak_days >= 3} />
-      <Achievement icon={<Gem />} name="جامع الزينة" desc="شري أول عنصر" unlocked={inventory.length > 0} />
+      <Achievement icon={<Star />} name="جامع الزينة" desc="شري أول عنصر" unlocked={inventory.length > 0} />
     </div></section>
     <button className="logout-button" onClick={onSignOut}>تسجيل الخروج من الحساب</button>
   </>;
