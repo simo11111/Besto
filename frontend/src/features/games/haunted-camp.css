@@ -745,3 +745,24 @@
 .haunted-mic-off-icon{position:relative;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px}
 .haunted-mic-off-icon>svg:last-child{position:absolute;right:-5px;top:-5px;width:10px;height:10px;padding:1px;border-radius:50%;background:#8be6a5;color:#0b2516;stroke-width:3}
 .haunted-inline-mic.is-active{border-color:rgba(255,169,169,.46)!important;background:rgba(144,47,63,.22)!important;color:#ffd5dc!important}
+
+
+/* Private night-action prompt stays in the open center of the camp ring. */
+.haunted-night-role-hint{
+  position:absolute;z-index:4;left:50%;top:72%;transform:translate(-50%,-50%);
+  display:flex;align-items:center;gap:7px;width:max-content;max-width:44%;
+  padding:8px 11px;border:1px solid rgba(222,185,255,.3);border-radius:13px;
+  background:rgba(8,9,17,.9);box-shadow:0 5px 18px rgba(0,0,0,.52),inset 0 1px rgba(255,255,255,.06);
+  color:#f4eaff;pointer-events:none;backdrop-filter:blur(5px)
+}
+.haunted-night-role-hint span{display:grid;place-items:center;color:#e9c9ff;flex:none}
+.haunted-night-role-hint b{font-size:clamp(9px,2vw,12px);font-weight:950;line-height:1.4;text-align:center}
+.haunted-night-role-hint.is-haunter{border-color:rgba(255,126,143,.36)}
+.haunted-night-role-hint.is-haunter span{color:#ffb0bd}
+.haunted-night-role-hint.is-faqih{border-color:rgba(155,255,193,.35)}
+.haunted-night-role-hint.is-faqih span{color:#b8ffd0}
+@media(max-width:520px){
+ .haunted-night-role-hint{top:73%;max-width:48%;padding:6px 8px;gap:5px;border-radius:10px}
+ .haunted-night-role-hint b{font-size:9px}
+ .haunted-night-role-hint span svg{width:14px;height:14px}
+}
