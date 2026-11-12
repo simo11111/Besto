@@ -31,6 +31,7 @@ export type HauntedState = {
   roles: Array<{ user_id: string; role: HauntedRole }>;
   night_actions_ready: boolean;
   vote_count: number;
+  voting_open: boolean;
 };
 export type HauntedPublicResult = {
   killed_user_id?: string | null;
