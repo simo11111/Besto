@@ -23,6 +23,11 @@ export function playHauntedSound(name: Exclude<HauntedSound, 'night'> | 'night')
 }
 export function setHauntedAudioMuted(muted: boolean) {
   audioManager.setMuted(muted);
+  if (muted) {
+    speechQueue = [];
+    speechBusy = false;
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+  }
 }
 
 /** Queue spoken announcements so one bot line never cuts off the previous one. */
@@ -46,8 +51,8 @@ function speakNext() {
     begun = true;
     const voices = synth.getVoices();
     const voice = voices.find(item => item.lang.toLowerCase() === 'ar-ma')
-      || voices.find(item => item.lang.toLowerCase().startsWith('ar'))
-;
+      || voices.find(item => item.lang.toLowerCase().startsWith('ar'));
+
     if (voice) utterance.voice = voice;
     utterance.onend = () => { speechBusy = false; window.setTimeout(speakNext, 180); };
     utterance.onerror = () => { speechBusy = false; window.setTimeout(speakNext, 180); };
