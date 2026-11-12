@@ -9,6 +9,7 @@ export type HauntedPlayer = {
   gender?: 'male' | 'female';
   is_alive: boolean;
   is_bot?: boolean;
+  votes_received?: number;
 };
 export type HauntedEvent = {
   id: string;
@@ -28,6 +29,7 @@ export type HauntedState = {
   phase_deadline_at: string | null;
   role: HauntedRole;
   my_vote: string | null;
+  my_night_target: string | null;
   players: HauntedPlayer[];
   events: HauntedEvent[];
   roles: Array<{ user_id: string; role: HauntedRole }>;
