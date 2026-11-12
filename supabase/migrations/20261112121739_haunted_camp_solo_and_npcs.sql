@@ -201,7 +201,7 @@ begin
  update public.rooms set status='playing',last_activity_at=now() where id=p_room_id;
  insert into public.haunted_players(game_id,user_id,role,is_bot)
  select v_game,rm.user_id,'villager',false from public.room_members rm where rm.room_id=p_room_id;
- for v_bot in select user_id from public.haunted_npcs order by user_id limit (v_total-v_humans) loop
+ for v_bot in select user_id from public.haunted_npcs order by random() limit (v_total-v_humans) loop
   insert into public.haunted_players(game_id,user_id,role,is_bot) values(v_game,v_bot.user_id,'villager',true);
  end loop;
  select user_id into v_haunter from public.haunted_players where game_id=v_game order by random() limit 1;
