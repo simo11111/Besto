@@ -9,7 +9,6 @@ export type HauntedPlayer = {
   gender?: 'male' | 'female';
   is_alive: boolean;
   is_bot?: boolean;
-  votes_received?: number;
 };
 export type HauntedEvent = {
   id: string;
