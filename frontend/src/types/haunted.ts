@@ -30,6 +30,7 @@ export type HauntedState = {
   role: HauntedRole;
   my_vote: string | null;
   my_night_target: string | null;
+  night_haunter_chosen: boolean;
   players: HauntedPlayer[];
   events: HauntedEvent[];
   roles: Array<{ user_id: string; role: HauntedRole }>;
