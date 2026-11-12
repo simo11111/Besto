@@ -24,3 +24,18 @@ export function playHauntedSound(name: Exclude<HauntedSound, 'night'> | 'night')
 export function setHauntedAudioMuted(muted: boolean) {
   audioManager.setMuted(muted);
 }
+
+/** Speak short phase announcements with the device's Arabic voice when available. */
+export function speakHauntedAnnouncement(text: string) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window) || !text.trim()) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'ar-MA';
+  utterance.rate = 0.92;
+  utterance.pitch = 0.92;
+  const voices = window.speechSynthesis.getVoices();
+  const arabicVoice = voices.find(voice => voice.lang.toLowerCase().startsWith('ar-ma'))
+    || voices.find(voice => voice.lang.toLowerCase().startsWith('ar'));
+  if (arabicVoice) utterance.voice = arabicVoice;
+  window.speechSynthesis.speak(utterance);
+}
