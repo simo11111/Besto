@@ -143,7 +143,7 @@ begin
  end if;
  select count(*) into v_count from public.room_members where room_id=p_room_id;
  if v_count<4 or v_count>10 then raise exception 'خاص يكونو بين 4 و10 لاعبين'; end if;
- if p_quick_mode and v_count<4 then raise exception 'الطور السريع خاصو 4 لاعبين على الأقل'; end if;
+ if p_quick_mode and v_count<>4 then raise exception 'الطور السريع خاصو 4 لاعبين بالضبط'; end if;
  if not p_quick_mode and v_count<5 then raise exception 'الطور العادي خاصو 5 لاعبين على الأقل؛ مع 4 اختار الطور السريع'; end if;
  if exists(select 1 from public.haunted_games where room_id=p_room_id and status<>'ended') then raise exception 'كاينة لعبة ديجا خدامة فهاد الغرفة'; end if;
  if exists(select 1 from public.game_sessions where room_id=p_room_id and status='active') then raise exception 'ساليو اللعبة اللي خدامة قبل';
