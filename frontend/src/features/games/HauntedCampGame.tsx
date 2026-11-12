@@ -167,7 +167,7 @@ export default function HauntedCampGame(props: Props) {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, []);
-  const presentNarration = async (key: string, text: string, segment?: 'night' | 'morning_safe' | 'morning_death' | 'discussion' | 'voting' | 'tie' | 'ejected' | 'win_villagers' | 'win_haunter', afterSegmentText?: string) => {
+  const presentNarration = async (key: string, text: string, segment?: 'night' | 'night_quick' | 'morning_safe' | 'morning_death' | 'discussion' | 'voting' | 'tie' | 'ejected' | 'win_villagers' | 'win_haunter', afterSegmentText?: string) => {
     narratorRunRef.current = key;
     setNarratorText(text);
     setNarratorVisible(true);
