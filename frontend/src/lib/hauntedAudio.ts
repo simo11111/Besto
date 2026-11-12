@@ -87,8 +87,8 @@ function speakNext() {
   speechBusy = true;
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'ar-MA';
-  utterance.rate = 0.9;
-  utterance.pitch = 0.82;
+  utterance.rate = 0.86;
+  utterance.pitch = 0.72;
   utterance.volume = 1;
   let begun = false;
   const begin = () => {
@@ -188,7 +188,7 @@ export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncemen
     announcementAudio = audio;
     audio.preload = 'auto';
     audio.volume = 0.98;
-    audio.playbackRate = segment === 'faqih_awake' ? 0.9 : 0.93;
+    audio.playbackRate = segment === 'faqih_awake' ? 0.88 : 0.9;
     let finished = false;
     let playbackStarted = false;
     const finish = (ok: boolean) => {
