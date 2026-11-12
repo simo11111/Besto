@@ -1,6 +1,8 @@
 import { audioManager, type HauntedSound } from './audioManager';
 import { getSoundEnabled } from './audio';
 
+export function unlockHauntedNarrator() { if (typeof window !== 'undefined' && 'speechSynthesis' in window) { try { window.speechSynthesis.resume(); void window.speechSynthesis.getVoices(); } catch { /* Audio unlock is best-effort on mobile browsers. */ } } }
+
 export function startCampMusic() { audioManager.fadeIn('camp', 0.18); }
 export function stopCampMusic() { audioManager.stop('camp'); }
 
@@ -54,6 +56,7 @@ let speechBusy = false;
 function speakNext() {
   if (typeof window === 'undefined' || !('speechSynthesis' in window) || speechBusy || !speechQueue.length) return;
   const synth = window.speechSynthesis;
+  if (synth.paused) synth.resume();
   const item = speechQueue.shift();
   if (!item) return;
   const text = item.text;
@@ -94,5 +97,5 @@ function speakNext() {
 
 export function speakHauntedAnnouncement(text: string): Promise<void> {
   if(typeof window==='undefined'||!('speechSynthesis'in window)||!text.trim())return Promise.resolve();
-  return new Promise(resolve=>{speechQueue.push({text:text.trim(),resolve});if(speechQueue.length>8){const dropped=speechQueue.splice(0,speechQueue.length-8);dropped.forEach(item=>item.resolve());}speakNext();});
+  return new Promise(resolve=>{window.speechSynthesis.resume();speechQueue.push({text:text.trim(),resolve});if(speechQueue.length>8){const dropped=speechQueue.splice(0,speechQueue.length-8);dropped.forEach(item=>item.resolve());}speakNext();});
 }
