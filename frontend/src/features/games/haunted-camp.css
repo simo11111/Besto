@@ -344,3 +344,31 @@
 .haunted-camp-chat .haunted-chat-line.is-system b{color:#ffdc9a}
 .haunted-camp-chat .haunted-voice-box>div{display:flex;align-items:center;gap:8px}
 .haunted-camp-chat .haunted-voice-box button{border:1px solid rgba(197,155,255,.26);border-radius:11px;background:rgba(127,77,169,.2);color:#ead9ff;padding:9px 12px;font:inherit;font-size:11px;font-weight:800}
+
+/* Production camp scene polish: layered flame, ember glow and cinematic phase banners. */
+.haunted-camp-scene{background:radial-gradient(ellipse at 50% 78%,rgba(255,133,48,.22),transparent 31%),radial-gradient(ellipse at 50% 100%,rgba(113,69,151,.16),transparent 52%),linear-gradient(180deg,#070916 0%,#111329 54%,#171226 100%);box-shadow:inset 0 0 70px rgba(0,0,0,.46),inset 0 -26px 58px rgba(255,115,42,.07),0 24px 60px rgba(0,0,0,.35)}
+.haunted-camp-scene:before{opacity:.85;background:radial-gradient(1px 1px at 12% 18%,#fff 99%,transparent),radial-gradient(1px 1px at 82% 22%,#d9baff 99%,transparent),radial-gradient(2px 2px at 63% 12%,#fff 99%,transparent),radial-gradient(1px 1px at 30% 34%,#fff 99%,transparent),radial-gradient(1px 1px at 46% 13%,#fff 99%,transparent),radial-gradient(1px 1px at 91% 46%,#d8c4ff 99%,transparent);animation:haunted-star-drift 18s linear infinite}
+.haunted-scene-moon{background:radial-gradient(circle at 35% 30%,#fff8dc,#ead9a8 72%);box-shadow:0 0 18px rgba(255,231,175,.45),0 0 54px rgba(255,221,153,.18)}
+.haunted-scene-tent{background:linear-gradient(110deg,#9a65c4 0%,#61347f 35%,#2d1c47 72%,#21162f 100%);filter:drop-shadow(0 12px 18px rgba(0,0,0,.75)) drop-shadow(0 0 18px rgba(167,100,231,.2))}
+.haunted-scene-tent:after{background:linear-gradient(180deg,#1b1229,#090a15)}
+.haunted-scene-tent span{height:3px;background:linear-gradient(90deg,transparent,#e7c9ff,transparent);box-shadow:0 0 12px rgba(205,154,255,.7)}
+.haunted-campfire{width:84px;height:104px;filter:drop-shadow(0 0 18px rgba(255,120,40,.28))}
+.haunted-campfire:before{inset:18px -42px -12px;background:radial-gradient(ellipse,rgba(255,130,43,.46),rgba(229,72,30,.14) 42%,transparent 72%);filter:blur(21px);animation:haunted-fire-pulse 1.1s ease-in-out infinite alternate}
+.haunted-campfire i,.haunted-campfire b{bottom:12px;width:14px;border-radius:82% 12% 76% 18%;background:linear-gradient(180deg,#fff8c8 0%,#ffe17c 18%,#ff9b36 54%,#ec4c25 82%,rgba(174,42,27,.2) 100%);box-shadow:0 0 10px #ffb34e,0 0 25px rgba(255,100,35,.8),0 0 45px rgba(255,76,28,.28);animation:haunted-fire-flicker .46s ease-in-out infinite alternate}
+.haunted-campfire i{height:66px;transform:rotate(18deg);transform-origin:bottom}
+.haunted-campfire b{height:51px;width:11px;transform:rotate(-23deg);animation-delay:-.23s}
+.haunted-campfire span{width:68px;height:11px;bottom:2px;background:linear-gradient(180deg,#87563a,#4c3028 70%,#281c20);box-shadow:0 5px 0 #21171b,0 0 14px rgba(255,114,42,.28)}
+.haunted-campfire span:before,.haunted-campfire span:after{content:"";position:absolute;bottom:22px;left:50%;width:18px;height:30px;border-radius:50%;background:rgba(210,205,220,.12);filter:blur(9px);animation:haunted-smoke-rise 2.8s ease-out infinite}
+.haunted-campfire span:after{margin-left:9px;animation-delay:-1.4s;scale:.7}
+.haunted-campfire:after{filter:drop-shadow(0 0 6px #ffb347);animation:haunted-embers 1.05s ease-in-out infinite alternate}
+.haunted-phase-banner{position:relative;overflow:hidden;border:1px solid rgba(211,173,255,.3);border-radius:19px;background:linear-gradient(110deg,rgba(38,24,58,.96),rgba(17,18,39,.96) 55%,rgba(48,26,59,.94));box-shadow:inset 0 1px rgba(255,255,255,.09),0 12px 32px rgba(0,0,0,.28),0 0 24px rgba(151,91,206,.1)}
+.haunted-phase-banner:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 22%,rgba(255,255,255,.075) 48%,transparent 70%);transform:translateX(-120%);animation:haunted-banner-sheen 6s ease-in-out infinite}
+.haunted-role-cover,.haunted-vote-panel,.haunted-night-panel,.haunted-morning-panel,.haunted-end-panel{box-shadow:inset 0 1px rgba(255,255,255,.07),0 18px 44px rgba(0,0,0,.25),0 0 28px rgba(151,91,206,.09)}
+.haunted-vote-panel{border:1px solid rgba(197,157,239,.2);background:radial-gradient(ellipse at 50% 0,rgba(131,70,177,.18),transparent 65%),linear-gradient(145deg,rgba(28,22,45,.98),rgba(14,15,30,.98))}
+.haunted-camp-chat{border-top-color:rgba(203,161,255,.3);box-shadow:0 -16px 38px rgba(0,0,0,.38)}
+@keyframes haunted-fire-flicker{0%{scale:.88 .94;filter:brightness(.9) saturate(1.05)}45%{scale:1.06 1.02;filter:brightness(1.18) saturate(1.2)}100%{scale:.96 1.12;filter:brightness(1.28) saturate(1.25)}}
+@keyframes haunted-fire-pulse{from{opacity:.55;transform:scale(.9)}to{opacity:1;transform:scale(1.16)}}
+@keyframes haunted-smoke-rise{0%{transform:translate(-50%,8px) scale(.65);opacity:0}25%{opacity:.55}100%{transform:translate(-25%,-40px) scale(1.8);opacity:0}}
+@keyframes haunted-star-drift{0%{transform:translateY(0)}100%{transform:translateY(-8px)}}
+@keyframes haunted-banner-sheen{0%,22%{transform:translateX(-120%)}55%,100%{transform:translateX(120%)}}
+@media(prefers-reduced-motion:reduce){.haunted-camp-scene:before,.haunted-campfire i,.haunted-campfire b,.haunted-campfire:before,.haunted-campfire span:before,.haunted-campfire span:after,.haunted-phase-banner:after{animation:none!important}}
