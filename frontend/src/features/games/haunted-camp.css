@@ -291,3 +291,24 @@
 .haunted-role-reveal-list span{display:grid;place-items:center}
 .haunted-vote-panel h2{display:flex;align-items:center;gap:8px}
 @keyframes camp-target-pulse{0%{transform:scale(.8);opacity:.9}100%{transform:scale(1.28);opacity:0}}
+
+
+/* Anime campers: seated full-body characters instead of profile bubbles */
+.haunted-camp-ring{z-index:4}
+.haunted-camp-seat{appearance:none;-webkit-appearance:none;border:0;background:transparent;padding:0;color:#fff;cursor:default;width:84px;min-height:112px;gap:0;outline-offset:4px}
+.haunted-camp-seat:disabled{opacity:1}
+.haunted-camp-seat>span{display:grid;place-items:end center;width:82px;height:88px;overflow:visible;border:0;border-radius:0;background:transparent;box-shadow:none}
+.haunted-camp-seat .haunted-anime-art{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 5px 7px rgba(0,0,0,.6));transform-origin:50% 100%;animation:anime-camp-breathe 3.2s ease-in-out infinite}
+.haunted-camp-seat:nth-child(2n) .haunted-anime-art{animation-delay:-1.2s}
+.haunted-camp-seat b{max-width:88px;margin-top:-1px;padding:3px 7px;border:1px solid rgba(255,255,255,.09);border-radius:8px;background:rgba(7,8,17,.82);font-size:10px;box-shadow:0 3px 10px rgba(0,0,0,.3)}
+.haunted-camp-seat small{padding:1px 6px;border-radius:8px;background:rgba(7,8,17,.76);font-size:9px}
+.haunted-camp-seat.is-selectable{cursor:pointer}
+.haunted-camp-seat.is-selectable:hover .haunted-anime-art,.haunted-camp-seat.is-selected .haunted-anime-art{filter:drop-shadow(0 0 10px rgba(255,173,79,.85));transform:translateY(-3px) scale(1.06)}
+.haunted-camp-seat.is-selected b{border-color:#ffbd69;color:#ffe0aa}
+.haunted-camp-seat.is-out .haunted-anime-art{filter:grayscale(1) brightness(.55);opacity:.55}
+.haunted-campfire:after{content:"";position:absolute;left:50%;bottom:34px;width:54px;height:65px;transform:translateX(-50%);pointer-events:none;background:radial-gradient(2px 2px at 18% 78%,#ffd16a 98%,transparent),radial-gradient(1.5px 1.5px at 74% 54%,#ff9b45 98%,transparent),radial-gradient(1px 1px at 50% 24%,#ffe7a0 98%,transparent);animation:haunted-embers 1.7s ease-in-out infinite alternate}
+.haunted-camp-scene:after{content:"";position:absolute;z-index:1;left:50%;top:43%;width:130px;height:110px;transform:translate(-50%,-50%);pointer-events:none;background:radial-gradient(ellipse,rgba(255,151,61,.13),transparent 68%);filter:blur(10px);animation:campfire-glow 2.1s ease-in-out infinite alternate}
+@keyframes anime-camp-breathe{0%,100%{transform:translateY(0) rotate(-.5deg)}50%{transform:translateY(-2px) rotate(.5deg)}}
+@keyframes haunted-embers{from{opacity:.4;transform:translate(-50%,5px)}to{opacity:1;transform:translate(-50%,-7px)}}
+@media(max-width:520px){.haunted-camp-seat{width:68px;min-height:98px}.haunted-camp-seat>span{width:68px;height:76px}.haunted-camp-seat b{max-width:72px;font-size:9px}}
+@media(prefers-reduced-motion:reduce){.haunted-camp-seat .haunted-anime-art,.haunted-campfire:after,.haunted-camp-scene:after{animation:none!important}}
