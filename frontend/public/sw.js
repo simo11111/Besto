@@ -1,4 +1,4 @@
-const CACHE='mimox-shell-v24';
+const CACHE='mimox-shell-v25';
 const SOUND_ASSETS=[
   '/sounds/camp-theme.mp3','/sounds/night-ambience.mp3','/sounds/morning-birds.mp3','/sounds/death-sting.mp3',
   '/sounds/save-chime.mp3','/sounds/vote-click.mp3','/sounds/eject-whoosh.mp3',
