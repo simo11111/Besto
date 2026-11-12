@@ -262,3 +262,12 @@
  .haunted-voice-box{gap:8px}
  .haunted-bottom-bar{padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
 }
+
+.haunted-loading{display:flex;min-height:100dvh;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px}
+.haunted-loading h1{margin:10px 0 0;font-size:clamp(25px,7vw,34px);color:#f4eaff}
+.haunted-loading p{max-width:290px;color:#b9abc9;line-height:1.8}
+.haunted-loading-fire{position:relative;width:92px;height:108px;display:grid;place-items:end center}
+.haunted-loading-fire:before{content:"";position:absolute;inset:26px 0 0;border-radius:50%;background:rgba(255,119,38,.24);filter:blur(18px);animation:campfire-glow 1.1s ease-in-out infinite alternate}
+.haunted-loading-fire span,.haunted-loading-fire i,.haunted-loading-fire b{position:absolute;bottom:8px;width:19px;height:66px;border-radius:90% 10% 70% 20%;background:linear-gradient(180deg,#fff2b0,#ff9b36 48%,#d83e28);box-shadow:0 0 22px rgba(255,117,38,.7);transform:rotate(20deg);animation:campfire-flame .8s ease-in-out infinite alternate}
+.haunted-loading-fire i{height:49px;transform:rotate(-22deg);animation-delay:-.35s}
+.haunted-loading-fire b{height:31px;width:13px;transform:rotate(4deg);animation-delay:-.15s}
