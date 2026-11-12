@@ -2,6 +2,8 @@ import { getSoundEnabled } from './audio';
 
 export type HauntedSound = 'night' | 'morning' | 'death' | 'save' | 'vote' | 'eject' | 'win' | 'lose' | 'role';
 type SoundConfig = { file: string; volume: number; loop?: boolean };
+type AmbientVoice = { oscillators: OscillatorNode[]; gain: GainNode; filter: BiquadFilterNode };
+
 const SOUND_CONFIG: Record<HauntedSound, SoundConfig> = {
   night: { file: '/sounds/night-ambience.mp3', volume: 0.3, loop: true },
   morning: { file: '/sounds/morning-birds.mp3', volume: 0.3, loop: true },
@@ -16,8 +18,18 @@ const SOUND_CONFIG: Record<HauntedSound, SoundConfig> = {
 
 class AudioManager {
   private players = new Map<HauntedSound, HTMLAudioElement>();
+  private ambient = new Map<HauntedSound, AmbientVoice>();
   private muted = !getSoundEnabled();
   private context: AudioContext | null = null;
+
+  private getContext() {
+    if (typeof window === 'undefined') return null;
+    const Ctor = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!Ctor) return null;
+    this.context ||= new Ctor();
+    if (this.context.state === 'suspended') void this.context.resume().catch(() => undefined);
+    return this.context;
+  }
 
   private getPlayer(name: HauntedSound) {
     let player = this.players.get(name);
@@ -42,12 +54,16 @@ class AudioManager {
         player.load();
         if (player.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) {
           await new Promise<void>(resolve => {
-            const done = () => { player.removeEventListener('canplaythrough', done); player.removeEventListener('error', done); resolve(); };
+            const done = () => {
+              player.removeEventListener('canplaythrough', done);
+              player.removeEventListener('error', done);
+              resolve();
+            };
             player.addEventListener('canplaythrough', done, { once: true });
             player.addEventListener('error', done, { once: true });
           });
         }
-      } catch { /* fallback is generated locally if an optional MP3 is absent */ }
+      } catch { /* Optional licensed MP3s may be absent; synthesized audio remains available. */ }
     }));
   }
 
@@ -67,9 +83,9 @@ class AudioManager {
 
   fadeIn(name: HauntedSound, volume?: number) {
     if (this.muted || !getSoundEnabled()) return;
-    const player = this.getPlayer(name);
-    if (!player) { this.playFallback(name); return; }
     const target = Math.max(0, Math.min(1, volume ?? SOUND_CONFIG[name].volume));
+    const player = this.getPlayer(name);
+    if (!player) { this.startAmbientFallback(name, target); return; }
     player.loop = true;
     player.volume = 0;
     void player.play().then(() => {
@@ -81,7 +97,7 @@ class AudioManager {
         if (progress < 1) requestAnimationFrame(step);
       };
       requestAnimationFrame(step);
-    }).catch(() => this.playFallback(name));
+    }).catch(() => this.startAmbientFallback(name, target));
   }
 
   stop(name?: HauntedSound) {
@@ -98,39 +114,92 @@ class AudioManager {
       };
       requestAnimationFrame(fade);
     });
+    const ambientEntries = name ? [[name, this.ambient.get(name)] as const] : [...this.ambient.entries()];
+    ambientEntries.forEach(([key, voice]) => {
+      if (!voice) return;
+      const ctx = this.context;
+      if (!ctx) return;
+      voice.gain.gain.cancelScheduledValues(ctx.currentTime);
+      voice.gain.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.16);
+      window.setTimeout(() => {
+        voice.oscillators.forEach(oscillator => { try { oscillator.stop(); oscillator.disconnect(); } catch { /* already stopped */ } });
+        voice.filter.disconnect();
+        voice.gain.disconnect();
+        this.ambient.delete(key);
+      }, 750);
+    });
   }
 
   setMuted(muted: boolean) {
     this.muted = muted;
-    this.players.forEach(player => {
-      if (muted) { player.pause(); player.currentTime = 0; }
+    if (muted) {
+      this.players.forEach(player => { player.pause(); player.currentTime = 0; });
+      this.stop();
+    }
+  }
+
+  private startAmbientFallback(name: HauntedSound, volume: number) {
+    if (name !== 'night' && name !== 'morning') { this.playFallback(name); return; }
+    const ctx = this.getContext();
+    if (!ctx || this.ambient.has(name)) return;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = name === 'night' ? 520 : 1800;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.setTargetAtTime(Math.max(0.008, volume * 0.11), ctx.currentTime, 0.9);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    const frequencies = name === 'night' ? [55, 82.41, 110] : [261.63, 392, 523.25];
+    const oscillators = frequencies.map((frequency, index) => {
+      const oscillator = ctx.createOscillator();
+      oscillator.type = name === 'night' ? (index === 0 ? 'triangle' : 'sine') : 'sine';
+      oscillator.frequency.value = frequency;
+      oscillator.detune.value = index * (name === 'night' ? 4 : -3);
+      oscillator.connect(filter);
+      oscillator.start();
+      return oscillator;
     });
+    this.ambient.set(name, { oscillators, gain, filter });
   }
 
   private playFallback(name: HauntedSound) {
-    if (this.muted || typeof window === 'undefined') return;
-    const Ctor = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!Ctor) return;
-    this.context ||= new Ctor();
-    const ctx = this.context;
-    if (ctx.state === 'suspended') void ctx.resume().catch(() => undefined);
-    const notes: Record<HauntedSound, number[]> = {
-      night: [110, 82], morning: [523, 659, 784], death: [180, 82], save: [660, 880, 1174],
-      vote: [740], eject: [330, 120], win: [523, 659, 784, 1047], lose: [392, 294, 196], role: [392, 587, 784]
+    if (this.muted) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+    const patterns: Record<Exclude<HauntedSound, 'night' | 'morning'>, { notes: number[]; duration: number; wave: OscillatorType; gap: number }> = {
+      death: { notes: [196, 146.83, 82.41], duration: 0.48, wave: 'triangle', gap: 0.08 },
+      save: { notes: [659.25, 830.61, 987.77], duration: 0.42, wave: 'sine', gap: 0.09 },
+      vote: { notes: [740], duration: 0.09, wave: 'triangle', gap: 0 },
+      eject: { notes: [330, 220, 110], duration: 0.32, wave: 'sawtooth', gap: 0.07 },
+      win: { notes: [523.25, 659.25, 783.99, 1046.5], duration: 0.55, wave: 'sine', gap: 0.12 },
+      lose: { notes: [392, 293.66, 196, 146.83], duration: 0.58, wave: 'triangle', gap: 0.16 },
+      role: { notes: [392, 587.33, 783.99], duration: 0.34, wave: 'sine', gap: 0.11 }
     };
-    const gain = ctx.createGain();
-    gain.gain.value = name === 'night' || name === 'morning' ? 0.045 : 0.07;
-    gain.connect(ctx.destination);
-    const oscillators = notes[name].map((frequency, index) => {
+    if (name === 'night' || name === 'morning') { this.startAmbientFallback(name, 0.3); return; }
+    const pattern = patterns[name];
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0.0001, ctx.currentTime);
+    master.connect(ctx.destination);
+    pattern.notes.forEach((frequency, index) => {
+      const start = ctx.currentTime + index * pattern.gap;
       const oscillator = ctx.createOscillator();
-      oscillator.type = name === 'death' || name === 'eject' ? 'sawtooth' : 'sine';
-      oscillator.frequency.value = frequency;
-      oscillator.connect(gain);
-      oscillator.start(ctx.currentTime + index * 0.12);
-      oscillator.stop(ctx.currentTime + index * 0.12 + (name === 'night' ? 0.8 : 0.22));
-      return oscillator;
+      const envelope = ctx.createGain();
+      oscillator.type = pattern.wave;
+      oscillator.frequency.setValueAtTime(frequency, start);
+      if (name === 'death' || name === 'lose' || name === 'eject') {
+        oscillator.frequency.exponentialRampToValueAtTime(Math.max(45, frequency * 0.72), start + pattern.duration);
+      }
+      envelope.gain.setValueAtTime(0.0001, start);
+      envelope.gain.linearRampToValueAtTime(name === 'vote' ? 0.035 : 0.085, start + 0.018);
+      envelope.gain.exponentialRampToValueAtTime(0.0001, start + pattern.duration);
+      oscillator.connect(envelope);
+      envelope.connect(master);
+      oscillator.start(start);
+      oscillator.stop(start + pattern.duration + 0.025);
+      oscillator.addEventListener('ended', () => { oscillator.disconnect(); envelope.disconnect(); }, { once: true });
     });
-    window.setTimeout(() => { gain.disconnect(); oscillators.forEach(oscillator => oscillator.disconnect()); }, 1600);
+    window.setTimeout(() => master.disconnect(), 1800);
   }
 }
 
