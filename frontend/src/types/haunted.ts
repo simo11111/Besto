@@ -5,6 +5,8 @@ export type HauntedPlayer = {
   user_id: string;
   username: string;
   avatar_url: string | null;
+  avatar_key?: string | null;
+  gender?: 'male' | 'female';
   is_alive: boolean;
   is_bot?: boolean;
 };
