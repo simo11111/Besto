@@ -29,7 +29,7 @@ export function playHauntedSound(name: Exclude<HauntedSound, 'night'> | 'night')
 }
 let narratorAudio: HTMLAudioElement | null = null;
 let narratorFinish: (() => void) | null = null;
-export function stopHauntedNarrator() { if(narratorAudio){narratorAudio.pause();narratorAudio.currentTime=0;narratorAudio=null;} const finish=narratorFinish;narratorFinish=null;finish?.(); }
+export function stopHauntedNarrator() { if(typeof window!=='undefined'&&window.speechSynthesis)window.speechSynthesis.cancel(); if(narratorAudio){narratorAudio.pause();narratorAudio.currentTime=0;narratorAudio=null;} const finish=narratorFinish;narratorFinish=null;finish?.(); }
 export async function playHauntedNarrator(fallbackText: string): Promise<void> {
   if(typeof window==='undefined'||!getSoundEnabled())return;
   stopHauntedNarrator();
