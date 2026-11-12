@@ -91,7 +91,7 @@ export default function App(){
   }
  }
  async function openRoom(r:Room){if(r.game_key!=='haunted_camp'){notify('هاد الغرفة كتستعمل لعبة قديمة ما بقاتش متاحة. صايب غرفة جديدة ديال ليلة فالخيمة.');return;}playGameSound('join');setRoom(r);setCode(r.code);if(r.game_key)setSelectedGame(r.game_key);setMaxPlayers(r.max_players);setTab('room');await loadRoomData(r.id);}
- async function loadRoomData(id:string){if(!supabase)return;const snapshot=await fetchRoomSnapshot(supabase,id);if(snapshot.memberError)notify(prettyError(snapshot.memberError));else setRoster(snapshot.members.map(member=>({...member,profile:snapshot.profiles.find(profile=>profile.id===member.user_id)})));if(snapshot.chatError)notify(prettyError(snapshot.chatError));else setMessages(snapshot.chat);const latest=snapshot.sessions[0];if(latest){await loadGame(latest);setTab(latest.status==='active'?'game':'room');}else{setGame(null);setGamePlayers([]);setGameResult(null);setTab('room');}} async function postRoomMessage(body:string){if(!supabase||!room||!body.trim())return;const {data,error}=await supabase.rpc('send_room_message',{p_room_id:room.id,p_body:body.trim().slice(0,500)});if(error){notify(prettyError(error));return;}playGameSound('messageSent');const {data:row}=await supabase.from('chat_messages').select('id,user_id,body,created_at').eq('id',data).single();if(row)setMessages(prev=>prev.some(message=>message.id===row.id)?prev:[...prev,row]);}
+ async function loadRoomData(id:string){if(!supabase)return;const snapshot=await fetchRoomSnapshot(supabase,id);if(snapshot.memberError)notify(prettyError(snapshot.memberError));else setRoster(snapshot.members.map(member=>({...member,profile:snapshot.profiles.find(profile=>profile.id===member.user_id)})));if(snapshot.chatError)notify(prettyError(snapshot.chatError));else setMessages(snapshot.chat);const latest=snapshot.sessions[0];if(latest){await loadGame(latest);setTab(latest.status==='active'?'game':'room');}else if(r.game_key==='haunted_camp'){const {data:hauntedId}=await supabase.rpc('get_latest_haunted_game',{p_room_id:id});if(hauntedId){const {data:hauntedState}=await supabase.rpc('get_haunted_game_state',{p_game_id:hauntedId});if(hauntedState&&hauntedState.status!=='ended'){setGame({id:hauntedId as string,game_key:'haunted_camp',status:'active',created_by:userId||''});setTab('game');return;}}setGame(null);setGamePlayers([]);setGameResult(null);setTab('room');}else{setGame(null);setGamePlayers([]);setGameResult(null);setTab('room');}} async function postRoomMessage(body:string){if(!supabase||!room||!body.trim())return;const {data,error}=await supabase.rpc('send_room_message',{p_room_id:room.id,p_body:body.trim().slice(0,500)});if(error){notify(prettyError(error));return;}playGameSound('messageSent');const {data:row}=await supabase.from('chat_messages').select('id,user_id,body,created_at').eq('id',data).single();if(row)setMessages(prev=>prev.some(message=>message.id===row.id)?prev:[...prev,row]);}
  async function sendMessage(e:FormEvent){e.preventDefault();unlockGameAudio();if(!chatText.trim())return;const body=chatText.trim();setChatText('');await postRoomMessage(body);}
  async function sendQuickChat(body:string){await postRoomMessage(body);}
  async function claimDaily(){if(!supabase)return;setBusy(true);const {data,error}=await supabase.rpc('claim_daily_reward');setBusy(false);if(error){notify(prettyError(error));return;}const r=data?.[0];notify('ربحتي '+r.coins_awarded+' عملة و '+(r.streak%3===0?5:2)+' جواهر و '+r.xp_awarded+' XP! سلسلة '+r.streak+' أيام.');await Promise.all([loadProfile(),loadDailyMissions()]);}
@@ -181,7 +181,11 @@ export default function App(){
   if(!supabase||!room)return;
   setGameResult(null);
   if(selectedGame==='haunted_camp'){
-   setGame({id:'',game_key:'haunted_camp',status:'active',created_by:userId||''});
+   setBusy(true);
+   const {data,error}=await supabase.rpc('start_haunted_game',{p_room_id:room.id,p_quick_mode:false});
+   setBusy(false);
+   if(error){notify(prettyError(error));return;}
+   setGame({id:data as string,game_key:'haunted_camp',status:'active',created_by:userId||''});
    setTab('game');
    return;
   }
