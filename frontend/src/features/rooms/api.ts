@@ -51,7 +51,7 @@ export async function fetchRoomSnapshot(client: Client, roomId: string): Promise
   const [{ data: members, error: memberError }, { data: chat, error: chatError }, { data: sessions }] = await Promise.all([
     client.from('room_members').select('user_id,role,last_seen_at').eq('room_id', roomId),
     client.from('chat_messages').select('id,user_id,body,created_at').eq('room_id', roomId).order('created_at', { ascending: true }).limit(60),
-    client.from('game_sessions').select('id,game_key,status,created_by,result').eq('room_id', roomId).order('created_at', { ascending: false }).limit(1),
+    client.from('game_sessions').select('id,game_key,status,created_by,result').eq('room_id', roomId).eq('status', 'active').order('created_at', { ascending: false }).limit(1),
   ]);
 
   let profiles: RoomMemberProfile[] = [];
