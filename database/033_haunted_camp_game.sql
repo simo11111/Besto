@@ -332,49 +332,6 @@ end; $$;
 revoke all on function public.resolve_haunted_vote(uuid) from public,anon;
 grant execute on function public.resolve_haunted_vote(uuid) to authenticated;
 
-create or replace function private.finish_haunted_game(p_game_id uuid,p_winner text)
-returns jsonb language plpgsql security definer set search_path=''
-as $$
-declare v_game public.haunted_games%rowtype; v_player record; v_xp integer; v_kills integer; v_saves integer; v_correct integer; v_first boolean; v_undetected boolean; v_won boolean; v_reveals jsonb;
-begin
- select * into v_game from public.haunted_games where id=p_game_id for update;
- if not found then raise exception 'GAME_NOT_FOUND'; end if;
- if v_game.status='ended' then return jsonb_build_object('winner',v_game.winner); end if;
- if p_winner not in ('villagers','haunter') then raise exception 'INVALID_WINNER'; end if;
- update public.haunted_games set status='ended',winner=p_winner,ended_at=now(),phase_deadline_at=null where id=p_game_id;
- select jsonb_agg(jsonb_build_object('user_id',hp.user_id,'role',hp.role,'is_alive',hp.is_alive) order by hp.created_at)
- into v_reveals from public.haunted_players hp where hp.game_id=p_game_id;
- for v_player in select hp.user_id,hp.role from public.haunted_players hp where hp.game_id=p_game_id loop
-   v_won:=(p_winner='haunter' and v_player.role='haunter') or (p_winner='villagers' and v_player.role<>'haunter');
-   select count(*) into v_kills from public.haunted_night_actions na where na.game_id=p_game_id and na.haunter_target is not null and na.killed_user_id is not null and exists(select 1 from public.haunted_players h where h.game_id=p_game_id and h.user_id=v_player.user_id and h.role='haunter');
-   select count(*) into v_saves from public.haunted_night_actions na where na.game_id=p_game_id and na.faqih_target=na.haunter_target and na.resolved and exists(select 1 from public.haunted_players h where h.game_id=p_game_id and h.user_id=v_player.user_id and h.role='faqih');
-   select count(*) into v_correct from public.haunted_votes hv join public.haunted_players target on target.game_id=hv.game_id and target.user_id=hv.target_id
-   where hv.game_id=p_game_id and hv.voter_id=v_player.user_id and target.role='haunter';
-   select exists(select 1 from public.haunted_players where game_id=p_game_id and user_id=v_player.user_id and not is_alive and created_at=(select min(created_at) from public.haunted_players where game_id=p_game_id and user_id=v_player.user_id)) into v_first;
-   select v_player.role='haunter' and not exists(select 1 from public.haunted_votes hv join public.haunted_players h on h.game_id=hv.game_id and h.user_id=hv.target_id where hv.game_id=p_game_id and h.role='haunter') into v_undetected;
-   v_xp:=case v_player.role when 'haunter' then v_kills*50+case when v_won then 150 else 0 end
-         when 'faqih' then v_saves*50+case when v_won then 100 else 0 end
-         else v_correct*30+case when v_won then 100 else 0 end end;
-   insert into public.haunted_results(game_id,user_id,role,won,xp_earned,successful_kills,successful_protections,correct_votes,was_first_victim,haunter_undetected)
-   values(p_game_id,v_player.user_id,v_player.role,v_won,v_xp,case when v_player.role='haunter' then v_kills else 0 end,case when v_player.role='faqih' then v_saves else 0 end,v_correct,v_first,v_undetected)
-   on conflict(game_id,user_id) do nothing;
-   if not exists(select 1 from public.haunted_results where game_id=p_game_id and user_id=v_player.user_id and created_at<now()-interval '1 second') then
-     update public.profiles set xp=xp+v_xp,coins=coins+case when v_won then 10 else 5 end,
-       level=1+floor(sqrt((xp+v_xp)::numeric/100))::int,
-       games_played=games_played+1,wins=wins+case when v_won then 1 else 0 end,
-       total_score=total_score+v_xp,updated_at=now()
-     where id=v_player.user_id;
-     insert into public.player_achievements(user_id,achievement_id)
-     values(v_player.user_id,'first_game') on conflict do nothing;
-   end if;
- end loop;
- insert into public.haunted_events(game_id,round,event_type,payload)
- values(p_game_id,v_game.round,'game_ended',jsonb_build_object('winner',p_winner,'roles',coalesce(v_reveals,'[]'::jsonb)));
- return jsonb_build_object('winner',p_winner,'roles',coalesce(v_reveals,'[]'::jsonb));
-end; $$;
-revoke all on function private.finish_haunted_game(uuid,text) from public,anon,authenticated;
-grant usage on schema private to authenticated;
-
 create or replace function public.end_haunted_game(p_game_id uuid)
 returns jsonb language plpgsql security definer set search_path=''
 as $$
@@ -493,11 +450,15 @@ begin
    on conflict(game_id,user_id) do nothing;
    get diagnostics v_inserted=row_count;
    if v_inserted=1 then
-     update public.profiles set xp=xp+v_xp,coins=coins+case when v_won then 10 else 5 end,
+     update public.profiles set xp=xp+v_xp,coins=coins+5+least(v_xp/5,20),
        level=1+floor(sqrt((xp+v_xp)::numeric/100))::int,
        games_played=games_played+1,wins=wins+case when v_won then 1 else 0 end,
        total_score=total_score+v_xp,updated_at=now() where id=v_player.user_id;
      insert into public.player_achievements(user_id,achievement_id) values(v_player.user_id,'first_game') on conflict do nothing;
+     if v_won then insert into public.player_achievements(user_id,achievement_id) values(v_player.user_id,'first_win') on conflict do nothing; end if;
+     if (select games_played from public.profiles where id=v_player.user_id)>=10 then
+       insert into public.player_achievements(user_id,achievement_id) values(v_player.user_id,'social') on conflict do nothing;
+     end if;
    end if;
  end loop;
  perform private.award_haunted_achievements(p_game_id);
