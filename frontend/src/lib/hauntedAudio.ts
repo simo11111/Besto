@@ -152,13 +152,23 @@ export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncemen
       if (announcementAudio === audio) announcementAudio = null;
       resolve();
     };
-    audio.onloadedmetadata = () => {
-      try { audio.currentTime = Math.min(start, Math.max(0, audio.duration - 0.2)); } catch { /* Browser seek can be delayed until metadata is ready. */ }
+    let playbackStarted = false;
+    const beginPlayback = () => {
+      if (playbackStarted || finished) return;
+      playbackStarted = true;
+      void audio.play().catch(() => { void speakHauntedAnnouncement(fallbackText).finally(finish); });
     };
-    audio.ontimeupdate = () => { if (audio.currentTime >= end) { audio.pause(); finish(); } };
+    audio.onloadedmetadata = () => {
+      if (start <= 0) { beginPlayback(); return; }
+      audio.addEventListener('seeked', beginPlayback, { once: true });
+      try {
+        audio.currentTime = Math.min(start, Math.max(0, audio.duration - 0.2));
+        if (Math.abs(audio.currentTime - start) < 0.05) beginPlayback();
+      } catch { beginPlayback(); }
+    };
+    audio.ontimeupdate = () => { if (playbackStarted && audio.currentTime >= end) { audio.pause(); finish(); } };
     audio.onended = finish;
-    audio.onerror = () => { if (announcementAudio === audio) announcementAudio = null; finish(); void speakHauntedAnnouncement(fallbackText); };
-    void audio.play().catch(() => { if (announcementAudio === audio) announcementAudio = null; finish(); void speakHauntedAnnouncement(fallbackText); });
+    audio.onerror = () => { if (announcementAudio === audio) announcementAudio = null; void speakHauntedAnnouncement(fallbackText).finally(finish); };
   });
 }
 
