@@ -530,3 +530,20 @@ begin
 end; $$;
 revoke all on function public.create_room(text,boolean,integer,text,text) from public,anon;
 grant execute on function public.create_room(text,boolean,integer,text,text) to authenticated;
+
+
+create or replace function public.get_latest_haunted_game(p_room_id uuid)
+returns uuid language plpgsql stable security definer set search_path=''
+as $$
+declare v_user uuid:=auth.uid(); v_game uuid;
+begin
+ if v_user is null then raise exception 'خاصك تدخل للحساب'; end if;
+ select hg.id into v_game
+ from public.haunted_games hg
+ join public.haunted_players hp on hp.game_id=hg.id
+ where hg.room_id=p_room_id and hp.user_id=v_user
+ order by hg.created_at desc limit 1;
+ return v_game;
+end; $$;
+revoke all on function public.get_latest_haunted_game(uuid) from public,anon;
+grant execute on function public.get_latest_haunted_game(uuid) to authenticated;
