@@ -212,8 +212,9 @@ declare v_user uuid:=auth.uid(); v_game public.haunted_games%rowtype; v_action p
 begin
  if v_user is null then raise exception 'خاصك تدخل للحساب'; end if;
  select * into v_game from public.haunted_games where id=p_game_id for update;
- if not found or v_game.created_by<>v_user then raise exception 'غير مول اللعبة يقدر يحسم الليل'; end if;
- if v_game.status<>'night' then raise exception 'الليل تحسم من قبل'; end if;
+ if not found or not exists(select 1 from public.room_members where room_id=v_game.room_id and user_id=v_user) then raise exception 'ما عندكش الحق فهاد الغرفة'; end if;
+ if v_game.status<>'night' then return jsonb_build_object('status',v_game.status); end if;
+ if v_game.created_by<>v_user and v_game.phase_deadline_at>now() then raise exception 'مول اللعبة هو اللي يقدر يحسم قبل نهاية العداد'; end if;
  select * into v_action from public.haunted_night_actions where game_id=p_game_id and round=v_game.round for update;
  if not found or v_action.haunter_target is null then
    if v_game.phase_deadline_at>now() then raise exception 'كنستناو المسكون يختار الهدف'; end if;
@@ -254,8 +255,8 @@ declare v_user uuid:=auth.uid(); v_game public.haunted_games%rowtype;
 begin
  if v_user is null then raise exception 'خاصك تدخل للحساب'; end if;
  select * into v_game from public.haunted_games where id=p_game_id for update;
- if not found or v_game.created_by<>v_user then raise exception 'غير مول اللعبة يقدر يبدل المرحلة'; end if;
- if v_game.status<>'morning' then raise exception 'مرحلة الصباح ما سالاتش'; end if;
+ if not found or not exists(select 1 from public.room_members where room_id=v_game.room_id and user_id=v_user) then raise exception 'ما عندكش الحق فهاد الغرفة'; end if;
+ if v_game.status<>'morning' then return true; end if;
  if v_game.phase_deadline_at>now() then raise exception 'خلي لحظة باش تبان نتيجة الصباح'; end if;
  update public.haunted_games set status='day',phase_deadline_at=now()+interval '60 seconds' where id=p_game_id;
  return true;
@@ -290,8 +291,8 @@ declare v_user uuid:=auth.uid(); v_game public.haunted_games%rowtype; v_alive in
 begin
  if v_user is null then raise exception 'خاصك تدخل للحساب'; end if;
  select * into v_game from public.haunted_games where id=p_game_id for update;
- if not found or v_game.created_by<>v_user then raise exception 'غير مول اللعبة يقدر يحسم التصويت'; end if;
- if v_game.status<>'day' then raise exception 'مرحلة التصويت ما مفتوحاش'; end if;
+ if not found or not exists(select 1 from public.room_members where room_id=v_game.room_id and user_id=v_user) then raise exception 'ما عندكش الحق فهاد الغرفة'; end if;
+ if v_game.status<>'day' then return jsonb_build_object('status',v_game.status); end if;
  select count(*) into v_alive from public.haunted_players where game_id=p_game_id and is_alive;
  select count(*) into v_votes from public.haunted_votes where game_id=p_game_id and round=v_game.round and vote_round=v_game.vote_round;
  if v_votes<v_alive and v_game.phase_deadline_at>now() then raise exception 'كنستناو باقي الأصوات'; end if;
