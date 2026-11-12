@@ -4,7 +4,7 @@ export function resolveNightOutcome(killTarget: string | null, protectedTarget: 
   return { killedUserId: killTarget && !saved ? killTarget : null, saved };
 }
 export function resolveVoteOutcome(votes: string[], voteRound: 1 | 2): HauntedVoteResult {
-  if (!votes.length) return { outcome: voteRound === 1 ? 'revote' : 'no_ejection', targetId: null };
+  if (!votes.length) return { outcome: 'no_ejection', targetId: null };
   const counts = new Map<string, number>();
   votes.forEach(target => counts.set(target, (counts.get(target) ?? 0) + 1));
   const highest = Math.max(...counts.values());
