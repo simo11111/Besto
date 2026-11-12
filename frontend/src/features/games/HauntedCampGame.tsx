@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Shield, Skull, Moon, Sun, Volume2, VolumeX, Clock3, Users, MessageCircle, Mic, MicOff, Trophy, Sparkles, RefreshCw, Flame, CheckCircle2, Check, X, Headphones } from 'lucide-react';
 import { useHauntedGame } from '../../hooks/useHauntedGame';
-import { playHauntedSound, startNightAmbience, stopNightAmbience, startMorningAmbience, stopMorningAmbience, preloadHauntedSounds, setHauntedAudioMuted, speakHauntedAnnouncement, playHauntedNarrator, stopHauntedNarrator, startCampMusic, stopCampMusic, unlockHauntedNarrator } from '../../lib/hauntedAudio';
+import { playHauntedSound, startNightAmbience, stopNightAmbience, startMorningAmbience, stopMorningAmbience, preloadHauntedSounds, setHauntedAudioMuted, speakHauntedAnnouncement, playHauntedNarrator, playHauntedAnnouncementSegment, preloadHauntedAnnouncements, stopHauntedNarrator, startCampMusic, stopCampMusic, unlockHauntedNarrator } from '../../lib/hauntedAudio';
 import { getSoundEnabled, setSoundEnabled as persistSoundEnabled } from '../../lib/audio';
 import type { HauntedRole } from '../../types/haunted';
 import { getHauntedBotCount } from './hauntedNpcRoster';
@@ -166,10 +166,10 @@ export default function HauntedCampGame(props: Props) {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, []);
-  const presentNarration = (key: string, text: string, useGeneratedVoice = false) => {
+  const presentNarration = (key: string, text: string, useGeneratedVoice = false, segment?: 'morning_safe' | 'morning_death' | 'discussion' | 'voting' | 'ejected' | 'win_villagers' | 'win_haunter') => {
     narratorRunRef.current = key; setNarratorText(text); setNarratorVisible(true);
     void (async () => {
-      if (soundOn) { if (useGeneratedVoice) await playHauntedNarrator(text); else await speakHauntedAnnouncement(text); }
+      if (soundOn) { if (segment) await playHauntedAnnouncementSegment(segment, text); else if (useGeneratedVoice) await playHauntedNarrator(text); else await speakHauntedAnnouncement(text); }
       else await new Promise(resolve => window.setTimeout(resolve, 1800));
       if (narratorRunRef.current === key) setNarratorVisible(false);
     })();
@@ -179,25 +179,25 @@ export default function HauntedCampGame(props: Props) {
     const phase = state?.status ?? null;
     if (!phase || phase === previousPhase) return;
     if (phase === 'night') {
-      startNightAmbience(); onNightMute(true);
+      preloadHauntedAnnouncements(); startNightAmbience(); onNightMute(true);
       presentNarration(state!.id+':'+state!.round+':night', state?.game_mode==='quick'?'هبط الليل على المخيم. المسكون، اختار الضحية ديالك لهاد الليلة. القرار سري وعندك وقت محدود.':'هبط الليل على المخيم. المسكون، اختار الضحية ديالك لهاد الليلة. والفقيه، اختار شكون تحمي بسرية. عندكم وقت محدود، وكل اختيار محسوب.', true);
     } else if (phase === 'morning') {
       stopNightAmbience(); startMorningAmbience(); onNightMute(true);
       const latest = [...(state?.events ?? [])].reverse().find(e => e.event_type === 'night_resolved');
       const killedId = typeof latest?.payload.killed_user_id === 'string' ? latest.payload.killed_user_id : null;
-      if (killedId) { playHauntedSound('death'); const victim = state?.players.find(player => player.user_id === killedId)?.username || 'واحد من السكان'; presentNarration(state!.id+':'+state!.round+':morning','طلع الصباح يا سكان الخيمة. لقينا '+victim+' خرج من المخيم هاد الليلة.'); }
-      else { playHauntedSound('save'); presentNarration(state!.id+':'+state!.round+':morning','طلع الصباح يا سكان الخيمة. الليلة دازت بسلام، ما مات حتى واحد.'); }
+      if (killedId) { playHauntedSound('death'); const victim = state?.players.find(player => player.user_id === killedId)?.username || 'واحد من السكان'; presentNarration(state!.id+':'+state!.round+':morning','طلع الصباح يا سكان الخيمة. لقينا '+victim+' خرج من المخيم هاد الليلة.',false,'morning_death'); }
+      else { playHauntedSound('save'); presentNarration(state!.id+':'+state!.round+':morning','طلع الصباح يا سكان الخيمة. الليلة دازت بسلام، ما مات حتى واحد.',false,'morning_safe'); }
     } else if (phase === 'day') {
       stopNightAmbience(); stopMorningAmbience(); onNightMute(false);
-      presentNarration(state!.id+':'+state!.round+':day','رجع النهار للمخيم. عندكم أربع دقائق للنقاش وجمع القرائن. من بعد غادي يتحل التصويت، وكل واحد يختار بشوية ديال التركيز.');
+      presentNarration(state!.id+':'+state!.round+':day','رجع النهار للمخيم. عندكم أربع دقايق للنقاش وجمع القرائن. من بعد غادي يتحل التصويت، وكل واحد يختار بشوية ديال التركيز.',false,'discussion');
     } else { stopNightAmbience(); stopMorningAmbience(); onNightMute(false); setNarratorVisible(false); }
-    if (phase === 'ended') playHauntedSound(state?.winner === 'villagers' ? 'win' : 'lose');
+    if (phase === 'ended') { playHauntedSound(state?.winner === 'villagers' ? 'win' : 'lose'); presentNarration(state!.id+':'+state!.round+':ended',state?.winner==='villagers'?'سالَت هاد الليلة! سكان المخيم كشفو المسكون وربحو التحدي.':'المسكون ربح هاد الجولة. قدر يبقى مخبي حتى سيطر على المخيم.',false,state?.winner==='villagers'?'win_villagers':'win_haunter'); }
     setPreviousPhase(phase);
   }, [state?.status, state?.winner, previousPhase, onNightMute, soundOn]);
   useEffect(() => {
     if (!state || state.status !== 'day') return;
     const previous = previousVotingRef.current; previousVotingRef.current = state.voting_open;
-    if (previous === false && state.voting_open) presentNarration(state.id+':'+state.round+':voting','تحل التصويت. عندكم ثلاثين ثانية باش تختارو اللاعب اللي شاكين فيه. القرار سري، اختارو بعناية.');
+    if (previous === false && state.voting_open) presentNarration(state.id+':'+state.round+':voting','تحل التصويت. عندكم ثلاثين ثانية باش تختارو اللاعب اللي شاكين فيه. القرار سري، اختارو بعناية.',false,'voting');
   }, [state?.id, state?.round, state?.status, state?.voting_open, soundOn]);
   useEffect(() => { const node=chatMessagesRef.current; if(node)node.scrollTop=node.scrollHeight; }, [messages.length,state?.events.length]);
   useEffect(() => {
@@ -214,8 +214,8 @@ export default function HauntedCampGame(props: Props) {
       if (event.event_type === 'bot_chat' && !event.payload.system && soundOn && event.payload.message) { const botName=event.payload.system?'الراوي':state.players.find(player=>player.user_id===String(event.payload.bot_user_id))?.username||'واحد من البوتات'; speakHauntedAnnouncement(botName+' كيقول: '+String(event.payload.message)); }
       if (event.event_type === 'vote_tied' && soundOn) speakHauntedAnnouncement('وقع تعادل فالتصويت. غادي نعاودو التصويت بين المشتبه فيهم.');
       if (event.event_type === 'vote_tie_resolved' && soundOn) speakHauntedAnnouncement('بقى التعادل، وما خرج حتى واحد من المخيم.');
-      if (event.event_type === 'player_ejected') { playHauntedSound('eject'); const id=String(event.payload.ejected_user_id||''); const name=state.players.find(player=>player.user_id===id)?.username||'واحد من السكان'; if(soundOn)speakHauntedAnnouncement('تحسم التصويت، وخرج '+name+' من المخيم.'); }
-      if (event.event_type === 'game_ended') { onRewardsUpdated(); if(soundOn)speakHauntedAnnouncement(state.winner==='villagers'?'المواطنين ربحو! المسكون تكشف، والمخيم نجا.':'المسكون ربح! قدر يبقى مخفي حتى سيطر على المخيم.'); }
+      if (event.event_type === 'player_ejected') { playHauntedSound('eject'); const id=String(event.payload.ejected_user_id||''); const name=state.players.find(player=>player.user_id===id)?.username||'واحد من السكان'; if(soundOn)void playHauntedAnnouncementSegment('ejected','تحسم التصويت، وخرج '+name+' من المخيم.').then(()=>speakHauntedAnnouncement(name)); }
+      if (event.event_type === 'game_ended') { onRewardsUpdated();  }
     });
     previousEventCountRef.current = count;
   }, [state?.id, state?.events.length, onRewardsUpdated, soundOn, state?.players, state?.winner]);
