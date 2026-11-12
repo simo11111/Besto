@@ -20,6 +20,12 @@ describe('party game registry', () => {
     const keys: string[] = games.map((game) => game.key);
     expect(keys).not.toContain('rps');
   });
+  it('registers Haunted Camp for 4–10 players with a six-player default', () => {
+    const haunted = games.find((game) => game.key === 'haunted_camp');
+    expect(haunted?.minPlayers).toBe(4);
+    expect(haunted?.maxPlayers).toBe(10);
+    expect(haunted?.players).toBe('4–10');
+  });
   it('keeps online duels two-player and separate from party matchmaking', () => {
     const duels = games.filter((game) => game.mode === 'duel');
     expect(duels.map((game) => game.key).sort()).toEqual(['connect4', 'dama']);
