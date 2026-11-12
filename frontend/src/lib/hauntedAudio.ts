@@ -127,6 +127,7 @@ export type HauntedAnnouncementSegment = 'night' | 'night_quick' | 'morning_safe
 
 const announcementSegments: Record<HauntedAnnouncementSegment, [number, number]> = {
   night: [30.98, 42.40],
+  night_quick: [0, 7.15],
   morning_safe: [44.15, 53.98],
   morning_death: [55.63, 66.10],
   discussion: [68.05, 81.35],
