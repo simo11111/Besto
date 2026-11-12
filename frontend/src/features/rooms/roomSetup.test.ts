@@ -14,6 +14,11 @@ describe('room setup rules', () => {
       expect(getRoomCapacityOptions(game).every((capacity) => capacity >= game.minPlayers && capacity <= game.maxPlayers)).toBe(true);
     }
   });
+  it('offers 4, 6, 8 and 10 seats for Haunted Camp', () => {
+    const haunted = games.find((item) => item.key === 'haunted_camp')!;
+    expect(getRoomCapacityOptions(haunted)).toEqual([4, 6, 8, 10]);
+    expect(normalizeRoomCapacity(haunted, 8)).toBe(8);
+  });
   it('moves an invalid capacity to the nearest available size', () => {
     const wolf = games.find((item) => item.key === 'wolf')!;
     expect(normalizeRoomCapacity(wolf, 2)).toBe(4);
