@@ -135,15 +135,16 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
   }, [state?.id]);
 
   useEffect(() => {
-    if (!state || !state.phase_deadline_at || state.status === 'ended') return;
+    if (!state || !state.phase_deadline_at || state.status === 'ended' || !isHost) return;
     const deadline = new Date(state.phase_deadline_at).getTime();
     const timer = window.setTimeout(() => {
       if (state.status === 'night') void resolveNight();
       else if (state.status === 'morning') void advanceMorning();
-      else if (state.status === 'day') void resolveVote();
-    }, Math.max(0, deadline - Date.now()) + 150);
+      else if (state.status === 'day' && !state.voting_open) void openVoting();
+      else if (state.status === 'day' && state.voting_open) void resolveVote();
+    }, Math.max(0, deadline - Date.now()) + 250);
     return () => window.clearTimeout(timer);
-  }, [state?.id, state?.status, state?.phase_deadline_at, state?.round, state?.vote_round, resolveNight, advanceMorning, resolveVote]);
+  }, [state?.id, state?.status, state?.phase_deadline_at, state?.round, state?.vote_round, state?.voting_open, resolveNight, advanceMorning, resolveVote, openVoting, isHost]);
 
   return { state, loading, busy, error, refresh, start, submitKill, submitProtection, resolveNight, advanceMorning, submitVote, resolveVote, openVoting };
 }
