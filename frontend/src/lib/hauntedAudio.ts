@@ -47,7 +47,7 @@ function speakNext() {
     const voices = synth.getVoices();
     const voice = voices.find(item => item.lang.toLowerCase() === 'ar-ma')
       || voices.find(item => item.lang.toLowerCase().startsWith('ar'))
-      || voices.find(item => item.lang.toLowerCase().startsWith('fr'));
+;
     if (voice) utterance.voice = voice;
     utterance.onend = () => { speechBusy = false; window.setTimeout(speakNext, 180); };
     utterance.onerror = () => { speechBusy = false; window.setTimeout(speakNext, 180); };
