@@ -42,7 +42,7 @@ export default function App(){
  const [soundEnabled,setSoundEnabled]=useState(()=>getSoundEnabled());
  const duelSoundRef=useRef<{sessionId:string;version:number}|null>(null),damaSoundRef=useRef<{sessionId:string;version:number;pieces:number}|null>(null),countdownSoundRef=useRef<{gameId:string;second:number}|null>(null);
  const [voiceActive,setVoiceActive]=useState(false),[voiceMuted,setVoiceMuted]=useState(false),[voiceStatus,setVoiceStatus]=useState('الصوت مطفي'),[timeLeft,setTimeLeft]=useState(10);
- const nightMuteRef=useRef(false);
+ const nightMuteRef=useRef(false),manualVoiceMuteRef=useRef(false);
  const roomChatChannelRef=useRef<ReturnType<NonNullable<typeof supabase>['channel']>|null>(null),directChatChannelRef=useRef<ReturnType<NonNullable<typeof supabase>['channel']>|null>(null),roomTypingTimersRef=useRef<Map<string,number>>(new Map()),directTypingTimerRef=useRef<number|null>(null);
  const voiceChannelRef=useRef<any>(null),localStreamRef=useRef<MediaStream|null>(null),peerConnectionsRef=useRef<Map<string,RTCPeerConnection>>(new Map()),remoteAudioRef=useRef<Map<string,HTMLAudioElement>>(new Map()),pendingIceRef=useRef<Map<string,RTCIceCandidateInit[]>>(new Map());
  const userId=session?.user?.id;
@@ -281,7 +281,7 @@ export default function App(){
    try{const iceResponse=await fetch('https://dima-play-turn-api.m40065744.workers.dev/ice',{method:'POST',headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'}});if(!iceResponse.ok)throw new Error('TURN غير مهيأ');const iceData=await iceResponse.json();if(Array.isArray(iceData.iceServers)&&iceData.iceServers.length)iceServers=iceData.iceServers;}
    catch{setVoiceStatus('TURN مازال ما تهيّأش؛ غادي نجرب الاتصال المباشر.');}
    const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
-   localStreamRef.current=stream;stream.getAudioTracks().forEach(track=>track.enabled=!nightMuteRef.current&&!voiceMuted);
+   localStreamRef.current=stream;stream.getAudioTracks().forEach(track=>track.enabled=!nightMuteRef.current&&!manualVoiceMuteRef.current);
    const channel=supabase.channel('voice:'+room.id,{config:{private:true,presence:{key:userId},broadcast:{ack:true}}});
    voiceChannelRef.current=channel;
    const sendSignal=async(to:string,kind:string,data:any)=>{await channel.send({type:'broadcast',event:'signal',payload:{from:userId,to,kind,data}});};
@@ -320,8 +320,8 @@ export default function App(){
    });
   }catch(e:any){setVoiceStatus(e?.name==='NotAllowedError'?'خاصك تسمح باستعمال المايك.':e?.message||'تعذر تشغيل المايك.');stopVoice();}
  }
- function toggleVoiceMute(){const next=!voiceMuted;localStreamRef.current?.getAudioTracks().forEach(track=>track.enabled=!next&&!nightMuteRef.current);setVoiceMuted(next);}
- const forceNightMute=useCallback((muted:boolean)=>{nightMuteRef.current=muted;localStreamRef.current?.getAudioTracks().forEach(track=>track.enabled=!muted&&!voiceMuted);},[voiceMuted]);
+ function toggleVoiceMute(){const next=!voiceMuted;manualVoiceMuteRef.current=next;localStreamRef.current?.getAudioTracks().forEach(track=>track.enabled=!next&&!nightMuteRef.current);setVoiceMuted(next);}
+ const forceNightMute=useCallback((muted:boolean)=>{nightMuteRef.current=muted;localStreamRef.current?.getAudioTracks().forEach(track=>track.enabled=!muted&&!manualVoiceMuteRef.current);},[]);
  useEffect(()=>()=>stopVoice(),[room?.id]);
  const pendingInvite=notifications.find(n=>n.kind==='room_invite'&&!n.read_at&&(n.payload?.status||'pending')==='pending'&&!dismissedInviteIds.includes(n.id));
  const isHost=!!room&&roster.some(p=>p.user_id===userId&&(p.role==='owner'||p.role==='moderator'));
