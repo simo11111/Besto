@@ -26,7 +26,7 @@ const roleCopy: Record<HauntedRole, { name: string; title: string; description: 
 function RoleMark({ role, size = 22 }: { role: HauntedRole; size?: number }) {
   if (role === 'haunter') return <Skull size={size} />;
   if (role === 'faqih') return <Shield size={size} />;
-  return <Tent size={size} />;
+  return <Users size={size} />;
 }
 
 export default function HauntedCampGame(props: Props) {
