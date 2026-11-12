@@ -29,7 +29,7 @@ export function playHauntedSound(name: Exclude<HauntedSound, 'night'> | 'night')
 }
 let narratorAudio: HTMLAudioElement | null = null;
 let narratorFinish: (() => void) | null = null;
-export function stopHauntedNarrator() { if(announcementAudio){announcementAudio.pause();announcementAudio.currentTime=0;announcementAudio=null;} if(narratorAudio){narratorAudio.pause();narratorAudio.currentTime=0;narratorAudio=null;} const finish=narratorFinish;narratorFinish=null;finish?.(); }
+export function stopHauntedNarrator() { if(announcementAudio){announcementAudio.pause();announcementAudio.currentTime=0;announcementAudio=null;} const finishAnnouncement=announcementFinish;announcementFinish=null;finishAnnouncement?.(); if(narratorAudio){narratorAudio.pause();narratorAudio.currentTime=0;narratorAudio=null;} const finish=narratorFinish;narratorFinish=null;finish?.(); }
 export async function playHauntedNarrator(fallbackText: string): Promise<void> {
   if(typeof window==='undefined'||!getSoundEnabled())return;
   stopHauntedNarrator();
@@ -113,6 +113,7 @@ const announcementSegments: Record<HauntedAnnouncementSegment, [number, number]>
 };
 let announcementsUrl: string | null = null;
 let announcementAudio: HTMLAudioElement | null = null;
+let announcementFinish: (() => void) | null = null;
 let announcementRequest: Promise<string | null> | null = null;
 
 async function getAnnouncementsUrl(): Promise<string | null> {
@@ -150,6 +151,7 @@ export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncemen
       audio.onended = null;
       audio.onerror = null;
       if (announcementAudio === audio) announcementAudio = null;
+      if (announcementFinish === finish) announcementFinish = null;
       resolve();
     };
     let playbackStarted = false;
@@ -158,6 +160,7 @@ export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncemen
       playbackStarted = true;
       void audio.play().catch(() => { void speakHauntedAnnouncement(fallbackText).finally(finish); });
     };
+    announcementFinish = finish;
     audio.onloadedmetadata = () => {
       if (start <= 0) { beginPlayback(); return; }
       audio.addEventListener('seeked', beginPlayback, { once: true });
