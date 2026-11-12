@@ -174,6 +174,7 @@ begin
  if v_user is null then raise exception 'خاصك تدخل للحساب'; end if;
  select * into v_game from public.haunted_games where id=p_game_id for update;
  if not found or v_game.status<>'night' then raise exception 'مرحلة الليل سالات'; end if;
+ if v_game.phase_deadline_at<=now() then raise exception 'وقت الاختيار سالا'; end if;
  if not exists(select 1 from public.haunted_players where game_id=p_game_id and user_id=v_user and role='haunter' and is_alive) then raise exception 'هاد القرار غير ديال المسكون'; end if;
  if p_target is null or p_target=v_user or not exists(select 1 from public.haunted_players where game_id=p_game_id and user_id=p_target and is_alive) then raise exception 'اختار لاعب حي آخر'; end if;
  insert into public.haunted_night_actions(game_id,round,haunter_target) values(p_game_id,v_game.round,p_target)
@@ -193,6 +194,7 @@ begin
  if v_user is null then raise exception 'خاصك تدخل للحساب'; end if;
  select * into v_game from public.haunted_games where id=p_game_id for update;
  if not found or v_game.status<>'night' then raise exception 'مرحلة الليل سالات'; end if;
+ if v_game.phase_deadline_at<=now() then raise exception 'وقت الحماية سالا'; end if;
  if not exists(select 1 from public.haunted_players where game_id=p_game_id and user_id=v_user and role='faqih' and is_alive) then raise exception 'هاد القرار غير ديال الفقيه'; end if;
  if p_target is null or not exists(select 1 from public.haunted_players where game_id=p_game_id and user_id=p_target and is_alive) then raise exception 'اختار لاعب حي'; end if;
  insert into public.haunted_night_actions(game_id,round,faqih_target) values(p_game_id,v_game.round,p_target)
@@ -272,6 +274,7 @@ begin
  if v_user is null then raise exception 'خاصك تدخل للحساب'; end if;
  select * into v_game from public.haunted_games where id=p_game_id for update;
  if not found or v_game.status<>'day' then raise exception 'التصويت ما مفتوحش دابا'; end if;
+ if v_game.phase_deadline_at<=now() then raise exception 'وقت التصويت سالا'; end if;
  if not exists(select 1 from public.haunted_players where game_id=p_game_id and user_id=v_user and is_alive) then raise exception 'غير اللاعبين الأحياء كيصوتو'; end if;
  if p_target is null or p_target=v_user or not exists(select 1 from public.haunted_players where game_id=p_game_id and user_id=p_target and is_alive) then raise exception 'اختار لاعب حي آخر'; end if;
  insert into public.haunted_votes(game_id,round,vote_round,voter_id,target_id)
@@ -295,7 +298,7 @@ begin
  if v_game.status<>'day' then return jsonb_build_object('status',v_game.status); end if;
  select count(*) into v_alive from public.haunted_players where game_id=p_game_id and is_alive;
  select count(*) into v_votes from public.haunted_votes where game_id=p_game_id and round=v_game.round and vote_round=v_game.vote_round;
- if v_votes<v_alive and v_game.phase_deadline_at>now() then raise exception 'كنستناو باقي الأصوات'; end if;
+ if v_votes<v_alive and v_game.phase_deadline_at>now() then return jsonb_build_object('result','waiting','votes',v_votes,'alive',v_alive); end if;
  select max(c),count(*) filter(where c=(select max(c2) from (select count(*) c2 from public.haunted_votes where game_id=p_game_id and round=v_game.round and vote_round=v_game.vote_round group by target_id) q))
  into v_top,v_top_count from (select count(*) c from public.haunted_votes where game_id=p_game_id and round=v_game.round and vote_round=v_game.vote_round group by target_id) q;
  if v_top_count=1 then
