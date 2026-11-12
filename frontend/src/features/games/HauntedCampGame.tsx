@@ -69,10 +69,6 @@ export default function HauntedCampGame(props: Props) {
     if (count <= previousEventCount) return;
     const fresh = state?.events.slice(previousEventCount) ?? [];
     fresh.forEach(event => {
-      if (event.event_type === 'night_resolved') {
-        if (event.payload.killed_user_id) playHauntedSound('death');
-        else playHauntedSound('save');
-      }
       if (event.event_type === 'player_ejected') playHauntedSound('eject');
       if (event.event_type === 'game_ended') onRewardsUpdated();
     });
@@ -113,7 +109,7 @@ export default function HauntedCampGame(props: Props) {
       {state.status!=='ended'&&<strong><Clock3 size={15}/>{secondsLeft}ث</strong>}
     </div>
     {!revealed&&role&&<button className="haunted-role-cover" onClick={()=>{setRevealed(true);playHauntedSound('role');}}><span>🔒</span><b>كشف الدور السري ديالك</b><small>ما تورّيه حتى لواحد</small></button>}
-    {revealed&&role&&<motion.article className="haunted-role-card" initial={reduceMotion?false:{rotateY:90,opacity:0}} animate={reduceMotion?{opacity:1}:{rotateY:0,opacity:1}} transition={{duration:reduceMotion?0.01:0.8,ease:'easeOut'}} style={{transformStyle:'preserve-3d'}}><div className="haunted-role-card-inner"><span>{role.icon}</span><small>الدور السري ديالك</small><h2>{role.title}</h2><p>{role.description}</p></div></motion.article>}
+    {revealed&&role&&<motion.article className="haunted-role-card" initial={reduceMotion?false:{rotateY:180,opacity:0}} animate={reduceMotion?{opacity:1}:{rotateY:0,opacity:1}} transition={{duration:reduceMotion?0.01:0.8,ease:'easeOut'}} style={{transformStyle:'preserve-3d',backfaceVisibility:'hidden'}}><div className="haunted-role-card-inner"><span>{role.icon}</span><small>الدور السري ديالك</small><h2>{role.title}</h2><p>{role.description}</p></div></motion.article>}
 
     {state.status==='night'&&<motion.div className="haunted-night-panel" initial={reduceMotion?false:{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{duration:reduceMotion?0.01:0.5}}><div className="haunted-moon">🌙</div><h2>{myRole==='haunter'?'اختار الضحية ديالك':myRole==='faqih'?'شكون غادي تعتق الليلة؟':'نعس… الليل ماشي وقت الكلام'}</h2><p>{myRole==='haunter'?'اختار لاعب حي واحد. القرار سري وما غادي يبان حتى واحد.':myRole==='faqih'?'اختار لاعب تحميه. ما غاديش تعرف واش الحماية نجحات حتى يطلع الصباح.':'تسنى الصباح. الميكروفونات مكتومة فالليل.'}</p>
       {!isAlive&&<p className="haunted-waiting">خرجتي من اللعبة، تقدر تبقى تتفرج ولكن ما تقدرش تختار أو تصوّت.</p>}
