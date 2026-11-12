@@ -151,6 +151,7 @@ begin
  insert into public.haunted_games(room_id,created_by,status,round,game_mode,phase_deadline_at)
  values(p_room_id,v_user,'night',1,case when p_quick_mode then 'quick' else 'standard' end,now()+interval '40 seconds')
  returning id into v_game;
+ update public.rooms set status='playing',last_activity_at=now() where id=p_room_id;
  select user_id into v_haunter from public.room_members where room_id=p_room_id order by random() limit 1;
  if not p_quick_mode then
    select user_id into v_faqih from public.room_members where room_id=p_room_id and user_id<>v_haunter order by random() limit 1;
@@ -214,7 +215,7 @@ declare v_user uuid:=auth.uid(); v_game public.haunted_games%rowtype; v_action p
 begin
  if v_user is null then raise exception 'خاصك تدخل للحساب'; end if;
  select * into v_game from public.haunted_games where id=p_game_id for update;
- if not found or not exists(select 1 from public.room_members where room_id=v_game.room_id and user_id=v_user) then raise exception 'ما عندكش الحق فهاد الغرفة'; end if;
+ if not found or not exists(select 1 from public.haunted_players where game_id=p_game_id and user_id=v_user) then raise exception 'ما عندكش الحق فهاد الغرفة'; end if;
  if v_game.status<>'night' then return jsonb_build_object('status',v_game.status); end if;
  if v_game.created_by<>v_user and v_game.phase_deadline_at>now() then raise exception 'مول اللعبة هو اللي يقدر يحسم قبل نهاية العداد'; end if;
  select * into v_action from public.haunted_night_actions where game_id=p_game_id and round=v_game.round for update;
@@ -430,6 +431,7 @@ begin
  end if;
  if p_winner not in ('villagers','haunter') then raise exception 'INVALID_WINNER'; end if;
  update public.haunted_games set status='ended',winner=p_winner,ended_at=now(),phase_deadline_at=null where id=p_game_id;
+ update public.rooms set status='open',last_activity_at=now() where id=v_game.room_id and status='playing';
  select jsonb_agg(jsonb_build_object('user_id',hp.user_id,'role',hp.role,'is_alive',hp.is_alive) order by hp.created_at)
  into v_reveals from public.haunted_players hp where hp.game_id=p_game_id;
  for v_player in select hp.user_id,hp.role from public.haunted_players hp where hp.game_id=p_game_id loop
@@ -477,10 +479,10 @@ as $$
 declare v_user uuid:=auth.uid(); v_game uuid;
 begin
  if v_user is null then raise exception 'خاصك تدخل للحساب'; end if;
- if not exists(select 1 from public.room_members where room_id=p_room_id and user_id=v_user) then
-   raise exception 'ما عندكش الحق تشوف هاد الغرفة';
+ if not exists(select 1 from public.haunted_players hp join public.haunted_games hg on hg.id=hp.game_id where hg.room_id=p_room_id and hp.user_id=v_user and hg.status<>'ended') then
+   return null;
  end if;
- select id into v_game from public.haunted_games where room_id=p_room_id and status<>'ended' order by created_at desc limit 1;
+ select hg.id into v_game from public.haunted_games hg join public.haunted_players hp on hp.game_id=hg.id where hg.room_id=p_room_id and hp.user_id=v_user and hg.status<>'ended' order by hg.created_at desc limit 1;
  return v_game;
 end; $$;
 revoke all on function public.get_active_haunted_game(uuid) from public,anon;
