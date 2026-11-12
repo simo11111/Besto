@@ -69,7 +69,7 @@ export default function HauntedCampGame(props: Props) {
     fresh.forEach(event => {
       if (event.event_type === 'night_resolved') {
         if (event.payload.killed_user_id) playHauntedSound('death');
-        else if (event.payload.saved) playHauntedSound('save');
+        else playHauntedSound('save');
       }
       if (event.event_type === 'player_ejected') playHauntedSound('eject');
       if (event.event_type === 'game_ended') onRewardsUpdated();
