@@ -119,7 +119,8 @@ export default function HauntedCampGame(props: Props) {
   const [now, setNow] = useState(Date.now());
   const [soundOn, setSoundOn] = useState(() => getSoundEnabled());
   const [previousPhase, setPreviousPhase] = useState<string | null>(null);
-  const [previousEventCount, setPreviousEventCount] = useState(0);
+  const previousEventCountRef = useRef(0);
+  const previousEventGameRef = useRef<string | null>(null);
   const { state, busy, error, start, submitKill, submitProtection, resolveNight, advanceMorning, submitVote, resolveVote, openVoting, refresh } =
     useHauntedGame(gameId || null, roomId, userId, isHost);
 
@@ -151,21 +152,26 @@ export default function HauntedCampGame(props: Props) {
     if (phase === 'ended') playHauntedSound(state?.winner === 'villagers' ? 'win' : 'lose');
     setPreviousPhase(phase);
   }, [state?.status, state?.winner, previousPhase, onNightMute, soundOn]);
-  useEffect(() => { setPreviousEventCount(0); }, [state?.id]);
   useEffect(() => {
-    const count = state?.events.length ?? 0;
-    if (count <= previousEventCount) return;
-    const fresh = state?.events.slice(previousEventCount) ?? [];
+    if (!state) return;
+    const count = state.events.length;
+    if (previousEventGameRef.current !== state.id) {
+      previousEventGameRef.current = state.id;
+      previousEventCountRef.current = count;
+      return;
+    }
+    if (count <= previousEventCountRef.current) return;
+    const fresh = state.events.slice(previousEventCountRef.current);
     fresh.forEach(event => {
-      if (event.event_type === 'bot_chat' && soundOn && event.payload.message) { const botName=event.payload.system?'الراوي':state?.players.find(player=>player.user_id===String(event.payload.bot_user_id))?.username||'واحد من البوتات'; speakHauntedAnnouncement(botName+' كيقول: '+String(event.payload.message)); }
+      if (event.event_type === 'bot_chat' && soundOn && event.payload.message) { const botName=event.payload.system?'الراوي':state.players.find(player=>player.user_id===String(event.payload.bot_user_id))?.username||'واحد من البوتات'; speakHauntedAnnouncement(botName+' كيقول: '+String(event.payload.message)); }
       if (event.event_type === 'new_night' && soundOn) speakHauntedAnnouncement('رجع الليل للمخيم. كل واحد يرجع لبلاصتو، والقرارات غادي تبقى سرية.');
       if (event.event_type === 'vote_tied' && soundOn) speakHauntedAnnouncement('وقع تعادل فالتصويت. غادي نعاودو التصويت بين المشتبه فيهم.');
       if (event.event_type === 'vote_tie_resolved' && soundOn) speakHauntedAnnouncement('بقى التعادل، وما خرج حتى واحد من المخيم.');
-      if (event.event_type === 'player_ejected') { playHauntedSound('eject'); const id=String(event.payload.ejected_user_id||''); const name=state?.players.find(player=>player.user_id===id)?.username||'واحد من السكان'; if(soundOn)speakHauntedAnnouncement('تحسم التصويت، وخرج '+name+' من المخيم.'); }
-      if (event.event_type === 'game_ended') { onRewardsUpdated(); if(soundOn)speakHauntedAnnouncement(state?.winner==='villagers'?'المواطنين ربحو! المسكون تكشف، والمخيم نجا.':'المسكون ربح! قدر يبقى مخفي حتى سيطر على المخيم.'); }
+      if (event.event_type === 'player_ejected') { playHauntedSound('eject'); const id=String(event.payload.ejected_user_id||''); const name=state.players.find(player=>player.user_id===id)?.username||'واحد من السكان'; if(soundOn)speakHauntedAnnouncement('تحسم التصويت، وخرج '+name+' من المخيم.'); }
+      if (event.event_type === 'game_ended') { onRewardsUpdated(); if(soundOn)speakHauntedAnnouncement(state.winner==='villagers'?'المواطنين ربحو! المسكون تكشف، والمخيم نجا.':'المسكون ربح! قدر يبقى مخفي حتى سيطر على المخيم.'); }
     });
-    setPreviousEventCount(count);
-  }, [state?.events, previousEventCount, onRewardsUpdated, soundOn, state?.players, state?.winner]);
+    previousEventCountRef.current = count;
+  }, [state?.id, state?.events.length, onRewardsUpdated, soundOn, state?.players, state?.winner]);
   useEffect(() => () => { stopNightAmbience(); stopMorningAmbience(); onNightMute(false); }, [onNightMute]);
 
   async function startGame() {
