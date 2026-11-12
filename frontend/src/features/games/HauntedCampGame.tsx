@@ -55,9 +55,8 @@ export default function HauntedCampGame(props: Props) {
     const phase = state?.status ?? null;
     if (!phase || phase === previousPhase) return;
     if (phase === 'night') { startNightAmbience(); onNightMute(true); }
+    else if (phase === 'morning') { stopNightAmbience(); onNightMute(true); playHauntedSound('morning'); }
     else { stopNightAmbience(); onNightMute(false); }
-    if (phase === 'morning') playHauntedSound('morning');
-    if (phase === 'day') playHauntedSound('morning');
     if (phase === 'ended') playHauntedSound(state?.winner === 'villagers' ? 'win' : 'lose');
     setPreviousPhase(phase);
   }, [state?.status, state?.winner, previousPhase, onNightMute]);
