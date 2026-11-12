@@ -29,7 +29,7 @@ export function playHauntedSound(name: Exclude<HauntedSound, 'night'> | 'night')
 }
 let narratorAudio: HTMLAudioElement | null = null;
 let narratorFinish: (() => void) | null = null;
-export function stopHauntedNarrator() { if(narratorAudio){narratorAudio.pause();narratorAudio.currentTime=0;narratorAudio=null;} const finish=narratorFinish;narratorFinish=null;finish?.(); }
+export function stopHauntedNarrator() { if(announcementAudio){announcementAudio.pause();announcementAudio.currentTime=0;announcementAudio=null;} if(narratorAudio){narratorAudio.pause();narratorAudio.currentTime=0;narratorAudio=null;} const finish=narratorFinish;narratorFinish=null;finish?.(); }
 export async function playHauntedNarrator(fallbackText: string): Promise<void> {
   if(typeof window==='undefined'||!getSoundEnabled())return;
   stopHauntedNarrator();
@@ -99,3 +99,67 @@ export function speakHauntedAnnouncement(text: string): Promise<void> {
   if(typeof window==='undefined'||!('speechSynthesis'in window)||!text.trim())return Promise.resolve();
   return new Promise(resolve=>{window.speechSynthesis.resume();speechQueue.push({text:text.trim(),resolve});if(speechQueue.length>8){const dropped=speechQueue.splice(0,speechQueue.length-8);dropped.forEach(item=>item.resolve());}speakNext();});
 }
+
+
+type HauntedAnnouncementSegment = 'morning_safe' | 'morning_death' | 'discussion' | 'voting' | 'ejected' | 'win_villagers' | 'win_haunter';
+const announcementSegments: Record<HauntedAnnouncementSegment, [number, number]> = {
+  morning_safe: [0, 13.9],
+  morning_death: [14.0, 29.1],
+  discussion: [29.2, 45.3],
+  voting: [45.4, 62.0],
+  ejected: [62.1, 74.4],
+  win_villagers: [74.5, 87.8],
+  win_haunter: [87.9, 98.55],
+};
+let announcementsUrl: string | null = null;
+let announcementAudio: HTMLAudioElement | null = null;
+let announcementRequest: Promise<string | null> | null = null;
+
+async function getAnnouncementsUrl(): Promise<string | null> {
+  if (announcementsUrl) return announcementsUrl;
+  if (!announcementRequest) {
+    announcementRequest = (async () => {
+      const base = String(import.meta.env.VITE_SUPABASE_URL || '').replace(/\/+$/, '');
+      if (!base) return null;
+      const response = await fetch(base + '/functions/v1/cache-haunted-announcements', { method: 'GET', cache: 'no-store' });
+      if (!response.ok) return null;
+      const result = await response.json() as { ready?: boolean; url?: string };
+      if (result.ready && typeof result.url === 'string') announcementsUrl = result.url;
+      return announcementsUrl;
+    })().catch(() => null).finally(() => { announcementRequest = null; });
+  }
+  return announcementRequest;
+}
+
+export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncementSegment, fallbackText: string): Promise<void> {
+  if (typeof window === 'undefined' || !getSoundEnabled()) return;
+  if (announcementAudio) { announcementAudio.pause(); announcementAudio.currentTime = 0; announcementAudio = null; }
+  const url = await getAnnouncementsUrl();
+  if (!url) { await speakHauntedAnnouncement(fallbackText); return; }
+  const [start, end] = announcementSegments[segment];
+  await new Promise<void>(resolve => {
+    const audio = new Audio(url);
+    announcementAudio = audio;
+    audio.preload = 'auto';
+    audio.volume = 0.98;
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      audio.ontimeupdate = null;
+      audio.onended = null;
+      audio.onerror = null;
+      if (announcementAudio === audio) announcementAudio = null;
+      resolve();
+    };
+    audio.onloadedmetadata = () => {
+      try { audio.currentTime = Math.min(start, Math.max(0, audio.duration - 0.2)); } catch { /* Browser seek can be delayed until metadata is ready. */ }
+    };
+    audio.ontimeupdate = () => { if (audio.currentTime >= end) { audio.pause(); finish(); } };
+    audio.onended = finish;
+    audio.onerror = () => { if (announcementAudio === audio) announcementAudio = null; finish(); void speakHauntedAnnouncement(fallbackText); };
+    void audio.play().catch(() => { if (announcementAudio === audio) announcementAudio = null; finish(); void speakHauntedAnnouncement(fallbackText); });
+  });
+}
+
+export function preloadHauntedAnnouncements() { void getAnnouncementsUrl(); }
