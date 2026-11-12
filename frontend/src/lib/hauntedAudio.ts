@@ -29,7 +29,18 @@ export function playHauntedSound(name: Exclude<HauntedSound, 'night'> | 'night')
 }
 let narratorAudio: HTMLAudioElement | null = null;
 let narratorFinish: (() => void) | null = null;
-export function stopHauntedNarrator() { if(typeof window!=='undefined'&&window.speechSynthesis)window.speechSynthesis.cancel(); if(narratorAudio){narratorAudio.pause();narratorAudio.currentTime=0;narratorAudio=null;} const finish=narratorFinish;narratorFinish=null;finish?.(); }
+let speechQueue: Array<{text:string;resolve:()=>void}> = [];
+let speechBusy = false;
+let speechGeneration = 0;
+export function stopHauntedNarrator() {
+  speechGeneration++;
+  const pending = speechQueue.splice(0);
+  pending.forEach(item => item.resolve());
+  speechBusy = false;
+  if(typeof window!=='undefined'&&window.speechSynthesis)window.speechSynthesis.cancel();
+  if(narratorAudio){narratorAudio.pause();narratorAudio.currentTime=0;narratorAudio=null;}
+  const finish=narratorFinish;narratorFinish=null;finish?.();
+}
 export async function playHauntedNarrator(fallbackText: string): Promise<void> {
   if(typeof window==='undefined'||!getSoundEnabled())return;
   stopHauntedNarrator();
@@ -46,13 +57,10 @@ export async function playHauntedNarrator(fallbackText: string): Promise<void> {
 }
 export function setHauntedAudioMuted(muted: boolean) {
   audioManager.setMuted(muted);
-  if (muted) { stopHauntedNarrator(); const pending=speechQueue.splice(0);pending.forEach(item=>item.resolve());speechBusy=false;if(typeof window!=='undefined'&&'speechSynthesis'in window)window.speechSynthesis.cancel(); }
+  if (muted) stopHauntedNarrator();
 }
 
 /** Queue spoken announcements so one bot line never cuts off the previous one. */
-let speechQueue: Array<{text:string;resolve:()=>void}> = [];
-let speechBusy = false;
-
 function speakNext() {
   if (typeof window === 'undefined' || !('speechSynthesis' in window) || speechBusy || !speechQueue.length) return;
   const synth = window.speechSynthesis;
@@ -60,6 +68,7 @@ function speakNext() {
   const item = speechQueue.shift();
   if (!item) return;
   const text = item.text;
+  const generation = speechGeneration;
   speechBusy = true;
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'ar-MA';
@@ -68,7 +77,7 @@ function speakNext() {
   utterance.volume = 1;
   let begun = false;
   const begin = () => {
-    if (begun) return;
+    if (begun || generation !== speechGeneration) return;
     begun = true;
     const voices = synth.getVoices();
     const voice = voices.find(item => item.lang.toLowerCase() === 'ar-ma')
@@ -77,8 +86,8 @@ function speakNext() {
       || voices[0];
 
     if (voice) utterance.voice = voice;
-    utterance.onend = () => { speechBusy = false; item.resolve(); window.setTimeout(speakNext, 180); };
-    utterance.onerror = () => { speechBusy = false; item.resolve(); window.setTimeout(speakNext, 180); };
+    utterance.onend = () => { if(generation !== speechGeneration)return; speechBusy = false; item.resolve(); window.setTimeout(()=>{if(generation===speechGeneration)speakNext();},180); };
+    utterance.onerror = () => { if(generation !== speechGeneration)return; speechBusy = false; item.resolve(); window.setTimeout(()=>{if(generation===speechGeneration)speakNext();},180); };
     synth.speak(utterance);
   };
   if (synth.getVoices().length) begin();
