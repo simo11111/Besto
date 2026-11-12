@@ -1,0 +1,42 @@
+:root {
+  --hc-bg-night: #0a0618;
+  --hc-bg-morning: #1a0f2e;
+  --hc-bg-day: #1e1338;
+  --hc-violet: #8b5cf6;
+  --hc-violet-glow: #a78bfa;
+  --hc-gold: #fbbf24;
+  --hc-haunter: #ef4444;
+  --hc-safe: #10b981;
+  --hc-text: #f5f3ff;
+  --hc-muted: #a1a1aa;
+  --hc-radius-sm: 8px;
+  --hc-radius-md: 12px;
+  --hc-radius-lg: 16px;
+  --hc-radius-pill: 999px;
+  --hc-space-1: 4px;
+  --hc-space-2: 8px;
+  --hc-space-3: 12px;
+  --hc-space-4: 16px;
+  --hc-space-6: 24px;
+  --hc-space-8: 32px;
+  --hc-shadow-sm: 0 2px 8px rgb(0 0 0 / 18%);
+  --hc-shadow-md: 0 8px 24px rgb(0 0 0 / 28%);
+  --hc-shadow-lg: 0 18px 48px rgb(0 0 0 / 38%);
+  --hc-glow-violet: 0 0 24px rgb(167 139 250 / 28%);
+  --hc-glow-safe: 0 0 22px rgb(16 185 129 / 24%);
+}
+.haunted-shell { color: var(--hc-text); }
+.haunted-shell button { min-height: 48px; }
+.haunted-shell button:focus-visible,
+.haunted-shell input:focus-visible {
+  outline: 3px solid var(--hc-violet-glow);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .haunted-shell *, .haunted-shell *::before, .haunted-shell *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
