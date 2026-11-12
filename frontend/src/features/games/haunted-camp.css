@@ -237,3 +237,28 @@
 .haunted-phase-banner{max-width:620px}
 .haunted-shell .haunted-night-panel,.haunted-shell .haunted-morning-panel,.haunted-shell .haunted-end-panel{max-width:620px}
 @media(max-width:520px){.haunted-shell{padding-inline:10px!important}.haunted-camp-chat{margin-inline:-10px;padding-inline:10px}.haunted-camp-scene{height:300px}.haunted-topbar{padding-top:2px}.haunted-day-grid{padding-bottom:8px}}
+
+/* Discussion-first pacing and comfortable phone layout */
+.haunted-vote-panel{padding:clamp(16px,3.5vw,24px);border-radius:24px}
+.haunted-discussion-timer{display:flex;align-items:center;justify-content:center;gap:12px;margin:18px 0;padding:18px 14px;border:1px solid rgba(201,164,255,.24);border-radius:18px;background:radial-gradient(ellipse at 50% 0,rgba(168,85,247,.2),transparent 72%),rgba(12,12,26,.86);color:#e9d8ff}
+.haunted-discussion-timer svg{width:23px;height:23px;color:#d8b5ff}
+.haunted-discussion-timer b{font-size:clamp(30px,8vw,42px);font-variant-numeric:tabular-nums;letter-spacing:.05em;color:#fff}
+.haunted-discussion-timer small{font-size:12px;color:#b9a9cc}
+.haunted-vote-panel>p{line-height:1.85;color:#c9c1d7}
+.haunted-vote-panel .haunted-target-grid{margin:18px 0}
+.haunted-vote-panel .haunted-target{min-height:62px;border-radius:16px}
+.haunted-vote-panel .haunted-primary,.haunted-vote-panel .haunted-secondary{width:100%;margin-top:12px}
+.haunted-camp-chat{padding-top:14px}
+.haunted-camp-chat .haunted-chat-messages p{margin:0;padding:9px 12px;border:1px solid rgba(190,160,225,.08);border-radius:13px;background:rgba(20,19,34,.78);font-size:13px;line-height:1.65}
+.haunted-camp-chat .haunted-chat-messages p b{color:#d6adff}
+.haunted-shell{scroll-padding-bottom:230px}
+@media(max-width:520px){
+ .haunted-shell{padding-top:calc(8px + env(safe-area-inset-top,0px))!important}
+ .haunted-camp-scene{height:clamp(250px,39vh,320px);margin-bottom:12px}
+ .haunted-phase-banner{margin-block:8px 12px}
+ .haunted-vote-panel{padding:15px 12px;border-radius:20px}
+ .haunted-camp-chat{max-height:38vh;overflow:hidden}
+ .haunted-camp-chat .haunted-chat-messages{max-height:94px;min-height:38px}
+ .haunted-voice-box{gap:8px}
+ .haunted-bottom-bar{padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
+}
