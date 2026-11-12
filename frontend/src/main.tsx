@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './style.css';
+import './styles/tokens.css';
 import './features/shared/header-polish.css';
 import './features/shared/social-polish.css';
 import './features/games/haunted-camp.css';
