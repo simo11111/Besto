@@ -1,4 +1,4 @@
-export type Tab='home'|'games'|'room'|'game'|'rooms'|'friends'|'profile'|'leaderboard'|'shop';
+export type Tab='home'|'games'|'room'|'game'|'rooms'|'friends'|'profile'|'leaderboard';
 export type Room={id:string;code:string;name:string;is_private:boolean;max_players:number;status:string;game_key?:string|null};
 export type Profile={id:string;username:string;avatar_url?:string|null;gender?:'male'|'female'|null;bio:string;xp:number;coins:number;gems:number;level:number;wins:number;games_played:number;total_score:number;streak_days:number;last_daily_claim:string|null;equipped_frame:string;equipped_title:string};
 export type Game={id:string;game_key:string;status:string;created_by:string;result?:unknown};
