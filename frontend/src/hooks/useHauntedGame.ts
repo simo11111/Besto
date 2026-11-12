@@ -81,7 +81,7 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
     if (!supabase || !roomId || !userId) return;
     let cancelled = false;
     if (!effectiveGameId) {
-      void supabase.rpc('get_active_haunted_game', { p_room_id: roomId }).then(async ({ data, error: rpcError }) => {
+      void supabase.rpc('get_latest_haunted_game', { p_room_id: roomId }).then(async ({ data, error: rpcError }) => {
         if (cancelled || rpcError || !data) return;
         const id = data as string;
         const { data: snapshot } = await supabase!.rpc('get_haunted_game_state', { p_game_id: id });
@@ -90,7 +90,7 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
     } else void refreshRef.current();
     const discover = window.setInterval(async () => {
       if (cancelled || effectiveGameId || document.visibilityState !== 'visible') return;
-      const { data } = await supabase!.rpc('get_active_haunted_game', { p_room_id: roomId });
+      const { data } = await supabase!.rpc('get_latest_haunted_game', { p_room_id: roomId });
       if (!cancelled && data) {
         const { data: snapshot } = await supabase!.rpc('get_haunted_game_state', { p_game_id: data });
         if (!cancelled && snapshot) setState(snapshot as HauntedState);
