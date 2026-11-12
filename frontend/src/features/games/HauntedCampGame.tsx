@@ -32,7 +32,7 @@ function RoleMark({ role, size = 22 }: { role: HauntedRole; size?: number }) {
   return <Users size={size} />;
 }
 
-function AnimeCampCharacter({ gender, seed, spriteUrl }: { gender: 'male' | 'female'; seed: string; spriteUrl?: string | null }) {
+function AnimeCampCharacter({ gender, seed }: { gender: 'male' | 'female'; seed: string }) {
   const female = gender === 'female';
   const palettes = [
     { robe:'#473d86', shadow:'#242044', trim:'#e2c7ff', hair:'#20192e', eye:'#78d9ff', skin:'#f4c7ae' },
@@ -51,8 +51,7 @@ function AnimeCampCharacter({ gender, seed, spriteUrl }: { gender: 'male' | 'fem
   const c = palettes[variant];
   const uid = 'anime'+hash.toString(36);
   const longHair = female && variant % 3 !== 1;
-  const spriteColumn = hash % 4;
-  if (spriteUrl) return <span className="haunted-anime-sprite" role="img" aria-label={female?'شخصية أنمي أنثى':'شخصية أنمي ذكر'} style={{backgroundImage:'url("'+spriteUrl+'")',backgroundPosition:(spriteColumn*100/3)+'% '+(female?'100%':'0%')}}/>;
+
   const spiky = !female && variant % 3 !== 1;
   return <svg className={'haunted-anime-art '+(female?'is-female':'is-male')} viewBox="0 0 140 180" role="img" aria-label={female?'شخصية أنمي أنثى':'شخصية أنمي ذكر'}>
     <defs>
@@ -132,7 +131,6 @@ export default function HauntedCampGame(props: Props) {
   const [inviteDrawerOpen, setInviteDrawerOpen] = useState(false);
   const [now, setNow] = useState(Date.now());
   const [soundOn, setSoundOn] = useState(() => getSoundEnabled());
-  const [characterSpriteUrl, setCharacterSpriteUrl] = useState<string | null>(null);
   const [previousPhase, setPreviousPhase] = useState<string | null>(null);
   const [narratorVisible, setNarratorVisible] = useState(false);
   const [narratorText, setNarratorText] = useState('');
@@ -158,7 +156,6 @@ export default function HauntedCampGame(props: Props) {
   const voted = Boolean(state?.my_vote);
 
   useEffect(() => { preloadHauntedSounds(); setHauntedAudioMuted(!soundOn); if(soundOn)startCampMusic(); return()=>{stopCampMusic();if(roleHideTimerRef.current!==null)window.clearTimeout(roleHideTimerRef.current);}; }, []);
-  useEffect(() => { let active=true; fetch('/api/warm-characters',{cache:'no-store'}).then(response=>response.ok?response.json():null).then(data=>{if(active&&data?.ready&&typeof data.url==='string')setCharacterSpriteUrl(data.url);}).catch(()=>undefined); return()=>{active=false;}; }, []);
   useEffect(() => {
     if (!state?.id || !myRole || roleRevealGameRef.current === state.id) return;
     roleRevealGameRef.current = state.id;
@@ -266,7 +263,7 @@ export default function HauntedCampGame(props: Props) {
       <div className="haunted-scene-moon" aria-hidden="true"/>
       <div className="haunted-scene-tent" aria-hidden="true"><span/></div>
       <div className="haunted-campfire" aria-hidden="true"><i/><b/><span/></div>
-      <div className="haunted-camp-ring">{state.players.map((player,index)=>{const angle=(index/Math.max(state.players.length,1))*Math.PI*2-Math.PI/2;const ringX=state.players.length>=8?40:32;const ringY=state.players.length>=8?28:30;const left=50+ringX*Math.cos(angle);const top=50+ringY*Math.sin(angle);const canChoose=player.is_alive&&isAlive&&((state.status==='night'&&(myRole==='haunter'||myRole==='faqih')&&(myRole==='faqih'||player.user_id!==userId))||(state.status==='day'&&state.voting_open&&!voted&&player.user_id!==userId));const selected=target===player.user_id;const hasVoice=voiceParticipantIds.includes(player.user_id);const speaking=voiceSpeakingIds.includes(player.user_id);return <button type="button" aria-label={player.username+(player.is_alive?'':'، مقصي')+(speaking?'، كيهضر':'')} aria-pressed={selected} disabled={!canChoose} className={'haunted-camp-seat '+(!player.is_alive?'is-out':'')+(canChoose?' is-selectable':'')+(selected?' is-selected':'')+(hasVoice?' has-voice':'')+(speaking?' is-speaking':'')} key={player.user_id} style={{left:left+'%',top:top+'%'}} onClick={()=>{if(!canChoose)return;setTarget(player.user_id);if(state.status==='night')setConfirmNightChoice(true);else if(state.status==='day'&&state.voting_open){void submitVote(player.user_id).then(ok=>{if(ok){setTarget('');playHauntedSound('vote');}});}}}><span><AnimeCampCharacter gender={player.gender || roster.find(member=>member.user_id===player.user_id)?.profile?.gender || 'male'} seed={player.avatar_key || player.username} spriteUrl={characterSpriteUrl}/></span><b>{player.username}</b>{hasVoice&&<small className="haunted-seat-mic"><Mic size={11}/>{speaking?'كيهضر':'مايك'}</small>}{!player.is_alive&&<small className="haunted-eliminated-mark"><Skull size={13}/> مقصي</small>}{selected&&<i className="haunted-selected-flame"><Flame size={18}/></i>}</button>;})}</div>
+      <div className="haunted-camp-ring">{state.players.map((player,index)=>{const angle=(index/Math.max(state.players.length,1))*Math.PI*2-Math.PI/2;const ringX=state.players.length>=8?40:32;const ringY=state.players.length>=8?28:30;const left=50+ringX*Math.cos(angle);const top=50+ringY*Math.sin(angle);const canChoose=player.is_alive&&isAlive&&((state.status==='night'&&(myRole==='haunter'||myRole==='faqih')&&(myRole==='faqih'||player.user_id!==userId))||(state.status==='day'&&state.voting_open&&!voted&&player.user_id!==userId));const selected=target===player.user_id;const hasVoice=voiceParticipantIds.includes(player.user_id);const speaking=voiceSpeakingIds.includes(player.user_id);return <button type="button" aria-label={player.username+(player.is_alive?'':'، مقصي')+(speaking?'، كيهضر':'')} aria-pressed={selected} disabled={!canChoose} className={'haunted-camp-seat '+(!player.is_alive?'is-out':'')+(canChoose?' is-selectable':'')+(selected?' is-selected':'')+(hasVoice?' has-voice':'')+(speaking?' is-speaking':'')} key={player.user_id} style={{left:left+'%',top:top+'%'}} onClick={()=>{if(!canChoose)return;setTarget(player.user_id);if(state.status==='night')setConfirmNightChoice(true);else if(state.status==='day'&&state.voting_open){void submitVote(player.user_id).then(ok=>{if(ok){setTarget('');playHauntedSound('vote');}});}}}><span><AnimeCampCharacter gender={player.gender || roster.find(member=>member.user_id===player.user_id)?.profile?.gender || 'male'} seed={player.avatar_key || player.username}/></span><b>{player.username}</b>{hasVoice&&<small className="haunted-seat-mic"><Mic size={11}/>{speaking?'كيهضر':'مايك'}</small>}{!player.is_alive&&<small className="haunted-eliminated-mark"><Skull size={13}/> مقصي</small>}{selected&&<i className="haunted-selected-flame"><Flame size={18}/></i>}</button>;})}</div>
       <span className="haunted-scene-caption">المخيم ديالكم · {alivePlayers.length} باقيين حدا العافية</span>{state.status==='day'&&state.voting_open&&!voted&&isAlive&&<span className="haunted-scene-hint">ضغط على الشخصية اللي شاك فيها باش تصوّت</span>}
     </div>
     <div className="haunted-phase-banner">
@@ -283,7 +280,7 @@ export default function HauntedCampGame(props: Props) {
       <motion.section className="haunted-confirm-card" initial={reduceMotion?false:{opacity:0,scale:.9,y:18}} animate={{opacity:1,scale:1,y:0}} transition={{duration:.22}}>
         <span className="haunted-confirm-emblem">{myRole==='haunter'?<Skull size={30}/>:<Shield size={30}/>}</span><small>{myRole==='haunter'?'قرار المسكون · سري':'قرار الفقيه · سري'}</small>
         <h2 id="haunted-confirm-title">{myRole==='haunter'?'متأكد بغيتي تختار هاد الضحية؟':'متأكد بغيتي تحمي هاد اللاعب؟'}</h2>
-        <div className="haunted-confirm-player"><span><AnimeCampCharacter gender={state.players.find(p=>p.user_id===target)?.gender||'male'} seed={state.players.find(p=>p.user_id===target)?.avatar_key||target} spriteUrl={characterSpriteUrl}/></span><b>{state.players.find(p=>p.user_id===target)?.username||'اللاعب المختار'}</b></div>
+        <div className="haunted-confirm-player"><span><AnimeCampCharacter gender={state.players.find(p=>p.user_id===target)?.gender||'male'} seed={state.players.find(p=>p.user_id===target)?.avatar_key||target}/></span><b>{state.players.find(p=>p.user_id===target)?.username||'اللاعب المختار'}</b></div>
         <p>{myRole==='haunter'?'إلا أكدتي، الاختيار غادي يتسجل وما تقدرش تبدلو.':'إلا أكدتي، الحماية غادي تتسجل بسرية حتى يطلع الصباح.'}</p>
         <div className="haunted-confirm-actions"><button type="button" className="haunted-secondary" disabled={busy} onClick={()=>setConfirmNightChoice(false)}><X size={17}/> تراجع</button><button type="button" className="haunted-primary" disabled={busy} onClick={()=>void submitNightChoice()}>{busy?'كنسجلو القرار...':<><Check size={18}/> نعم، متأكد</>}</button></div>
       </motion.section>
