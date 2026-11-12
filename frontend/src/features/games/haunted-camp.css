@@ -271,3 +271,23 @@
 .haunted-loading-fire span,.haunted-loading-fire i,.haunted-loading-fire b{position:absolute;bottom:8px;width:19px;height:66px;border-radius:90% 10% 70% 20%;background:linear-gradient(180deg,#fff2b0,#ff9b36 48%,#d83e28);box-shadow:0 0 22px rgba(255,117,38,.7);transform:rotate(20deg);animation:campfire-flame .8s ease-in-out infinite alternate}
 .haunted-loading-fire i{height:49px;transform:rotate(-22deg);animation-delay:-.35s}
 .haunted-loading-fire b{height:31px;width:13px;transform:rotate(4deg);animation-delay:-.15s}
+
+/* Camp ring is the night action selector: tap a lit seat, not a text list. */
+.haunted-camp-seat{appearance:none;border:0;color:inherit;background:transparent;padding:0;cursor:default}
+.haunted-camp-seat.is-selectable{cursor:pointer}
+.haunted-camp-seat.is-selectable>span{border-color:rgba(255,174,91,.7);box-shadow:0 0 13px rgba(255,125,48,.24);transition:transform .18s,border-color .18s,box-shadow .18s}
+.haunted-camp-seat.is-selectable:active>span{transform:scale(.94)}
+.haunted-camp-seat.is-selected>span{border:3px solid #ff9b43;box-shadow:0 0 0 4px rgba(255,143,51,.18),0 0 28px rgba(255,132,42,.8);transform:scale(1.12)}
+.haunted-camp-seat.is-selected:after{content:"";position:absolute;inset:-8px;width:58px;height:58px;border:1px solid rgba(255,169,86,.75);border-radius:50%;animation:camp-target-pulse 1.25s ease-out infinite;pointer-events:none}
+.haunted-selected-flame{position:absolute;top:-16px;left:50%;transform:translateX(-50%);color:#ffb34f;filter:drop-shadow(0 0 8px #ff702c);animation:campfire-flame .55s ease-in-out infinite alternate}
+.haunted-eliminated-mark{display:flex;align-items:center;gap:3px;color:#ff8c85!important;font-weight:800}
+.haunted-camp-seat.is-out>span{border-color:rgba(255,120,120,.4);filter:grayscale(1)}
+.haunted-choice-hint{display:flex;justify-content:center;align-items:center;gap:7px;color:#ffcc93;font-size:13px}
+.haunted-role-cover{display:flex;align-items:center;justify-content:center;gap:10px}
+.haunted-role-card-inner>svg{margin:4px auto 10px;color:#d8b6ff}
+.haunted-moon{display:grid;place-items:center}
+.haunted-morning-emoji{display:grid;place-items:center}
+.haunted-role-legend span{display:inline-flex;align-items:center;gap:5px}
+.haunted-role-reveal-list span{display:grid;place-items:center}
+.haunted-vote-panel h2{display:flex;align-items:center;gap:8px}
+@keyframes camp-target-pulse{0%{transform:scale(.8);opacity:.9}100%{transform:scale(1.28);opacity:0}}
