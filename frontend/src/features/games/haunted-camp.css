@@ -33,3 +33,8 @@
 @keyframes haunted-confetti{from{transform:translateY(-12px)}to{transform:translateY(22px)}}
 
 .haunted-end-panel{position:relative;overflow:hidden}.haunted-end-panel>*{position:relative;z-index:1}.haunted-end-panel.villagers-win:before,.haunted-end-panel.haunter-win:after{z-index:0}
+
+.haunted-confetti-layer{position:absolute!important;inset:0;overflow:hidden;pointer-events:none;z-index:0!important}
+.haunted-confetti-layer i{position:absolute;top:-12px;width:7px;height:12px;border-radius:2px;background:linear-gradient(180deg,#fbbf24,#a78bfa);will-change:transform}
+.haunted-role-card{transform-style:preserve-3d;backface-visibility:hidden;will-change:transform,opacity}
+@media(prefers-reduced-motion:reduce){.haunted-confetti-layer{display:none!important}.haunted-role-card{will-change:auto}}
