@@ -934,3 +934,33 @@ body{background:radial-gradient(ellipse at 80% 0%,rgba(57,127,115,.16),transpare
 .app-loading-orb{width:24px;height:24px;border:3px solid #b88cff35;border-top-color:#d6b5ff;border-radius:50%;animation:mimox-load-spin .8s linear infinite}
 @keyframes mimox-load-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.app-loading-orb{animation:none}}
+
+/* ليلة فالخيمة — branded authentication scene */
+.auth-scene {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 230px;
+  border: 1px solid rgba(185,139,255,.28);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg,rgba(8,8,24,.08),rgba(8,8,24,.9)),
+    url('/night-camp-login.svg') center 48% / cover no-repeat,
+    #100b2b;
+  box-shadow: 0 22px 60px rgba(0,0,0,.34), 0 0 35px rgba(139,92,246,.13);
+}
+.auth-scene .auth-art-img { display:none; }
+.auth-scene-copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 230px;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  text-align: center;
+  background: linear-gradient(180deg,transparent 25%,rgba(8,7,20,.84));
+}
+.auth-scene-copy h1 { color:#fff; text-shadow:0 3px 18px #080714; }
+.auth-scene-copy p { color:#e0d2f6; }
+.install-app-banner > img { object-fit:contain; }
