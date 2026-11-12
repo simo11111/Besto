@@ -168,7 +168,7 @@ class AudioManager {
     if (this.muted) return;
     const ctx = this.getContext();
     if (!ctx) return;
-    const patterns: Record<Exclude<HauntedSound, 'night' | 'morning'>, { notes: number[]; duration: number; wave: OscillatorType; gap: number }> = {
+    const patterns: Record<Exclude<HauntedSound, 'camp' | 'night' | 'morning'>, { notes: number[]; duration: number; wave: OscillatorType; gap: number }> = {
       death: { notes: [196, 146.83, 82.41], duration: 0.48, wave: 'triangle', gap: 0.08 },
       save: { notes: [659.25, 830.61, 987.77], duration: 0.42, wave: 'sine', gap: 0.09 },
       vote: { notes: [740], duration: 0.09, wave: 'triangle', gap: 0 },
@@ -177,7 +177,7 @@ class AudioManager {
       lose: { notes: [392, 293.66, 196, 146.83], duration: 0.58, wave: 'triangle', gap: 0.16 },
       role: { notes: [392, 587.33, 783.99], duration: 0.34, wave: 'sine', gap: 0.11 }
     };
-    if (name === 'night' || name === 'morning') { this.startAmbientFallback(name, 0.3); return; }
+    if (name === 'camp' || name === 'night' || name === 'morning') { this.startAmbientFallback(name, 0.3); return; }
     const pattern = patterns[name];
     const master = ctx.createGain();
     master.gain.setValueAtTime(0.0001, ctx.currentTime);
