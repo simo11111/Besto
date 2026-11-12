@@ -43,3 +43,15 @@ WebRTC mesh مناسب للمجموعات الصغيرة. STUN وحده لا ي�
 - Production URL: https://mimox-c5a.pages.dev
 - GitHub: https://github.com/simo11111/Besto
 - خاص اختبار التسجيل والغرف واللعب والصوت يدوياً بحسابات منفصلة قبل اعتبار كل سيناريو مجرّباً.
+
+
+## الفقيه والمسكون — تفاصيل التشغيل والأمان
+- Migration `033_haunted_camp_game.sql` كتضيف محرك الأدوار السرية والتصويت والنتائج بسياسات RLS وRPC.
+- Migration `034_haunted_camp_completion.sql` كتضيف Feature Flag فـ `games_catalog`، وكتخلي الغرفة ترجع للّوبي بعد نهاية اللعبة، وكتضيف مكافآت Gems وربح أول مرة فالنهار.
+- تفعيل/تعطيل اللعبة كيتدار من `public.games_catalog` بتغيير `is_enabled`؛ الكتابة محصورة فـ JWT ديال الإدارة.
+- اختيارات الليل محفوظة فـ `haunted_night_actions` وما عندهاش سياسات قراءة للعميل. الأدوار ما كيبانوش حتى تسالي اللعبة.
+- الأصوات الحالية مولّدة بـ Web Audio API باش تخدم بلا ملفات خارجية؛ ملفات MP3 اختيارية ويمكن إضافتها لاحقاً داخل `frontend/public/sounds/`.
+- Design tokens فـ `frontend/src/styles/tokens.css` و`tokens.ts`. كاين احترام لإعداد `prefers-reduced-motion` وأزرار اللعبة عندها حد أدنى 48px.
+- CI كيشغل الاختبارات، TypeScript/Vite build، و`npm audit --audit-level=high`.
+
+**ملاحظة:** الصوت والصورة والـRealtime خاصهم اختبار يدوي بحسابات مستقلة؛ CI ما كيقدرش يعوض اختبار 4–10 لاعبين أو فحص WebRTC عبر شبكات مختلفة.
