@@ -253,7 +253,7 @@ export default function App(){
   if(!client||!room||!userId)return;
   let active=true;
   const discover=async()=>{
-   const {data,error}=await client.rpc('get_active_haunted_game',{p_room_id:room.id});
+   const {data,error}=await client.rpc('get_latest_haunted_game',{p_room_id:room.id});
    if(!active||error||!data)return;
    setSelectedGame('haunted_camp');
    setGame(current=>current?.game_key==='haunted_camp'?current:{id:'',game_key:'haunted_camp',status:'active',created_by:userId});
