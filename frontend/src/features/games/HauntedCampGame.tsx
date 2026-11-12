@@ -9,12 +9,10 @@ import { getHauntedBotCount } from './hauntedNpcRoster';
 
 type RosterMember = { user_id: string; profile?: { username?: string; avatar_url?: string | null; gender?: 'male' | 'female' | null } };
 type ChatMessage = { id: string; user_id: string; body: string; created_at?: string };
-type CampFriend = { id: string; profile?: { id: string; username?: string; avatar_url?: string | null } };
 type Props = {
   gameId: string; roomId: string; userId: string; isHost: boolean; roster: RosterMember[];
   messages: ChatMessage[]; voiceActive: boolean; voiceMuted: boolean; voiceStatus: string;
   voiceParticipantIds: string[]; voiceSpeakingIds: string[];
-  friends: CampFriend[]; onlineFriendIds: string[]; onInviteFriend: (friend: CampFriend) => Promise<void>;
   onBack: () => void; onExit: () => void; onSendChat: (text: string) => Promise<void>;
   onToggleVoice: () => void; onToggleMute: () => void; onNightMute: (muted: boolean) => void;
   onRewardsUpdated: () => void;
@@ -119,7 +117,7 @@ function AnimeCampCharacter({ gender, seed }: { gender: 'male' | 'female'; seed:
   </svg>;
 }
 export default function HauntedCampGame(props: Props) {
-  const { gameId, roomId, userId, isHost, roster, messages, onBack, onExit, onSendChat, voiceActive, voiceMuted, voiceStatus, voiceParticipantIds, voiceSpeakingIds, friends, onlineFriendIds, onInviteFriend, onToggleVoice, onToggleMute, onNightMute, onRewardsUpdated } = props;
+  const { gameId, roomId, userId, isHost, roster, messages, onBack, onExit, onSendChat, voiceActive, voiceMuted, voiceStatus, voiceParticipantIds, voiceSpeakingIds, onToggleVoice, onToggleMute, onNightMute, onRewardsUpdated } = props;
   const reduceMotion = useReducedMotion();
   const [quickMode, setQuickMode] = useState(false);
   const [revealed, setRevealed] = useState(false);
@@ -128,7 +126,6 @@ export default function HauntedCampGame(props: Props) {
   const roleRevealGameRef = useRef<string | null>(null);
   const [target, setTarget] = useState('');
   const [chatText, setChatText] = useState('');
-  const [inviteDrawerOpen, setInviteDrawerOpen] = useState(false);
   const [now, setNow] = useState(Date.now());
   const [soundOn, setSoundOn] = useState(() => getSoundEnabled());
   const [previousPhase, setPreviousPhase] = useState<string | null>(null);
@@ -300,7 +297,7 @@ export default function HauntedCampGame(props: Props) {
     {state.status==='ended'&&<motion.div className={'haunted-end-panel '+(state.winner==='villagers'?'villagers-win':'haunter-win')} initial={reduceMotion?false:{opacity:0,scale:0.96,y:12}} animate={{opacity:1,scale:1,y:0}} transition={{duration:reduceMotion?0.01:0.55}}>{state.winner==='villagers'&&!reduceMotion&&<div className="haunted-confetti-layer" aria-hidden="true">{Array.from({length:18},(_,i)=><motion.i key={i} style={{left:(i*37)%100+'%'}} animate={{y:['-10vh','90vh'],rotate:[0,360],opacity:[1,1,0]}} transition={{duration:2.8,delay:(i%6)*0.12,ease:'linear'}} />)}</div>}<div className="haunted-win-icon">{state.winner==='villagers'?<Users size={36}/>:<Skull size={36}/>}</div><span className="haunted-kicker">THE CAMP HAS SPOKEN</span><h2>{state.winner==='villagers'?'المواطنين ربحو!':'المسكون سيطر على المخيم!'}</h2><p>ها الأدوار الحقيقية ديال جميع اللاعبين:</p><div className="haunted-role-reveal-list">{state.roles.map(item=>{const player=state.players.find(p=>p.user_id===item.user_id);return <div key={item.user_id}><span><RoleMark role={item.role} size={20}/></span><b>{player?.username||'لاعب'}</b><small>{roleCopy[item.role].name}</small></div>;})}</div><button className="haunted-primary" disabled={busy} onClick={()=>void startGame()}><RefreshCw/> لعبة جديدة</button><button className="haunted-secondary" onClick={onBack}>رجوع للّوبي</button></motion.div>}
 
 
-    {!narratorVisible&&<section className="haunted-camp-chat"><h3><MessageCircle size={17}/> دردشة المخيم <span className="haunted-chat-live">مباشر</span><button type="button" className="haunted-invite-trigger" onClick={()=>setInviteDrawerOpen(value=>!value)}><Users size={14}/> دعوة الأصدقاء</button></h3>{inviteDrawerOpen&&<aside className="haunted-invite-drawer" aria-label="دعوة الأصدقاء"><div className="haunted-invite-drawer-head"><b>الأصدقاء</b><button type="button" onClick={()=>setInviteDrawerOpen(false)} aria-label="إغلاق">×</button></div>{friends.length?friends.map(friend=><div className="haunted-invite-friend" key={friend.id}><span className="haunted-invite-avatar">{friend.profile?.avatar_url?<img src={friend.profile.avatar_url} alt=""/>:(friend.profile?.username||'؟').slice(0,1)}</span><span><b>{friend.profile?.username||'لاعب'}</b><small>{onlineFriendIds.includes(friend.profile?.id||'')?'متصل الآن':'غير متصل'}</small></span><button type="button" onClick={()=>void onInviteFriend(friend)} aria-label={'دعوة '+(friend.profile?.username||'صديق')}><Plus size={17}/></button></div>):<p className="haunted-invite-empty">ما عندك حتى صديق فالقائمة دابا.</p>}</aside>
+    {!narratorVisible&&<section className="haunted-camp-chat"><h3><MessageCircle size={17}/> دردشة المخيم <span className="haunted-chat-live">مباشر</span></h3>{inviteDrawerOpen&&
     {state.status==='day'&&<section className="haunted-voice-dock" aria-label="الصوت المباشر">
         <div className="haunted-voice-dock-head"><span><Mic size={16}/> الصوت المباشر</span><small>{state.status==='day'?'الصوت متاح فالنقاش':'المايك غادي يتحل مع بداية النقاش'}</small></div>
         <div className="haunted-voice-dock-people">{state.players.filter(player=>voiceParticipantIds.includes(player.user_id)).slice(0,6).map(player=><span key={player.user_id} className={'haunted-voice-person '+(voiceSpeakingIds.includes(player.user_id)?'is-speaking':'')}><span className="haunted-voice-avatar">{player.avatar_url?<img src={player.avatar_url} alt=""/>:(player.username||'؟').slice(0,1)}</span><span className="haunted-voice-person-copy"><b>{player.username}</b><small>{voiceSpeakingIds.includes(player.user_id)?'كيهضر دابا':'متصل بالصوت'}</small></span><Mic size={13}/></span>)}{!voiceParticipantIds.length&&<small className="haunted-voice-empty">مازال حتى واحد ما دخل للصوت</small>}</div>
