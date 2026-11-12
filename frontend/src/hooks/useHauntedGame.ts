@@ -125,6 +125,7 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
       .on('postgres_changes', { event: '*', schema: 'public', table: 'haunted_games', filter: 'id=eq.' + state.id }, () => void refreshRef.current())
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'haunted_events', filter: 'game_id=eq.' + state.id }, () => void refreshRef.current())
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'haunted_votes', filter: 'game_id=eq.' + state.id }, () => void refreshRef.current())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'haunted_night_actions', filter: 'game_id=eq.' + state.id }, () => void refreshRef.current())
       .subscribe((status) => { if (status === 'SUBSCRIBED') void refreshRef.current(); });
     const poll = window.setInterval(() => { if (document.visibilityState === 'visible') void refreshRef.current(); }, 5000);
     document.addEventListener('visibilitychange', refreshOnVisible);
