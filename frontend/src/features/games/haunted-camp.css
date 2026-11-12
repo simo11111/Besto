@@ -438,7 +438,9 @@
 @media(prefers-reduced-motion:reduce){.haunted-narrator-orb,.haunted-narrator-wave i{animation:none!important}}
 
 /* Premium anime sprite-sheet characters and a dedicated live-voice dock. */
-.haunted-anime-sprite{display:block;width:100%;height:100%;aspect-ratio:7/9;background-repeat:no-repeat;background-size:400% 200%;filter:drop-shadow(0 7px 10px rgba(0,0,0,.34))}
+.haunted-anime-sprite{display:block;width:100%;height:100%;aspect-ratio:7/9;background-repeat:no-repeat;background-size:400% 200%;filter:drop-shadow(0 7px 10px rgba(0,0,0,.34));transform-origin:50% 100%;animation:anime-camp-breathe 3.2s ease-in-out infinite}
+.haunted-camp-seat:nth-child(2n) .haunted-anime-sprite{animation-delay:-1.2s}
+@media(prefers-reduced-motion:reduce){.haunted-anime-sprite{animation:none!important}}
 .haunted-camp-seat>span:has(.haunted-anime-sprite),.haunted-confirm-player span:has(.haunted-anime-sprite){overflow:visible;background:transparent}
 .haunted-voice-dock{position:relative;z-index:16;flex:0 0 auto;display:grid;gap:8px;margin:8px 0;padding:10px 12px;border:1px solid rgba(181,139,230,.22);border-radius:17px;background:linear-gradient(125deg,rgba(30,25,49,.96),rgba(13,17,29,.97));box-shadow:0 8px 25px rgba(0,0,0,.22)}
 .haunted-voice-dock-head,.haunted-voice-dock-actions{display:flex;align-items:center;justify-content:space-between;gap:8px}
