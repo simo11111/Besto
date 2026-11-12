@@ -13,6 +13,7 @@ export type RoomMemberProfile = {
   id: string;
   username: string;
   avatar_url: string | null;
+  gender: 'male' | 'female' | null;
   level: number;
   equipped_frame: string;
   equipped_title: string;
@@ -57,7 +58,7 @@ export async function fetchRoomSnapshot(client: Client, roomId: string): Promise
   if (!memberError) {
     const ids = (members ?? []).map((member) => member.user_id);
     const { data } = ids.length
-      ? await client.from('profiles').select('id,username,avatar_url,level,equipped_frame,equipped_title').in('id', ids)
+      ? await client.from('profiles').select('id,username,avatar_url,gender,level,equipped_frame,equipped_title').in('id', ids)
       : { data: [] };
     profiles = (data ?? []) as RoomMemberProfile[];
   }
