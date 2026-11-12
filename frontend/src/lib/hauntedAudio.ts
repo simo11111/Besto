@@ -36,7 +36,7 @@ export async function playHauntedNarrator(fallbackText: string): Promise<void> {
     const response=await fetch('/api/warm-narrator',{cache:'no-store'});
     if(response.ok){const result=await response.json() as {ready?:boolean;url?:string};if(result.ready&&result.url)source=result.url;}
   } catch { /* The Pages audio proxy remains a fallback if persistent storage is unavailable. */ }
-  return new Promise(resolve=>{const audio=new Audio(source);narratorAudio=audio;audio.preload='auto';audio.volume=.96;audio.playbackRate=1.08;let finished=false;let usedFallback=source!=='/sounds/narrator-night.mp3';
+  return new Promise(resolve=>{const audio=new Audio(source);narratorAudio=audio;audio.preload='auto';audio.volume=.96;audio.playbackRate=1.08;let finished=false;let usedFallback=source==='/sounds/narrator-night.mp3';
     const done=()=>{if(finished)return;finished=true;audio.onended=null;audio.onerror=null;if(narratorAudio===audio)narratorAudio=null;if(narratorFinish===done)narratorFinish=null;resolve();}; narratorFinish=done;
     audio.onended=done;
     audio.onerror=()=>{if(!usedFallback){usedFallback=true;audio.src='/sounds/narrator-night.mp3';void audio.play().catch(()=>{if(narratorAudio===audio)narratorAudio=null;void speakHauntedAnnouncement(fallbackText).then(done);});return;}if(narratorAudio===audio)narratorAudio=null;void speakHauntedAnnouncement(fallbackText).then(done);};
