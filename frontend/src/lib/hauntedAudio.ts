@@ -5,6 +5,8 @@ export function unlockHauntedNarrator() { if (typeof window !== 'undefined' && '
 
 export function startCampMusic() { audioManager.fadeIn('camp', 0.18); }
 export function stopCampMusic() { audioManager.stop('camp'); }
+export function startDiscussionAmbience() { audioManager.startDiscussionFire(); }
+export function stopDiscussionAmbience() { audioManager.stopDiscussionFire(); }
 
 export function preloadHauntedSounds() {
   void audioManager.preload(['role','death','save','vote','eject','win','lose']);
@@ -37,6 +39,7 @@ let announcementFinish: (() => void) | null = null;
 let announcementRun = 0;
 let announcementsUrl: string | null = null;
 let quickAnnouncementsUrl: string | null = null;
+let faqihAnnouncementsUrl: string | null = null;
 let announcementRequest: Promise<string | null> | null = null;
 let currentSpeechResolve: (()=>void) | null = null;
 export function stopHauntedNarrator() {
@@ -123,11 +126,12 @@ export function speakHauntedAnnouncement(text: string): Promise<void> {
 
 
 
-export type HauntedAnnouncementSegment = 'night' | 'night_quick' | 'morning_safe' | 'morning_death' | 'discussion' | 'voting' | 'tie' | 'ejected' | 'win_villagers' | 'win_haunter';
+export type HauntedAnnouncementSegment = 'night' | 'night_quick' | 'faqih_awake' | 'morning_safe' | 'morning_death' | 'discussion' | 'voting' | 'tie' | 'ejected' | 'win_villagers' | 'win_haunter';
 
 const announcementSegments: Record<HauntedAnnouncementSegment, [number, number]> = {
   night: [30.98, 42.40],
   night_quick: [0, 7.15],
+  faqih_awake: [0, 9.334],
   morning_safe: [44.15, 53.98],
   morning_death: [55.63, 66.10],
   discussion: [68.05, 81.35],
@@ -146,9 +150,10 @@ async function getAnnouncementsUrl(): Promise<string | null> {
       if (!base) return null;
       const response = await fetch(base + '/functions/v1/cache-haunted-announcements', { method: 'GET', cache: 'no-store' });
       if (!response.ok) return null;
-      const result = await response.json() as { ready?: boolean; url?: string; quick_url?: string };
+      const result = await response.json() as { ready?: boolean; url?: string; quick_url?: string; faqih_url?: string };
       if (result.ready && typeof result.url === 'string') announcementsUrl = result.url;
       if (result.ready && typeof result.quick_url === 'string') quickAnnouncementsUrl = result.quick_url;
+      if (result.ready && typeof result.faqih_url === 'string') faqihAnnouncementsUrl = result.faqih_url;
       return announcementsUrl;
     })().catch(() => null).finally(() => { announcementRequest = null; });
   }
@@ -170,7 +175,7 @@ export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncemen
 
   const masterUrl = await getAnnouncementsUrl();
   if (currentRun !== announcementRun) return;
-  const url = segment === 'night_quick' ? quickAnnouncementsUrl : masterUrl;
+  const url = segment === 'night_quick' ? quickAnnouncementsUrl : segment === 'faqih_awake' ? faqihAnnouncementsUrl : masterUrl;
   if (!url) {
     await speakHauntedAnnouncement(fallbackText);
     if (afterText) await speakHauntedAnnouncement(afterText);
@@ -183,7 +188,7 @@ export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncemen
     announcementAudio = audio;
     audio.preload = 'auto';
     audio.volume = 0.98;
-    audio.playbackRate = 0.94;
+    audio.playbackRate = segment === 'faqih_awake' ? 0.9 : 0.93;
     let finished = false;
     let playbackStarted = false;
     const finish = (ok: boolean) => {
