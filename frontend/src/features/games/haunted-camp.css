@@ -222,3 +222,18 @@
 @keyframes campfire-glow{from{opacity:.55;transform:scale(.9)}to{opacity:1;transform:scale(1.13)}}
 @media(max-width:520px){.haunted-camp-scene{height:290px}.haunted-camp-seat{width:62px}.haunted-camp-seat>span{width:36px;height:36px}.haunted-camp-seat b{max-width:62px;font-size:9px}.haunted-scene-tent{width:76px;height:60px}}
 @media(prefers-reduced-motion:reduce){.haunted-campfire i,.haunted-campfire b,.haunted-campfire:before{animation:none!important}}
+
+/* Full-screen mobile game stage and persistent camp chat */
+.haunted-shell{position:fixed!important;inset:0!important;z-index:120!important;width:100vw!important;height:100dvh!important;max-width:none!important;margin:0!important;padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(14px + env(safe-area-inset-bottom,0px))!important;border:0!important;border-radius:0!important;overflow-y:auto!important;overscroll-behavior:contain;background:radial-gradient(ellipse at 50% 42%,rgba(111,54,142,.2),transparent 52%),#080914!important}
+.haunted-camp-chat{position:sticky;bottom:0;z-index:15;margin:16px -14px -14px;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid rgba(194,151,255,.22);background:linear-gradient(180deg,rgba(13,12,25,.92),rgba(7,8,17,.99));backdrop-filter:blur(18px);box-shadow:0 -12px 34px rgba(0,0,0,.3)}
+.haunted-camp-chat h3{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:14px;color:#e6d4ff}
+.haunted-camp-chat .haunted-chat-messages{max-height:116px;min-height:46px;overflow:auto;gap:5px}
+.haunted-camp-chat form{display:flex;gap:8px;margin-top:8px}
+.haunted-camp-chat input{flex:1;min-width:0;min-height:46px;padding:10px 13px;border:1px solid rgba(192,151,255,.22);border-radius:13px;background:#11101f;color:#fff;font:inherit}
+.haunted-camp-chat form button{min-width:64px;border:0;border-radius:12px;background:#baff42;color:#17200f;font-weight:900}
+.haunted-camp-chat .haunted-voice-box{margin-top:8px;padding:7px}
+.haunted-bot-note{margin:0 0 12px;color:#c7b2dc;font-size:12px;line-height:1.6}
+.haunted-camp-scene{height:clamp(280px,48vh,430px);max-width:620px}
+.haunted-phase-banner{max-width:620px}
+.haunted-shell .haunted-night-panel,.haunted-shell .haunted-morning-panel,.haunted-shell .haunted-end-panel{max-width:620px}
+@media(max-width:520px){.haunted-shell{padding-inline:10px!important}.haunted-camp-chat{margin-inline:-10px;padding-inline:10px}.haunted-camp-scene{height:300px}.haunted-topbar{padding-top:2px}.haunted-day-grid{padding-bottom:8px}}
