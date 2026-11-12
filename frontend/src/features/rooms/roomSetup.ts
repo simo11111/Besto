@@ -1,7 +1,6 @@
 import type { GameDefinition } from '../games/registry';
 export const ROOM_CAPACITIES = [2, 4, 6, 8, 10, 12, 16] as const;
 export function getRoomCapacityOptions(game: Pick<GameDefinition, 'mode' | 'minPlayers' | 'maxPlayers'>): number[] {
-  if (game.mode === 'duel') return [2];
   return ROOM_CAPACITIES.filter((capacity) => capacity >= game.minPlayers && capacity <= game.maxPlayers);
 }
 export function normalizeRoomCapacity(game: Pick<GameDefinition, 'mode' | 'minPlayers' | 'maxPlayers'>, currentCapacity: number): number {
