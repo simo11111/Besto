@@ -96,6 +96,10 @@ export default function HauntedCampGame(props: Props) {
     if (ok) { setTarget(''); playHauntedSound('vote'); }
   }
 
+  if (!state && gameId) {
+    return <section className="haunted-shell haunted-loading"><div className="haunted-stars" aria-hidden="true"/><div className="haunted-loading-fire"><span/><i/><b/></div><h1>كنوجدو المخيم…</h1><p>الراوي كيوزع الأدوار وكيشعل العافية. بقا معانا لحظة.</p></section>;
+  }
+
   if (!state) {
     return <section className="haunted-shell haunted-lobby">
       <div className="haunted-stars" aria-hidden="true"/><div className="haunted-header"><span className="haunted-kicker">ليلة فالخيمة · الفقيه والمسكون</span><h1>ليلة فالخيمة</h1><p>ليلة طويلة، أسرار مخفية، وشكون غادي يخرج من الخيمة؟</p></div>
