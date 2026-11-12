@@ -15,6 +15,9 @@ describe('haunted camp rules', () => {
   it('ejects nobody when the second ballot is still tied', () => {
     expect(resolveVoteOutcome(['a','a','b','b'], 2)).toEqual({ outcome: 'no_ejection', targetId: null });
   });
+  it('does not eject anyone when nobody votes before the deadline', () => {
+    expect(resolveVoteOutcome([], 1)).toEqual({ outcome: 'no_ejection', targetId: null });
+  });
   it('ejects the unique top-voted player', () => {
     expect(resolveVoteOutcome(['a','a','b'], 1)).toEqual({ outcome: 'ejected', targetId: 'a' });
   });
