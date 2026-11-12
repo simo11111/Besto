@@ -117,7 +117,7 @@ function AnimeCampCharacter({ gender, seed }: { gender: 'male' | 'female'; seed:
   </svg>;
 }
 export default function HauntedCampGame(props: Props) {
-  const { gameId, roomId, userId, isHost, maxPlayers, roster, messages, onBack, onExit, onSendChat, voiceActive, voiceMuted, voiceStatus, voiceParticipantIds, voiceSpeakingIds, onToggleVoice, onToggleMute, onNightMute, onRewardsUpdated } = props;
+  const { gameId, roomId, userId, isHost, maxPlayers, roster, messages, onBack, onExit, onSendChat, voiceActive, voiceParticipantIds, voiceSpeakingIds, onToggleVoice, onNightMute, onRewardsUpdated } = props;
   const reduceMotion = useReducedMotion();
   const [quickMode, setQuickMode] = useState(false);
   const [revealed, setRevealed] = useState(false);
