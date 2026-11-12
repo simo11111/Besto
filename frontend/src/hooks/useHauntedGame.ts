@@ -116,6 +116,15 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
     return () => window.clearInterval(timer);
   }, [state?.id, state?.status, isHost]);
 
+  // The faqih must receive the haunter's choice promptly, even if Realtime is delayed on mobile.
+  useEffect(() => {
+    if (!state || state.status !== 'night' || state.role !== 'faqih') return;
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === 'visible') void refreshRef.current();
+    }, 1200);
+    return () => window.clearInterval(timer);
+  }, [state?.id, state?.status, state?.role, state?.round]);
+
   useEffect(() => {
     if (!supabase || !state?.id) return;
     const client = supabase;
