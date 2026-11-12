@@ -28,14 +28,35 @@ export function setHauntedAudioMuted(muted: boolean) {
 /** Speak short phase announcements with the device's Arabic voice when available. */
 export function speakHauntedAnnouncement(text: string) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window) || !text.trim()) return;
-  window.speechSynthesis.cancel();
+  const synth = window.speechSynthesis;
+  synth.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'ar-MA';
-  utterance.rate = 0.92;
-  utterance.pitch = 0.92;
-  const voices = window.speechSynthesis.getVoices();
-  const arabicVoice = voices.find(voice => voice.lang.toLowerCase().startsWith('ar-ma'))
-    || voices.find(voice => voice.lang.toLowerCase().startsWith('ar'));
-  if (arabicVoice) utterance.voice = arabicVoice;
-  window.speechSynthesis.speak(utterance);
+  utterance.rate = 0.88;
+  utterance.pitch = 0.94;
+  utterance.volume = 1;
+  let spoken = false;
+  const speakWithAvailableVoice = () => {
+    if (spoken) return;
+    spoken = true;
+    const voices = synth.getVoices();
+    const voice = voices.find(item => item.lang.toLowerCase() === 'ar-ma')
+      || voices.find(item => item.lang.toLowerCase().startsWith('ar'))
+      || voices.find(item => item.lang.toLowerCase().startsWith('fr'));
+    if (voice) utterance.voice = voice;
+    synth.speak(utterance);
+  };
+  const onVoicesChanged = () => {
+    if (synth.getVoices().length) {
+      window.clearTimeout(fallbackTimer);
+      synth.removeEventListener('voiceschanged', onVoicesChanged);
+      speakWithAvailableVoice();
+    }
+  };
+  const fallbackTimer = window.setTimeout(() => {
+    synth.removeEventListener('voiceschanged', onVoicesChanged);
+    speakWithAvailableVoice();
+  }, 900);
+  synth.addEventListener('voiceschanged', onVoicesChanged);
+  if (synth.getVoices().length) onVoicesChanged();
 }
