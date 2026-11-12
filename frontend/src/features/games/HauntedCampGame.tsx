@@ -10,7 +10,7 @@ import { getHauntedBotCount } from './hauntedNpcRoster';
 type RosterMember = { user_id: string; profile?: { username?: string; avatar_url?: string | null } };
 type ChatMessage = { id: string; user_id: string; body: string; created_at?: string };
 type Props = {
-  roomId: string; userId: string; isHost: boolean; roster: RosterMember[];
+  gameId: string; roomId: string; userId: string; isHost: boolean; roster: RosterMember[];
   messages: ChatMessage[]; voiceActive: boolean; voiceMuted: boolean; voiceStatus: string;
   onBack: () => void; onExit: () => void; onSendChat: (text: string) => Promise<void>;
   onToggleVoice: () => void; onToggleMute: () => void; onNightMute: (muted: boolean) => void;
@@ -24,7 +24,7 @@ const roleCopy: Record<HauntedRole, { name: string; icon: string; title: string;
 };
 
 export default function HauntedCampGame(props: Props) {
-  const { roomId, userId, isHost, roster, messages, onBack, onExit, onSendChat, voiceActive, voiceMuted, voiceStatus, onToggleVoice, onToggleMute, onNightMute, onRewardsUpdated } = props;
+  const { gameId, roomId, userId, isHost, roster, messages, onBack, onExit, onSendChat, voiceActive, voiceMuted, voiceStatus, onToggleVoice, onToggleMute, onNightMute, onRewardsUpdated } = props;
   const reduceMotion = useReducedMotion();
   const [quickMode, setQuickMode] = useState(false);
   const [revealed, setRevealed] = useState(false);
@@ -35,7 +35,7 @@ export default function HauntedCampGame(props: Props) {
   const [previousPhase, setPreviousPhase] = useState<string | null>(null);
   const [previousEventCount, setPreviousEventCount] = useState(0);
   const { state, busy, error, start, submitKill, submitProtection, resolveNight, advanceMorning, submitVote, resolveVote, refresh } =
-    useHauntedGame(null, roomId, userId, isHost);
+    useHauntedGame(gameId || null, roomId, userId, isHost);
 
   const myRole = state?.role;
   const role = myRole ? roleCopy[myRole] : null;
