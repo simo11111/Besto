@@ -11,7 +11,7 @@ type RosterMember = { user_id: string; profile?: { username?: string; avatar_url
 type ChatMessage = { id: string; user_id: string; body: string; created_at?: string };
 type Props = {
   gameId: string; roomId: string; userId: string; isHost: boolean; maxPlayers: number; roster: RosterMember[];
-  messages: ChatMessage[]; voiceActive: boolean; voiceStatus: string;
+  messages: ChatMessage[]; voiceActive: boolean;
   voiceParticipantIds: string[]; voiceSpeakingIds: string[];
   onBack: () => void; onExit: () => void; onSendChat: (text: string) => Promise<void>;
   onToggleVoice: () => void; onNightMute: (muted: boolean) => void;
