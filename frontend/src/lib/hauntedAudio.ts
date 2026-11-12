@@ -87,15 +87,17 @@ function speakNext() {
   speechBusy = true;
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'ar-MA';
-  utterance.rate = 0.86;
-  utterance.pitch = 0.72;
+  utterance.rate = 0.92;
+  utterance.pitch = 0.82;
   utterance.volume = 1;
   let begun = false;
   const begin = () => {
     if (begun || generation !== speechGeneration) return;
     begun = true;
     const voices = synth.getVoices();
-    const voice = voices.find(item => item.lang.toLowerCase() === 'ar-ma')
+    const voice = voices.find(item => item.lang.toLowerCase() === 'ar-ma' && /male|mohammed|hassan|adil|omar/i.test(item.name))
+      || voices.find(item => item.lang.toLowerCase() === 'ar-ma')
+      || voices.find(item => item.lang.toLowerCase().startsWith('ar') && /male|mohammed|hassan|adil|omar/i.test(item.name))
       || voices.find(item => item.lang.toLowerCase().startsWith('ar'))
       || voices.find(item => item.default)
       || voices[0];
