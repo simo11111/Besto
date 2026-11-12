@@ -60,15 +60,15 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
     return true;
   }, []);
 
-  const submitKill = useCallback((target: string) => callBoolean('submit_haunter_kill', { p_target: target }), [callBoolean, gameId]);
-  const submitProtection = useCallback((target: string) => callBoolean('submit_faqih_protect', { p_game_id: gameId, p_target: target }), [callBoolean, gameId]);
-  const advanceMorning = useCallback(() => callBoolean('advance_haunted_to_day', {}), [callBoolean, gameId]);
-  const submitVote = useCallback((target: string) => callBoolean('submit_haunted_vote', { p_game_id: gameId, p_target: target }), [callBoolean, gameId]);
+  const submitKill = useCallback((target: string) => callBoolean('submit_haunter_kill', { p_target: target }), [callBoolean]);
+  const submitProtection = useCallback((target: string) => callBoolean('submit_faqih_protect', { p_target: target }), [callBoolean]);
+  const advanceMorning = useCallback(() => callBoolean('advance_haunted_to_day', {}), [callBoolean]);
+  const submitVote = useCallback((target: string) => callBoolean('submit_haunted_vote', { p_target: target }), [callBoolean]);
 
   const callResult = useCallback(async (name: string): Promise<HauntedPublicResult | null> => {
     if (!supabase || !effectiveGameId || !isHost) return null;
     setBusy(true); setError('');
-    const { data, error: rpcError } = await supabase.rpc(name, { p_game_id: gameId });
+    const { data, error: rpcError } = await supabase.rpc(name, { p_game_id: effectiveGameId });
     setBusy(false);
     if (rpcError) { setError(rpcError.message); return null; }
     await refreshRef.current();
