@@ -194,18 +194,18 @@ class AudioManager {
     if (!ctx || this.ambient.has(name)) return;
     const filter = ctx.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.value = name === 'night' ? 520 : name === 'camp' ? 760 : 1800;
+    filter.frequency.value = name === 'night' ? 520 : 1800;
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-    gain.gain.setTargetAtTime(Math.max(0.006, volume * (name === 'camp' ? 0.16 : 0.11)), ctx.currentTime, 1.4);
+    gain.gain.setTargetAtTime(Math.max(0.006, volume * 0.11), ctx.currentTime, 1.4);
     filter.connect(gain);
     gain.connect(ctx.destination);
-    const frequencies = name === 'night' ? [55, 82.41, 110] : name === 'camp' ? [65.41, 98, 130.81, 164.81, 196] : [261.63, 392, 523.25];
+    const frequencies = name === 'night' ? [55, 82.41, 110] : [261.63, 392, 523.25];
     const oscillators = frequencies.map((frequency, index) => {
       const oscillator = ctx.createOscillator();
-      oscillator.type = name === 'night' ? (index === 0 ? 'triangle' : 'sine') : name === 'camp' && index === 0 ? 'triangle' : 'sine';
+      oscillator.type = name === 'night' ? (index === 0 ? 'triangle' : 'sine') : 'sine';
       oscillator.frequency.value = frequency;
-      oscillator.detune.value = index * (name === 'night' ? 4 : name === 'camp' ? 2 : -3);
+      oscillator.detune.value = index * (name === 'night' ? 4 : -3);
       oscillator.connect(filter);
       oscillator.start();
       return oscillator;
