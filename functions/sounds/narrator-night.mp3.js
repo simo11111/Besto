@@ -4,7 +4,8 @@ export async function onRequest({ request, ctx }) {
   if (request.method !== "GET" && request.method !== "HEAD") {
     return new Response("Method not allowed", { status: 405, headers: { Allow: "GET, HEAD" } });
   }
-  const cacheKey = new Request(new URL(request.url).toString(), { method: "GET" });
+  const cacheUrl = new URL(request.url); cacheUrl.searchParams.set('asset-version','2');
+  const cacheKey = new Request(cacheUrl.toString(), { method: "GET" });
   const cache = caches.default;
   let response = await cache.match(cacheKey);
   if (!response) {

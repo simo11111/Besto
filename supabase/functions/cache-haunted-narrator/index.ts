@@ -1,7 +1,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 const SOURCE_URL = "https://elevenlabsusercontent.com/database/workspace/f3f06a9ba5254bbc92d7d9f57821a322/content_generation/WaOOEWCuXqpxXMSVFvyt/ZQfdaiBEqzugzikNiZex/content.mp3?Expires=1794513600&KeyName=assets-cdn-key-1&Signature=_iVlQKrXe4HDDKzFU1vUKd42X5w=";
 const BUCKET = "avatars";
-const OBJECT_PATH = "game-audio/narrator-night.mp3";
+const OBJECT_PATH = "game-audio/narrator-night-v2.mp3";
 Deno.serve(async (request: Request) => {
   if (request.method !== "GET") return new Response("Method not allowed", { status: 405, headers: { Allow: "GET" } });
   const supabaseUrl = Deno.env.get("SUPABASE_URL"), serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
