@@ -233,14 +233,19 @@ export default function App(){
  async function finishGame(){if(!supabase||!game)return;setBusy(true);const {data,error}=await supabase.rpc(game.game_key==='impostor'?'finish_impostor_game':'finish_party_game',{p_session_id:game.id});setBusy(false);if(error)notify(prettyError(error));else{playGameSound('result');setGameResult(data);setGame({...game,status:'completed'});await loadGame({...game,status:'completed'});await loadProfile();await loadLeaderboard();await loadDailyMissions();}}
  useEffect(()=>{
   if(!supabase||!room||room.game_key!=='haunted_camp'||!userId||!voiceActive)return;
+  const client=supabase;
+  const activeRoomId=room.id;
+  const activeUserId=userId;
   let cancelled=false;
   const enforceSpectatorAudio=async()=>{
    try{
-    const {data:hauntedId,error:lookupError}=await supabase!.rpc('get_latest_haunted_game',{p_room_id:room.id});
-    if(cancelled||lookupError||!hauntedId)return;
-    const {data:snapshot,error:stateError}=await supabase!.rpc('get_haunted_game_state',{p_game_id:hauntedId});
+    const {data:hauntedId,error:lookupError}=await client.rpc('get_latest_haunted_game',{p_room_id:activeRoomId});
     if(cancelled)return;
-    const currentPlayer=snapshot?.players?.find((player:any)=>player.user_id===userId);
+    if(lookupError){stopVoice();notify('تعذر التحقق من حالة اللعبة، تسد المايك مؤقتاً.');return;}
+    if(!hauntedId)return;
+    const {data:snapshot,error:stateError}=await client.rpc('get_haunted_game_state',{p_game_id:hauntedId});
+    if(cancelled)return;
+    const currentPlayer=snapshot?.players?.find((player:any)=>player.user_id===activeUserId);
     if(stateError||(snapshot?.status!=='ended'&&!currentPlayer?.is_alive)){
      stopVoice();
      notify('خرجتي من اللعبة. الصوت تسد عليك وبقيتي غير متفرج.');
