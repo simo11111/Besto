@@ -7,7 +7,7 @@ import { getSoundEnabled, setSoundEnabled as persistSoundEnabled } from '../../l
 import type { HauntedRole } from '../../types/haunted';
 import { getHauntedBotCount } from './hauntedNpcRoster';
 
-type RosterMember = { user_id: string; profile?: { username?: string; avatar_url?: string | null } };
+type RosterMember = { user_id: string; profile?: { username?: string; avatar_url?: string | null; gender?: 'male' | 'female' | null } };
 type ChatMessage = { id: string; user_id: string; body: string; created_at?: string };
 type Props = {
   gameId: string; roomId: string; userId: string; isHost: boolean; roster: RosterMember[];
@@ -27,6 +27,39 @@ function RoleMark({ role, size = 22 }: { role: HauntedRole; size?: number }) {
   if (role === 'haunter') return <Skull size={size} />;
   if (role === 'faqih') return <Shield size={size} />;
   return <Users size={size} />;
+}
+
+function AnimeCampCharacter({ gender, seed }: { gender: 'male' | 'female'; seed: string }) {
+  const female = gender === 'female';
+  const palettes = [
+    { robe: '#7544a8', shade: '#392052', trim: '#d6b4ff', hair: '#242039' },
+    { robe: '#286b78', shade: '#173b4c', trim: '#9de8e6', hair: '#39251f' },
+    { robe: '#9a5639', shade: '#512b2b', trim: '#ffd29b', hair: '#211c2d' },
+    { robe: '#4d619c', shade: '#26345d', trim: '#c6d5ff', hair: '#4b2c25' },
+    { robe: '#8b416c', shade: '#482342', trim: '#ffc0e1', hair: '#2a1b28' },
+  ];
+  const paletteIndex = Array.from(seed || 'camp').reduce((sum, char) => sum + char.charCodeAt(0), 0) % palettes.length;
+  const colors = palettes[paletteIndex];
+  return <svg className={'haunted-anime-art ' + (female ? 'is-female' : 'is-male')} viewBox="0 0 100 128" role="img" aria-label={female ? 'شخصية أنمي أنثى' : 'شخصية أنمي ذكر'}>
+    <ellipse cx="51" cy="119" rx="34" ry="5" fill="rgba(0,0,0,.35)" />
+    <path d="M31 79 Q18 88 23 101 Q34 109 52 100 Q65 110 83 108 Q94 103 81 91 L67 77Z" fill={colors.shade} stroke={colors.trim} strokeWidth="1.5"/>
+    <path d="M25 102 Q14 108 18 116 Q30 123 48 117 L54 108Z" fill="#211b2c" stroke={colors.trim} strokeWidth="1.3"/>
+    <path d="M58 104 Q70 108 83 116 Q94 119 96 112 Q92 104 76 97 L65 91Z" fill="#211b2c" stroke={colors.trim} strokeWidth="1.3"/>
+    <path d="M36 48 Q49 40 63 48 L76 83 Q61 94 29 84Z" fill={colors.robe} stroke={colors.trim} strokeWidth="1.8"/>
+    <path d="M48 49 L55 86 L62 49" fill="none" stroke={colors.trim} strokeWidth="2"/>
+    <path d="M37 54 Q25 59 25 76 L34 81 L43 67" fill={colors.robe} stroke={colors.trim} strokeWidth="1.5"/>
+    <path d="M64 54 Q76 59 75 75 L66 81 L59 66" fill={colors.robe} stroke={colors.trim} strokeWidth="1.5"/>
+    <path d="M42 31 Q50 24 59 31 L63 47 Q56 57 43 49 L38 40Z" fill="#efc2a6"/>
+    {female
+      ? <path d="M34 38 Q27 12 49 11 Q75 10 69 43 L67 72 Q61 63 60 48 L39 48 Q39 63 31 71 L29 48Z" fill={colors.hair} stroke="#171321" strokeWidth="1.4"/>
+      : <path d="M34 34 Q31 12 48 13 Q67 10 68 31 L61 27 L56 33 L49 25 L42 34 L36 29Z" fill={colors.hair} stroke="#171321" strokeWidth="1.4"/>}
+    <path d="M43 39 Q46 36 48 39 M55 39 Q58 36 60 39" fill="none" stroke="#39242b" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M49 46 Q52 48 55 46" fill="none" stroke="#a65e64" strokeWidth="1.4" strokeLinecap="round"/>
+    {female && <path d="M31 20 Q20 12 26 7 Q34 7 37 17 M64 17 Q73 7 79 12 Q79 20 68 23" fill={colors.trim} stroke={colors.hair} strokeWidth="1.5"/>}
+    <path d="M29 84 Q49 95 77 84" fill="none" stroke={colors.trim} strokeWidth="2"/>
+    <path d="M34 85 L26 98 M68 85 L81 98" stroke={colors.trim} strokeWidth="2" strokeLinecap="round"/>
+    <circle cx="51" cy="64" r="3" fill="#ffd77d"/>
+  </svg>;
 }
 
 export default function HauntedCampGame(props: Props) {
@@ -58,7 +91,7 @@ export default function HauntedCampGame(props: Props) {
   const aliveCount = alivePlayers.length;
   const voted = Boolean(state?.my_vote);
 
-  useEffect(() => { preloadHauntedSounds(); }, []);
+  useEffect(() => { preloadHauntedSounds(); setHauntedAudioMuted(!soundOn); }, []);
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 500);
     return () => window.clearInterval(timer);
@@ -123,7 +156,7 @@ export default function HauntedCampGame(props: Props) {
       <div className="haunted-scene-moon" aria-hidden="true"/>
       <div className="haunted-scene-tent" aria-hidden="true"><span/></div>
       <div className="haunted-campfire" aria-hidden="true"><i/><b/><span/></div>
-      <div className="haunted-camp-ring">{state.players.map((player,index)=>{const angle=(index/Math.max(state.players.length,1))*Math.PI*2-Math.PI/2;const left=50+37*Math.cos(angle);const top=50+38*Math.sin(angle);const canChoose=state.status==='night'&&isAlive&&(myRole==='haunter'||myRole==='faqih')&&player.is_alive&&(myRole==='faqih'||player.user_id!==userId);const selected=target===player.user_id;return <button type="button" aria-label={player.username+(player.is_alive?'':'، مقصي')} aria-pressed={selected} disabled={!canChoose} className={'haunted-camp-seat '+(!player.is_alive?'is-out':'')+(canChoose?' is-selectable':'')+(selected?' is-selected':'')} key={player.user_id} style={{left:left+'%',top:top+'%'}} onClick={()=>setTarget(player.user_id)}><span>{player.avatar_url?<img src={player.avatar_url} alt=""/>:(player.username||'؟').slice(0,1)}</span><b>{player.username}</b>{player.is_bot&&<small>بوت</small>}{!player.is_alive&&<small className="haunted-eliminated-mark"><Skull size={13}/> مقصي</small>}{selected&&<i className="haunted-selected-flame"><Flame size={18}/></i>}</button>;})}</div>
+      <div className="haunted-camp-ring">{state.players.map((player,index)=>{const angle=(index/Math.max(state.players.length,1))*Math.PI*2-Math.PI/2;const left=50+32*Math.cos(angle);const top=50+30*Math.sin(angle);const canChoose=state.status==='night'&&isAlive&&(myRole==='haunter'||myRole==='faqih')&&player.is_alive&&(myRole==='faqih'||player.user_id!==userId);const selected=target===player.user_id;return <button type="button" aria-label={player.username+(player.is_alive?'':'، مقصي')} aria-pressed={selected} disabled={!canChoose} className={'haunted-camp-seat '+(!player.is_alive?'is-out':'')+(canChoose?' is-selectable':'')+(selected?' is-selected':'')} key={player.user_id} style={{left:left+'%',top:top+'%'}} onClick={()=>setTarget(player.user_id)}><span><AnimeCampCharacter gender={player.gender || roster.find(member=>member.user_id===player.user_id)?.profile?.gender || 'male'} seed={player.avatar_key || player.username}/></span><b>{player.username}</b>{player.is_bot&&<small>بوت</small>}{!player.is_alive&&<small className="haunted-eliminated-mark"><Skull size={13}/> مقصي</small>}{selected&&<i className="haunted-selected-flame"><Flame size={18}/></i>}</button>;})}</div>
       <span className="haunted-scene-caption">المخيم ديالكم · {alivePlayers.length} باقيين حدا العافية</span>
     </div>
     <div className="haunted-phase-banner">
