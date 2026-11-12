@@ -476,7 +476,9 @@ begin
    select count(*) into v_kills from public.haunted_night_actions na where na.game_id=p_game_id and na.haunter_target is not null and na.killed_user_id is not null and v_player.role='haunter';
    select count(*) into v_saves from public.haunted_night_actions na where na.game_id=p_game_id and na.faqih_target=na.haunter_target and na.resolved and v_player.role='faqih';
    select count(*) into v_correct from public.haunted_votes hv join public.haunted_players target on target.game_id=hv.game_id and target.user_id=hv.target_id where hv.game_id=p_game_id and hv.voter_id=v_player.user_id and target.role='haunter';
-   select exists(select 1 from public.haunted_night_actions where game_id=p_game_id and round=1 and killed_user_id=v_player.user_id) into v_first;
+   select exists(select 1 from public.haunted_night_actions where game_id=p_game_id and round=1 and killed_user_id=v_player.user_id)
+     or exists(select 1 from public.haunted_events where game_id=p_game_id and round=1 and event_type='player_ejected' and payload->>'ejected_user_id'=v_player.user_id::text)
+     into v_first;
    select not exists(select 1 from public.haunted_votes hv join public.haunted_players h on h.game_id=hv.game_id and h.user_id=hv.target_id where hv.game_id=p_game_id and h.role='haunter') into v_undetected;
    v_xp:=case v_player.role when 'haunter' then v_kills*50+case when v_won then 150 else 0 end
          when 'faqih' then v_saves*50+case when v_won then 100 else 0 end
@@ -514,3 +516,46 @@ begin
 end; $$;
 revoke all on function public.get_active_haunted_game(uuid) from public,anon;
 grant execute on function public.get_active_haunted_game(uuid) to authenticated;
+
+
+-- Extend the existing room creator without changing its password/rate-limit contract.
+create or replace function public.create_room(
+  p_name text,
+  p_private boolean default false,
+  p_max_players integer default 10,
+  p_game_key text default null,
+  p_password text default null
+)
+returns table(room_id uuid,room_code text)
+language plpgsql security definer set search_path=''
+as $$
+declare
+ v_user uuid:=auth.uid(); v_code text; v_room uuid; v_attempt integer;
+ v_min_players integer; v_max_players integer;
+begin
+ if v_user is null then raise exception 'AUTH_REQUIRED'; end if;
+ if p_name is null or char_length(btrim(p_name)) not between 2 and 40 then raise exception 'INVALID_ROOM_NAME'; end if;
+ if p_game_key is null or p_game_key not in ('wolf','who','forbidden','ten_seconds','impostor','connect4','dama','haunted_camp') then raise exception 'INVALID_GAME'; end if;
+ v_min_players:=case when p_game_key in ('wolf','impostor') then 4 when p_game_key='forbidden' then 3 when p_game_key='haunted_camp' then 4 else 2 end;
+ v_max_players:=case when p_game_key in ('connect4','dama') then 2 when p_game_key='haunted_camp' then 10 when p_game_key in ('wolf','impostor','forbidden','ten_seconds') then 12 else 16 end;
+ if p_max_players is null or p_max_players<v_min_players or p_max_players>v_max_players then raise exception 'INVALID_CAPACITY'; end if;
+ if p_game_key in ('connect4','dama') and p_max_players<>2 then raise exception 'DUEL_REQUIRES_TWO_SEATS'; end if;
+ if p_private and (p_password is null or char_length(p_password)<4 or char_length(p_password)>32) then raise exception 'ROOM_PASSWORD_REQUIRED'; end if;
+ perform 1 from auth.users where id=v_user for update;
+ if (select count(*) from public.rooms where owner_id=v_user and created_at>now()-interval '1 hour')>=5 then raise exception 'ROOM_CREATE_RATE_LIMITED'; end if;
+ for v_attempt in 1..5 loop
+   v_code:=upper(substr(replace(extensions.gen_random_uuid()::text,'-',''),1,12));
+   begin
+     insert into public.rooms(code,owner_id,name,is_private,max_players,game_key,password_hash)
+     values(v_code,v_user,btrim(p_name),coalesce(p_private,false),p_max_players,p_game_key,
+       case when p_private then extensions.crypt(p_password,extensions.gen_salt('bf')) else null end)
+     returning id into v_room;
+     exit;
+   exception when unique_violation then if v_attempt=5 then raise; end if;
+   end;
+ end loop;
+ insert into public.room_members(room_id,user_id,role) values(v_room,v_user,'owner');
+ return query select v_room,v_code;
+end; $$;
+revoke all on function public.create_room(text,boolean,integer,text,text) from public,anon;
+grant execute on function public.create_room(text,boolean,integer,text,text) to authenticated;
