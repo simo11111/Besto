@@ -34,10 +34,12 @@ let speechBusy = false;
 let speechGeneration = 0;
 let announcementAudio: HTMLAudioElement | null = null;
 let announcementFinish: (() => void) | null = null;
+let announcementRun = 0;
 let announcementsUrl: string | null = null;
 let announcementRequest: Promise<string | null> | null = null;
 let currentSpeechResolve: (()=>void) | null = null;
 export function stopHauntedNarrator() {
+  announcementRun++;
   speechGeneration++;
   const pending = speechQueue.splice(0);
   pending.forEach(item => item.resolve());
@@ -138,7 +140,7 @@ async function getAnnouncementsUrl(): Promise<string | null> {
   if (announcementsUrl) return announcementsUrl;
   if (!announcementRequest) {
     announcementRequest = (async () => {
-      const base = String(import.meta.env.VITE_SUPABASE_URL || '').replace(/\\/+$/, '');
+      const base = String(import.meta.env.VITE_SUPABASE_URL || '').replace(/\/+$/, '');
       if (!base) return null;
       const response = await fetch(base + '/functions/v1/cache-haunted-announcements', { method: 'GET', cache: 'no-store' });
       if (!response.ok) return null;
@@ -152,6 +154,7 @@ async function getAnnouncementsUrl(): Promise<string | null> {
 
 export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncementSegment, fallbackText: string, afterText?: string): Promise<void> {
   if (typeof window === 'undefined' || !getSoundEnabled()) return;
+  const currentRun = ++announcementRun;
 
   if (announcementAudio) {
     announcementAudio.pause();
@@ -163,6 +166,7 @@ export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncemen
   }
 
   const url = await getAnnouncementsUrl();
+  if (currentRun !== announcementRun) return;
   if (!url) {
     await speakHauntedAnnouncement(fallbackText);
     if (afterText) await speakHauntedAnnouncement(afterText);
@@ -214,7 +218,9 @@ export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncemen
     audio.onerror = () => finish(false);
   });
 
+  if (currentRun !== announcementRun) return;
   if (!played) await speakHauntedAnnouncement(fallbackText);
+  if (currentRun !== announcementRun) return;
   if (afterText) await speakHauntedAnnouncement(afterText);
 }
 
