@@ -32,7 +32,7 @@ export default function HauntedCampGame(props: Props) {
   const [previousPhase, setPreviousPhase] = useState<string | null>(null);
   const [previousEventCount, setPreviousEventCount] = useState(0);
   const { state, busy, error, start, submitKill, submitProtection, resolveNight, advanceMorning, submitVote, resolveVote, refresh } =
-    useHauntedGame(null, roomId, userId, isHost);
+    useHauntedGame(null, roomId, userId);
 
   const myRole = state?.role;
   const role = myRole ? roleCopy[myRole] : null;
