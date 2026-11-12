@@ -181,6 +181,7 @@ export default function App(){
   if(!supabase||!room)return;
   setGameResult(null);
   if(selectedGame==='haunted_camp'){
+   if(game?.game_key==='haunted_camp'&&game.id){setTab('game');return;}
    setBusy(true);
    const {data,error}=await supabase.rpc('start_haunted_game',{p_room_id:room.id,p_quick_mode:false});
    setBusy(false);
