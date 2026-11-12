@@ -24,16 +24,17 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const refreshRef = useRef<() => Promise<void>>(async () => undefined);
+  const effectiveGameId = gameId ?? state?.id ?? null;
 
   const refresh = useCallback(async () => {
-    if (!supabase || !gameId || !userId) return;
+    if (!supabase || !effectiveGameId || !userId) return;
     setLoading(true);
-    const { data, error: rpcError } = await supabase.rpc('get_haunted_game_state', { p_game_id: gameId });
+    const { data, error: rpcError } = await supabase.rpc('get_haunted_game_state', { p_game_id: effectiveGameId });
     setLoading(false);
     if (rpcError) { setError(rpcError.message); return; }
     setError('');
     setState(data as HauntedState);
-  }, [gameId, userId]);
+  }, [effectiveGameId, userId]);
   refreshRef.current = refresh;
 
   const start = useCallback(async (targetRoomId: string, quickMode: boolean) => {
@@ -50,36 +51,36 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
   }, []);
 
   const callBoolean = useCallback(async (name: string, args: Record<string, unknown>) => {
-    if (!supabase) return false;
+    if (!supabase || !effectiveGameId) return false;
     setBusy(true); setError('');
-    const { error: rpcError } = await supabase.rpc(name, args);
+    const { error: rpcError } = await supabase.rpc(name, { ...args, p_game_id: effectiveGameId });
     setBusy(false);
     if (rpcError) { setError(rpcError.message); return false; }
     await refreshRef.current();
     return true;
   }, []);
 
-  const submitKill = useCallback((target: string) => callBoolean('submit_haunter_kill', { p_game_id: gameId, p_target: target }), [callBoolean, gameId]);
+  const submitKill = useCallback((target: string) => callBoolean('submit_haunter_kill', { p_target: target }), [callBoolean, gameId]);
   const submitProtection = useCallback((target: string) => callBoolean('submit_faqih_protect', { p_game_id: gameId, p_target: target }), [callBoolean, gameId]);
-  const advanceMorning = useCallback(() => callBoolean('advance_haunted_to_day', { p_game_id: gameId }), [callBoolean, gameId]);
+  const advanceMorning = useCallback(() => callBoolean('advance_haunted_to_day', {}), [callBoolean, gameId]);
   const submitVote = useCallback((target: string) => callBoolean('submit_haunted_vote', { p_game_id: gameId, p_target: target }), [callBoolean, gameId]);
 
   const callResult = useCallback(async (name: string): Promise<HauntedPublicResult | null> => {
-    if (!supabase || !gameId || !isHost) return null;
+    if (!supabase || !effectiveGameId || !isHost) return null;
     setBusy(true); setError('');
     const { data, error: rpcError } = await supabase.rpc(name, { p_game_id: gameId });
     setBusy(false);
     if (rpcError) { setError(rpcError.message); return null; }
     await refreshRef.current();
     return data as HauntedPublicResult;
-  }, [gameId, isHost]);
+  }, [effectiveGameId, isHost]);
   const resolveNight = useCallback(() => callResult('resolve_haunted_night'), [callResult]);
   const resolveVote = useCallback(() => callResult('resolve_haunted_vote'), [callResult]);
 
   useEffect(() => {
     if (!supabase || !roomId || !userId) return;
     let cancelled = false;
-    if (!gameId) {
+    if (!effectiveGameId) {
       void supabase.rpc('get_active_haunted_game', { p_room_id: roomId }).then(async ({ data, error: rpcError }) => {
         if (cancelled || rpcError || !data) return;
         const id = data as string;
@@ -87,8 +88,16 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
         if (!cancelled && snapshot) setState(snapshot as HauntedState);
       });
     } else void refreshRef.current();
-    return () => { cancelled = true; };
-  }, [gameId, roomId, userId]);
+    const discover = window.setInterval(async () => {
+      if (cancelled || effectiveGameId || document.visibilityState !== 'visible') return;
+      const { data } = await supabase!.rpc('get_active_haunted_game', { p_room_id: roomId });
+      if (!cancelled && data) {
+        const { data: snapshot } = await supabase!.rpc('get_haunted_game_state', { p_game_id: data });
+        if (!cancelled && snapshot) setState(snapshot as HauntedState);
+      }
+    }, 4000);
+    return () => { cancelled = true; window.clearInterval(discover); };
+  }, [effectiveGameId, roomId, userId]);
 
   useEffect(() => {
     if (!supabase || !state?.id) return;
