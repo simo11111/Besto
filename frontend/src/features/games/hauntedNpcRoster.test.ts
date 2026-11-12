@@ -4,6 +4,7 @@ import { getHauntedBotCount } from './hauntedNpcRoster';
 describe('Haunted Camp NPC roster', () => {
   it('fills standard games for a solo player', () => expect(getHauntedBotCount(1, false)).toBe(4));
   it('fills standard games for two humans', () => expect(getHauntedBotCount(2, false)).toBe(3));
+  it('fills standard games for three humans', () => expect(getHauntedBotCount(3, false)).toBe(2));
   it('fills quick games for a solo player', () => expect(getHauntedBotCount(1, true)).toBe(3));
   it('does not add bots when the room meets its target', () => {
     expect(getHauntedBotCount(5, false)).toBe(0);
