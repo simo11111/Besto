@@ -28,6 +28,8 @@ export type HauntedState = {
   players: HauntedPlayer[];
   events: HauntedEvent[];
   roles: Array<{ user_id: string; role: HauntedRole }>;
+  night_actions_ready: boolean;
+  vote_count: number;
 };
 export type HauntedPublicResult = {
   killed_user_id?: string | null;
