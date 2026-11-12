@@ -166,7 +166,7 @@ export default function HauntedCampGame(props: Props) {
     roleHideTimerRef.current = window.setTimeout(() => setRevealed(false), 8500);
   }, [state?.id, myRole]);
   useEffect(() => { setTarget(''); setConfirmNightChoice(false); previousHaunterChoiceRef.current = null; }, [state?.status, state?.round]);
-  useEffect(() => { if (!isAlive && voiceActive) onToggleVoice(); }, [isAlive, voiceActive, onToggleVoice]);
+  useEffect(() => { if (state && state.status !== 'ended' && !isAlive && voiceActive) onToggleVoice(); }, [state?.id, state?.status, isAlive, voiceActive, onToggleVoice]);
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(timer);
