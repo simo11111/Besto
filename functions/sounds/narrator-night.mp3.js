@@ -1,4 +1,4 @@
-const SOURCE_URL = "https://elevenlabsusercontent.com/database/workspace/f3f06a9ba5254bbc92d7d9f57821a322/content_generation/RCwp0MLcGCSCBBnorFA9/wwfiEaKVa7DtbNak22wY/content.mp3?Expires=1794510000&KeyName=assets-cdn-key-1&Signature=VgDX09B49Nl149P04PFzlKwOD3c=";
+const SOURCE_URL = "https://elevenlabsusercontent.com/database/workspace/f3f06a9ba5254bbc92d7d9f57821a322/content_generation/WaOOEWCuXqpxXMSVFvyt/ZQfdaiBEqzugzikNiZex/content.mp3?Expires=1794513600&KeyName=assets-cdn-key-1&Signature=_iVlQKrXe4HDDKzFU1vUKd42X5w=";
 
 export async function onRequest({ request, ctx }) {
   if (request.method !== "GET" && request.method !== "HEAD") {
