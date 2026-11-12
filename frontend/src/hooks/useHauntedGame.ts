@@ -58,7 +58,7 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
     if (rpcError) { setError(rpcError.message); return false; }
     await refreshRef.current();
     return true;
-  }, []);
+  }, [effectiveGameId]);
 
   const submitKill = useCallback((target: string) => callBoolean('submit_haunter_kill', { p_target: target }), [callBoolean]);
   const submitProtection = useCallback((target: string) => callBoolean('submit_faqih_protect', { p_target: target }), [callBoolean]);
