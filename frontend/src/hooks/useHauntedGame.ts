@@ -18,7 +18,7 @@ type HookResult = {
   resolveVote: () => Promise<HauntedPublicResult | null>;
 };
 
-export function useHauntedGame(gameId: string | null, roomId: string, userId: string): HookResult {
+export function useHauntedGame(gameId: string | null, roomId: string, userId: string, isHost = false): HookResult {
   const [state, setState] = useState<HauntedState | null>(null);
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -98,6 +98,21 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
     }, 4000);
     return () => { cancelled = true; window.clearInterval(discover); };
   }, [effectiveGameId, roomId, userId]);
+
+  useEffect(() => {
+    if (!supabase || !state?.id || !isHost || state.status === 'ended') return;
+    const client = supabase;
+    let running = false;
+    const runBots = async () => {
+      if (running || document.visibilityState !== 'visible') return;
+      running = true;
+      try { await client.rpc('run_haunted_bot_turns', { p_game_id: state.id }); await refreshRef.current(); }
+      finally { running = false; }
+    };
+    void runBots();
+    const timer = window.setInterval(() => void runBots(), 2500);
+    return () => window.clearInterval(timer);
+  }, [state?.id, state?.status, isHost]);
 
   useEffect(() => {
     if (!supabase || !state?.id) return;
