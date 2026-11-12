@@ -345,7 +345,7 @@ export default function App(){
      const {data:snapshot,error:stateError}=await supabase.rpc('get_haunted_game_state',{p_game_id:hauntedId});
      if(stateError)throw stateError;
      const currentPlayer=snapshot?.players?.find((player:any)=>player.user_id===userId);
-     if(!currentPlayer?.is_alive){setVoiceStatus('خرجتي من اللعبة. المايك مسدود عليك فهاد الجولة.');voiceStartingRef.current=false;return;}
+     if(snapshot?.status!=='ended'&&!currentPlayer?.is_alive){setVoiceStatus('خرجتي من اللعبة. المايك مسدود عليك فهاد الجولة.');voiceStartingRef.current=false;return;}
     }
    }
    setVoiceStatus('كنفتح المايك...');
