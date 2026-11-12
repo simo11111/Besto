@@ -258,7 +258,7 @@ declare v_user uuid:=auth.uid(); v_game public.haunted_games%rowtype;
 begin
  if v_user is null then raise exception 'خاصك تدخل للحساب'; end if;
  select * into v_game from public.haunted_games where id=p_game_id for update;
- if not found or not exists(select 1 from public.room_members where room_id=v_game.room_id and user_id=v_user) then raise exception 'ما عندكش الحق فهاد الغرفة'; end if;
+ if not found or not exists(select 1 from public.haunted_players where game_id=p_game_id and user_id=v_user) then raise exception 'ما عندكش الحق فهاد الغرفة'; end if;
  if v_game.status<>'morning' then return true; end if;
  if v_game.phase_deadline_at>now() then raise exception 'خلي لحظة باش تبان نتيجة الصباح'; end if;
  update public.haunted_games set status='day',phase_deadline_at=now()+interval '60 seconds' where id=p_game_id;
