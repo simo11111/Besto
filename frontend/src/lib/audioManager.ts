@@ -50,8 +50,6 @@ class AudioManager {
       const player = this.getPlayer(name);
       if (!player) return;
       try {
-        const response = await fetch(SOUND_CONFIG[name].file, { cache: 'reload' });
-        if (!response.ok) return;
         player.load();
         if (player.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) {
           await new Promise<void>(resolve => {

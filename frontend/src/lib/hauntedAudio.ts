@@ -4,7 +4,7 @@ export function startCampMusic() { audioManager.fadeIn('camp', 0.18); }
 export function stopCampMusic() { audioManager.stop('camp'); }
 
 export function preloadHauntedSounds() {
-  void audioManager.preload();
+  void audioManager.preload(['role','death','save','vote','eject','win','lose']);
 }
 export function startNightAmbience() {
   audioManager.stop('morning');

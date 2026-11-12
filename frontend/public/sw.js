@@ -1,10 +1,10 @@
-const CACHE='mimox-shell-v14';
+const CACHE='mimox-shell-v15';
 const SOUND_ASSETS=[
-  '/sounds/night-ambience.mp3','/sounds/morning-birds.mp3','/sounds/death-sting.mp3',
+  '/sounds/camp-theme.mp3','/sounds/night-ambience.mp3','/sounds/morning-birds.mp3','/sounds/death-sting.mp3',
   '/sounds/save-chime.mp3','/sounds/vote-click.mp3','/sounds/eject-whoosh.mp3',
   '/sounds/win-fanfare.mp3','/sounds/lose-drone.mp3','/sounds/role-reveal.mp3'
 ];
-const SHELL=['/','/manifest.webmanifest','/night-camp-icon.svg?v=20261112a','/night-camp-icon.svg','/night-camp-hero.svg','/games/haunted_camp.svg',...SOUND_ASSETS];
+const SHELL=['/','/manifest.webmanifest','/night-camp-icon.svg?v=20261112a','/night-camp-icon.svg','/night-camp-hero.svg','/games/haunted_camp.svg'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('mimox-shell-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
 self.addEventListener('message',event=>{
