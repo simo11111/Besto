@@ -292,6 +292,7 @@ export default function HauntedCampGame(props: Props) {
       <div className="haunted-scene-sun" aria-hidden="true"/><div className="haunted-scene-moon" aria-hidden="true"/>
       <div className="haunted-scene-tent" aria-hidden="true"><span/></div>
       <div className="haunted-campfire" aria-hidden="true"><i/><b/><span/></div>
+      {state.status==='night'&&isAlive&&(myRole==='haunter'||myRole==='faqih')&&<div className={'haunted-night-role-hint '+(myRole==='faqih'?'is-faqih':'is-haunter')} aria-live="polite"><span>{myRole==='haunter'?<Skull size={17}/>:<Shield size={17}/>}</span><b>{myRole==='haunter'?(state.my_night_target?'الضحية تحددات':'ختار شكون بغيتي تقتل'):(haunterChosen?(state.my_night_target?'الحماية تسجلات':'ختار شكون بغيتي تعتق'):'تسنى اختيار المسكون')}</b></div>}
       <div className={'haunted-camp-ring '+(state.players.length<=6?'is-six-or-fewer':'is-many')}>{state.players.map((player,index)=>{const angle=(index/Math.max(state.players.length,1))*Math.PI*2-Math.PI/2;const ringX=state.players.length>=8?39:32;const ringY=state.players.length>=8?28:21;const left=50+ringX*Math.cos(angle);const top=50+ringY*Math.sin(angle);const myNightTarget=state.my_night_target===player.user_id;
       const myVoteTarget=state.my_vote===player.user_id;
       const canChoose=player.is_alive&&isAlive&&!busy&&((state.status==='night'&&!state.my_night_target&&(myRole==='haunter'||(myRole==='faqih'&&haunterChosen))&&(myRole==='faqih'||player.user_id!==userId))||(state.status==='day'&&state.voting_open&&!voted&&player.user_id!==userId));
