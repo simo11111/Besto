@@ -1,4 +1,5 @@
 import { audioManager, type HauntedSound } from './audioManager';
+import { getSoundEnabled } from './audio';
 
 export function startCampMusic() { audioManager.fadeIn('camp', 0.18); }
 export function stopCampMusic() { audioManager.stop('camp'); }
