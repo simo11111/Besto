@@ -22,6 +22,7 @@ class AudioManager {
   private ambient = new Map<HauntedSound, AmbientVoice>();
   private muted = !getSoundEnabled();
   private context: AudioContext | null = null;
+  private discussionFire: { source: AudioBufferSourceNode; filter: BiquadFilterNode; gain: GainNode } | null = null;
 
   private getContext() {
     if (typeof window === 'undefined') return null;
@@ -129,11 +130,58 @@ class AudioManager {
     });
   }
 
+  startDiscussionFire() {
+    if (this.muted || !getSoundEnabled() || this.discussionFire) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+    const length = Math.max(1, Math.floor(ctx.sampleRate * 2.4));
+    const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let brown = 0;
+    for (let i = 0; i < length; i++) {
+      brown = (brown + 0.018 * (Math.random() * 2 - 1)) / 1.018;
+      data[i] = brown * 3.2;
+    }
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 1450;
+    filter.Q.value = 0.55;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.setTargetAtTime(0.012, ctx.currentTime, 1.8);
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    source.start();
+    this.discussionFire = { source, filter, gain };
+  }
+
+  stopDiscussionFire() {
+    const fire = this.discussionFire;
+    if (!fire) return;
+    this.discussionFire = null;
+    const ctx = this.context;
+    if (ctx) {
+      fire.gain.gain.cancelScheduledValues(ctx.currentTime);
+      fire.gain.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.18);
+    }
+    window.setTimeout(() => {
+      try { fire.source.stop(); } catch { /* already stopped */ }
+      fire.source.disconnect();
+      fire.filter.disconnect();
+      fire.gain.disconnect();
+    }, 900);
+  }
+
   setMuted(muted: boolean) {
     this.muted = muted;
     if (muted) {
       this.players.forEach(player => { player.pause(); player.currentTime = 0; });
       this.stop();
+      this.stopDiscussionFire();
     }
   }
 
