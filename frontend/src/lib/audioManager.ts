@@ -23,6 +23,7 @@ class AudioManager {
   private muted = !getSoundEnabled();
   private context: AudioContext | null = null;
   private discussionFire: { source: AudioBufferSourceNode; filter: BiquadFilterNode; gain: GainNode } | null = null;
+  private campScore: { source: AudioBufferSourceNode; filter: BiquadFilterNode; gain: GainNode } | null = null;
 
   private getContext() {
     if (typeof window === 'undefined') return null;
@@ -101,6 +102,7 @@ class AudioManager {
   }
 
   stop(name?: HauntedSound) {
+    if (!name || name === 'camp') this.stopCampScore();
     const entries = name ? [[name, this.players.get(name)] as const] : [...this.players.entries()];
     entries.forEach(([key, player]) => {
       if (!player) return;
@@ -208,6 +210,104 @@ class AudioManager {
       return oscillator;
     });
     this.ambient.set(name, { oscillators, gain, filter });
+  }
+
+  private startCampScore(volume: number) {
+    if (this.muted || this.campScore) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    // A 12-second original ambient loop: low D-minor pads with sparse,
+    // soft plucked notes. One looping buffer keeps CPU use low on phones.
+    const sampleRate = 22050;
+    const seconds = 12;
+    const frames = sampleRate * seconds;
+    const buffer = ctx.createBuffer(1, frames, sampleRate);
+    const data = buffer.getChannelData(0);
+
+    const addTone = (frequency: number, start: number, duration: number, amplitude: number, kind: 'pad' | 'pluck') => {
+      const first = Math.max(0, Math.floor(start * sampleRate));
+      const last = Math.min(frames, Math.floor((start + duration) * sampleRate));
+      const phaseStep = (Math.PI * 2 * frequency) / sampleRate;
+      for (let i = first; i < last; i++) {
+        const t = i / sampleRate - start;
+        const progress = t / duration;
+        const attack = kind === 'pad' ? Math.min(1, t / 0.55) : Math.min(1, t / 0.012);
+        const envelope = kind === 'pad'
+          ? attack * Math.min(1, (1 - progress) / 0.24) * (0.84 + 0.16 * Math.sin(t * 1.1))
+          : attack * Math.pow(1 - progress, 2.25);
+        const phase = phaseStep * (i - first);
+        const tone = kind === 'pad'
+          ? Math.sin(phase) + 0.18 * Math.sin(phase * 2)
+          : Math.sin(phase) + 0.28 * Math.sin(phase * 2.01) + 0.08 * Math.sin(phase * 3.02);
+        data[i] += tone * envelope * amplitude;
+      }
+    };
+
+    // Soft continuous low bed.
+    addTone(73.42, 0, seconds, 0.075, 'pad');
+    addTone(110.00, 0, seconds, 0.038, 'pad');
+
+    const chords = [
+      { start: 0, notes: [146.83, 174.61, 220.00] },
+      { start: 3, notes: [116.54, 146.83, 174.61] },
+      { start: 6, notes: [130.81, 164.81, 196.00] },
+      { start: 9, notes: [110.00, 130.81, 164.81] },
+    ];
+    chords.forEach(chord => chord.notes.forEach((note, index) =>
+      addTone(note, chord.start, 3.25, index === 0 ? 0.038 : 0.024, 'pad')
+    ));
+
+    const melody = [
+      [0.55, 293.66], [1.65, 349.23], [2.8, 392.00], [4.15, 349.23],
+      [5.3, 293.66], [6.55, 261.63], [7.65, 293.66], [8.85, 349.23],
+      [10.1, 392.00], [11.2, 349.23],
+    ] as const;
+    melody.forEach(([start, note], index) => {
+      addTone(note, start, 0.9, 0.028, 'pluck');
+      if (index % 3 === 1) addTone(note * 2, start + 0.035, 0.38, 0.008, 'pluck');
+    });
+
+    // Tiny edge fades prevent a click where the buffer loops.
+    const fadeFrames = Math.floor(sampleRate * 0.08);
+    for (let i = 0; i < fadeFrames; i++) {
+      const fade = i / fadeFrames;
+      data[i] *= fade;
+      data[frames - 1 - i] *= fade;
+    }
+
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 1850;
+    filter.Q.value = 0.45;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.setTargetAtTime(Math.max(0.012, Math.min(0.055, volume * 0.25)), ctx.currentTime, 1.5);
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    source.start();
+    this.campScore = { source, filter, gain };
+  }
+
+  private stopCampScore() {
+    const score = this.campScore;
+    if (!score) return;
+    this.campScore = null;
+    const ctx = this.context;
+    if (ctx) {
+      score.gain.gain.cancelScheduledValues(ctx.currentTime);
+      score.gain.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.22);
+    }
+    window.setTimeout(() => {
+      try { score.source.stop(); } catch { /* already stopped */ }
+      score.source.disconnect();
+      score.filter.disconnect();
+      score.gain.disconnect();
+    }, 1100);
   }
 
   private playFallback(name: HauntedSound) {
