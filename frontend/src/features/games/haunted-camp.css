@@ -608,3 +608,11 @@
  .haunted-shell .haunted-voice-person{font-size:10px}
 }
 @media(prefers-reduced-motion:reduce){.haunted-camp-scene,.haunted-camp-seat,.haunted-scene-sun{animation:none!important;transition:none!important}}
+
+/* Keep the central fire as the visual anchor of the camp. */
+.haunted-campfire{width:98px;height:116px}
+.haunted-campfire i{width:15px;height:66px;box-shadow:0 0 24px #ff772b,0 0 44px rgba(255,133,48,.42)}
+.haunted-campfire b{width:12px;height:52px}
+.haunted-campfire span{width:82px;height:12px}
+.haunted-campfire:before{inset:5px -34px -10px;filter:blur(23px)}
+@media(max-width:520px){.haunted-campfire{width:88px;height:104px}.haunted-campfire i{height:60px}.haunted-campfire b{height:47px}.haunted-campfire span{width:74px}}
