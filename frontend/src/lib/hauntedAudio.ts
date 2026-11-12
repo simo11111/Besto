@@ -24,24 +24,31 @@ export function playHauntedSound(name: Exclude<HauntedSound, 'night'> | 'night')
   if (name === 'morning') startMorningAmbience();
   else audioManager.play(name, 0.7);
 }
+let narratorAudio: HTMLAudioElement | null = null;
+let narratorFinish: (() => void) | null = null;
+export function stopHauntedNarrator() { if(narratorAudio){narratorAudio.pause();narratorAudio.currentTime=0;narratorAudio=null;} const finish=narratorFinish;narratorFinish=null;finish?.(); }
+export function playHauntedNarrator(fallbackText: string): Promise<void> {
+  if(typeof window==='undefined'||!getSoundEnabled())return Promise.resolve(); stopHauntedNarrator();
+  return new Promise(resolve=>{const audio=new Audio('/sounds/narrator-night.mp3');narratorAudio=audio;audio.preload='auto';audio.volume=.96;audio.playbackRate=1.08;let finished=false;
+    const done=()=>{if(finished)return;finished=true;audio.onended=null;audio.onerror=null;if(narratorAudio===audio)narratorAudio=null;if(narratorFinish===done)narratorFinish=null;resolve();}; narratorFinish=done;
+    audio.onended=done;audio.onerror=()=>{if(narratorAudio===audio)narratorAudio=null;void speakHauntedAnnouncement(fallbackText).then(done);};
+    void audio.play().catch(()=>{if(narratorAudio===audio)narratorAudio=null;void speakHauntedAnnouncement(fallbackText).then(done);});});
+}
 export function setHauntedAudioMuted(muted: boolean) {
   audioManager.setMuted(muted);
-  if (muted) {
-    speechQueue = [];
-    speechBusy = false;
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
-  }
+  if (muted) { stopHauntedNarrator(); const pending=speechQueue.splice(0);pending.forEach(item=>item.resolve());speechBusy=false;if(typeof window!=='undefined'&&'speechSynthesis'in window)window.speechSynthesis.cancel(); }
 }
 
 /** Queue spoken announcements so one bot line never cuts off the previous one. */
-let speechQueue: string[] = [];
+let speechQueue: Array<{text:string;resolve:()=>void}> = [];
 let speechBusy = false;
 
 function speakNext() {
   if (typeof window === 'undefined' || !('speechSynthesis' in window) || speechBusy || !speechQueue.length) return;
   const synth = window.speechSynthesis;
-  const text = speechQueue.shift();
-  if (!text) return;
+  const item = speechQueue.shift();
+  if (!item) return;
+  const text = item.text;
   speechBusy = true;
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'ar-MA';
@@ -59,8 +66,8 @@ function speakNext() {
       || voices[0];
 
     if (voice) utterance.voice = voice;
-    utterance.onend = () => { speechBusy = false; window.setTimeout(speakNext, 180); };
-    utterance.onerror = () => { speechBusy = false; window.setTimeout(speakNext, 180); };
+    utterance.onend = () => { speechBusy = false; item.resolve(); window.setTimeout(speakNext, 180); };
+    utterance.onerror = () => { speechBusy = false; item.resolve(); window.setTimeout(speakNext, 180); };
     synth.speak(utterance);
   };
   if (synth.getVoices().length) begin();
@@ -77,9 +84,7 @@ function speakNext() {
   }
 }
 
-export function speakHauntedAnnouncement(text: string) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window) || !text.trim()) return;
-  speechQueue.push(text.trim());
-  if (speechQueue.length > 8) speechQueue = speechQueue.slice(-8);
-  speakNext();
+export function speakHauntedAnnouncement(text: string): Promise<void> {
+  if(typeof window==='undefined'||!('speechSynthesis'in window)||!text.trim())return Promise.resolve();
+  return new Promise(resolve=>{speechQueue.push({text:text.trim(),resolve});if(speechQueue.length>8){const dropped=speechQueue.splice(0,speechQueue.length-8);dropped.forEach(item=>item.resolve());}speakNext();});
 }

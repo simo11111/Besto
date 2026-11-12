@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Shield, Skull, Moon, Sun, Volume2, VolumeX, Clock3, Users, MessageCircle, Mic, MicOff, Trophy, Sparkles, RefreshCw, Flame, CheckCircle2, Check, X, Headphones } from 'lucide-react';
 import { useHauntedGame } from '../../hooks/useHauntedGame';
-import { playHauntedSound, startNightAmbience, stopNightAmbience, startMorningAmbience, stopMorningAmbience, preloadHauntedSounds, setHauntedAudioMuted, speakHauntedAnnouncement, startCampMusic, stopCampMusic } from '../../lib/hauntedAudio';
+import { playHauntedSound, startNightAmbience, stopNightAmbience, startMorningAmbience, stopMorningAmbience, preloadHauntedSounds, setHauntedAudioMuted, speakHauntedAnnouncement, playHauntedNarrator, stopHauntedNarrator, startCampMusic, stopCampMusic } from '../../lib/hauntedAudio';
 import { getSoundEnabled, setSoundEnabled as persistSoundEnabled } from '../../lib/audio';
 import type { HauntedRole } from '../../types/haunted';
 import { getHauntedBotCount } from './hauntedNpcRoster';
@@ -104,8 +104,15 @@ function AnimeCampCharacter({ gender, seed }: { gender: 'male' | 'female'; seed:
     <path d="M48 23 Q61 9 78 18 M54 30 Q62 22 68 21 M80 22 Q89 24 91 32" fill="none" stroke="#fff" strokeOpacity=".18" strokeWidth="2.2" strokeLinecap="round"/>
     {female&&<><path d="M41 22 Q27 13 27 28 Q31 37 45 35 M96 22 Q110 13 111 28 Q107 37 94 35" fill="none" stroke={c.trim} strokeWidth="3" strokeLinecap="round"/><circle cx="43" cy="29" r="3" fill={c.trim}/><circle cx="97" cy="29" r="3" fill={c.trim}/></>}
     {!female&&variant%4===0&&<path d="M53 17 L70 8 L87 17" fill="none" stroke={c.trim} strokeWidth="2.5" strokeLinecap="round"/>}
-    {/* shoulder ornaments */}
+    {/* shoulder ornaments and fine anime linework */}
     <circle cx="48" cy="88" r="3" fill={'url(#'+uid+'gold)'}/><circle cx="92" cy="88" r="3" fill={'url(#'+uid+'gold)'}/>
+    <path d="M47 91 Q39 100 43 111 M93 91 Q101 100 97 111 M56 89 Q61 96 62 103 M84 89 Q79 96 78 103" fill="none" stroke={c.trim} strokeWidth="1.15" opacity=".75"/>
+    <path d="M47 98 L53 103 L47 108 M93 98 L87 103 L93 108" fill="none" stroke="#fff0c7" strokeWidth=".9" opacity=".55"/>
+    <path d="M54 34 Q59 29 65 31 M76 31 Q84 28 88 35 M50 39 Q55 35 59 36 M83 36 Q88 34 91 40" fill="none" stroke="#fff" strokeWidth="1.1" opacity=".34" strokeLinecap="round"/>
+    <path d="M55 58 Q61 64 67 59 M73 59 Q80 64 86 58" fill="none" stroke="#fff" strokeWidth=".75" opacity=".4"/>
+    <circle cx="58" cy="52" r=".8" fill="#fff"/><circle cx="78" cy="52" r=".8" fill="#fff"/>
+    <path d="M64 117 L70 123 L76 117 M60 125 L70 131 L80 125" fill="none" stroke="#fff0bf" strokeWidth="1" opacity=".65"/>
+    {female?<><path d="M42 38 Q35 42 39 50 M98 38 Q105 42 101 50" fill="none" stroke={c.trim} strokeWidth="1.4"/><circle cx="39" cy="52" r="2" fill={'url(#'+uid+'gold)'}/><circle cx="101" cy="52" r="2" fill={'url(#'+uid+'gold)'}/></>:<path d="M48 27 Q70 19 92 27" fill="none" stroke={c.trim} strokeWidth="1.8" opacity=".55"/>}
   </svg>;
 }
 export default function HauntedCampGame(props: Props) {
@@ -121,6 +128,11 @@ export default function HauntedCampGame(props: Props) {
   const [now, setNow] = useState(Date.now());
   const [soundOn, setSoundOn] = useState(() => getSoundEnabled());
   const [previousPhase, setPreviousPhase] = useState<string | null>(null);
+  const [narratorVisible, setNarratorVisible] = useState(false);
+  const [narratorText, setNarratorText] = useState('');
+  const narratorRunRef = useRef<string | null>(null);
+  const previousVotingRef = useRef<boolean | null>(null);
+  const chatMessagesRef = useRef<HTMLDivElement | null>(null);
   const previousEventCountRef = useRef(0);
   const previousEventGameRef = useRef<string | null>(null);
   const { state, busy, error, start, submitKill, submitProtection, submitVote } =
@@ -153,15 +165,40 @@ export default function HauntedCampGame(props: Props) {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, []);
+  const presentNarration = (key: string, text: string, useGeneratedVoice = false) => {
+    narratorRunRef.current = key; setNarratorText(text); setNarratorVisible(true);
+    void (async () => {
+      if (soundOn) { if (useGeneratedVoice) await playHauntedNarrator(text); else await speakHauntedAnnouncement(text); }
+      else await new Promise(resolve => window.setTimeout(resolve, 1800));
+      if (narratorRunRef.current === key) setNarratorVisible(false);
+    })();
+  };
+
   useEffect(() => {
     const phase = state?.status ?? null;
     if (!phase || phase === previousPhase) return;
-    if (phase === 'night') { startNightAmbience(); onNightMute(true); if (soundOn) speakHauntedAnnouncement(state?.game_mode==='quick'?'هبط الليل على المخيم. المسكون، اختار الضحية ديالك لهاد الليلة. القرار سري وعندك وقت محدود.':'هبط الليل على المخيم. المسكون، اختار الضحية ديالك لهاد الليلة. والفقيه، اختار شكون تحمي بسرية. عندكم وقت محدود، وكل اختيار محسوب.'); }
-    else if (phase === 'morning') { stopNightAmbience(); startMorningAmbience(); onNightMute(true); const latest = [...(state?.events ?? [])].reverse().find(e => e.event_type === 'night_resolved'); const killedId = typeof latest?.payload.killed_user_id === 'string' ? latest.payload.killed_user_id : null; if (killedId) { playHauntedSound('death'); const victim = state?.players.find(player => player.user_id === killedId)?.username || 'واحد من السكان'; if (soundOn) speakHauntedAnnouncement('طلع الصباح يا سكان الخيمة. لقينا '+victim+' خرج من المخيم هاد الليلة.'); } else { playHauntedSound('save'); if (soundOn) speakHauntedAnnouncement('طلع الصباح يا سكان الخيمة. الليلة دازت بسلام، ما مات حتى واحد.'); } }
-    else { stopNightAmbience(); stopMorningAmbience(); onNightMute(false); }
+    if (phase === 'night') {
+      startNightAmbience(); onNightMute(true);
+      presentNarration(state!.id+':'+state!.round+':night', state?.game_mode==='quick'?'هبط الليل على المخيم. المسكون، اختار الضحية ديالك لهاد الليلة. القرار سري وعندك وقت محدود.':'هبط الليل على المخيم. المسكون، اختار الضحية ديالك لهاد الليلة. والفقيه، اختار شكون تحمي بسرية. عندكم وقت محدود، وكل اختيار محسوب.', true);
+    } else if (phase === 'morning') {
+      stopNightAmbience(); startMorningAmbience(); onNightMute(true);
+      const latest = [...(state?.events ?? [])].reverse().find(e => e.event_type === 'night_resolved');
+      const killedId = typeof latest?.payload.killed_user_id === 'string' ? latest.payload.killed_user_id : null;
+      if (killedId) { playHauntedSound('death'); const victim = state?.players.find(player => player.user_id === killedId)?.username || 'واحد من السكان'; presentNarration(state!.id+':'+state!.round+':morning','طلع الصباح يا سكان الخيمة. لقينا '+victim+' خرج من المخيم هاد الليلة.'); }
+      else { playHauntedSound('save'); presentNarration(state!.id+':'+state!.round+':morning','طلع الصباح يا سكان الخيمة. الليلة دازت بسلام، ما مات حتى واحد.'); }
+    } else if (phase === 'day') {
+      stopNightAmbience(); stopMorningAmbience(); onNightMute(false);
+      presentNarration(state!.id+':'+state!.round+':day','رجع النهار للمخيم. عندكم أربع دقائق للنقاش وجمع القرائن. من بعد غادي يتحل التصويت، وكل واحد يختار بشوية ديال التركيز.');
+    } else { stopNightAmbience(); stopMorningAmbience(); onNightMute(false); setNarratorVisible(false); }
     if (phase === 'ended') playHauntedSound(state?.winner === 'villagers' ? 'win' : 'lose');
     setPreviousPhase(phase);
   }, [state?.status, state?.winner, previousPhase, onNightMute, soundOn]);
+  useEffect(() => {
+    if (!state || state.status !== 'day') return;
+    const previous = previousVotingRef.current; previousVotingRef.current = state.voting_open;
+    if (previous === false && state.voting_open) presentNarration(state.id+':'+state.round+':voting','تحل التصويت. عندكم ثلاثين ثانية باش تختارو اللاعب اللي شاكين فيه. القرار سري، اختارو بعناية.');
+  }, [state?.id, state?.round, state?.status, state?.voting_open, soundOn]);
+  useEffect(() => { const node=chatMessagesRef.current; if(node)node.scrollTop=node.scrollHeight; }, [messages.length,state?.events.length]);
   useEffect(() => {
     if (!state) return;
     const count = state.events.length;
@@ -182,7 +219,7 @@ export default function HauntedCampGame(props: Props) {
     });
     previousEventCountRef.current = count;
   }, [state?.id, state?.events.length, onRewardsUpdated, soundOn, state?.players, state?.winner]);
-  useEffect(() => () => { stopNightAmbience(); stopMorningAmbience(); onNightMute(false); }, [onNightMute]);
+  useEffect(() => () => { stopHauntedNarrator(); stopNightAmbience(); stopMorningAmbience(); onNightMute(false); }, [onNightMute]);
 
   async function startGame() {
     const ok = await start(roomId, quickMode);
@@ -216,6 +253,9 @@ export default function HauntedCampGame(props: Props) {
   return <section className={'haunted-shell haunted-phase-' + state.status} aria-label="لعبة الفقيه والمسكون">
     <div className="haunted-stars" aria-hidden="true"/><div className="haunted-mist" aria-hidden="true"/>
     <header className="haunted-topbar"><div><span className="haunted-kicker">ليلة فالخيمة · الجولة {state.round}</span><h1>ليلة فالخيمة</h1></div><div className="haunted-top-actions"><span className="haunted-round-pill">الجولة {state.round}</span><button className="haunted-icon-button" onClick={()=>{const next=!soundOn;setSoundOn(next);persistSoundEnabled(next);if(!next){stopNightAmbience();stopMorningAmbience();stopCampMusic();}else{startCampMusic();if(state.status==='night')startNightAmbience();else if(state.status==='morning')startMorningAmbience();}setHauntedAudioMuted(!next);}} aria-label={soundOn?'كتم المؤثرات':'تشغيل المؤثرات'}>{soundOn?<Volume2/>:<VolumeX/>}</button><button className="haunted-ghost-button" onClick={onBack}>اللوبي</button></div></header>
+    {narratorVisible ? <motion.section className="haunted-narrator-stage" role="status" aria-live="assertive" initial={reduceMotion?false:{opacity:0,scale:.97}} animate={{opacity:1,scale:1}} transition={{duration:.35}}>
+      <div className="haunted-narrator-orb"><span/><i/><b/><em/></div><span className="haunted-narrator-kicker"><Volume2 size={15}/> الراوي كيهضر</span><h2>اسمع الإعلان</h2><p>{narratorText}</p><div className="haunted-narrator-wave" aria-hidden="true">{Array.from({length:25},(_,i)=><i key={i} style={{'--wave-delay':(i%7)*.09+'s'} as React.CSSProperties}/>)}</div><small>غادي ترجع الخيمة والدردشة مباشرة منين يكمل الإعلان</small>
+    </motion.section> : <>
     <div className="haunted-camp-scene" aria-label="مخيم اللاعبين حول النار">
       <div className="haunted-scene-moon" aria-hidden="true"/>
       <div className="haunted-scene-tent" aria-hidden="true"><span/></div>
@@ -227,6 +267,7 @@ export default function HauntedCampGame(props: Props) {
       {state.status==='night'?<><Moon/><span>الليل هبط على المخيم</span></>:state.status==='morning'?<><Sun/><span>طلع الصباح… شنو وقع فالليل؟</span></>:state.status==='day'?<><Sun/><span>وقت النقاش والتصويت</span></>:<><Trophy/><span>سالَت الحكاية</span></>}
       {state.status!=='ended'&&<strong><Clock3 size={15}/>{secondsLeft}ث</strong>}
     </div>
+    </>}
     {revealed&&role&&<div className="haunted-role-overlay" role="dialog" aria-modal="true" aria-label="بطاقتك السرية" onClick={()=>setRevealed(false)}>
       <motion.article className={'haunted-role-card haunted-role-'+myRole} initial={reduceMotion?false:{rotateY:70,opacity:0,scale:.86,y:24}} animate={reduceMotion?{opacity:1,scale:1}:{rotateY:0,opacity:1,scale:1,y:0}} transition={{duration:reduceMotion?0.01:0.72,ease:[.2,.8,.2,1]}} onClick={e=>e.stopPropagation()}>
         <div className="haunted-role-card-aura"/><div className="haunted-role-card-inner"><span className="haunted-role-card-kicker">ليلة فالخيمة · الجولة {state.round}</span><RoleMark role={myRole!} size={52}/><small>الدور السري ديالك</small><h2>{role.name}</h2><strong>{role.title}</strong><p>{role.description}</p><span className="haunted-role-card-hint">خلي الدور سري · البطاقة غادي تختفي بوحدها</span><button type="button" className="haunted-role-close" onClick={()=>setRevealed(false)}><X size={17}/> فهمت</button></div>
@@ -242,21 +283,21 @@ export default function HauntedCampGame(props: Props) {
       </motion.section>
     </div>}
 
-    {state.status==='night'&&<motion.div className="haunted-night-panel" initial={reduceMotion?false:{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{duration:reduceMotion?0.01:0.5}}><div className="haunted-moon"><Moon size={28}/></div><h2>{myRole==='haunter'?'اختار الضحية ديالك':myRole==='faqih'?'شكون غادي تعتق الليلة؟':'نعس… الليل ماشي وقت الكلام'}</h2><p>{myRole==='haunter'?'اختار لاعب حي واحد. القرار سري وما غادي يبان حتى واحد.':myRole==='faqih'?'اختار لاعب تحميه. ما غاديش تعرف واش الحماية نجحات حتى يطلع الصباح.':'تسنى الصباح. الميكروفونات مكتومة فالليل.'}</p>
+    {!narratorVisible&&state.status==='night'&&<motion.div className="haunted-night-panel" initial={reduceMotion?false:{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{duration:reduceMotion?0.01:0.5}}><div className="haunted-moon"><Moon size={28}/></div><h2>{myRole==='haunter'?'اختار الضحية ديالك':myRole==='faqih'?'شكون غادي تعتق الليلة؟':'نعس… الليل ماشي وقت الكلام'}</h2><p>{myRole==='haunter'?'اختار لاعب حي واحد. القرار سري وما غادي يبان حتى واحد.':myRole==='faqih'?'اختار لاعب تحميه. ما غاديش تعرف واش الحماية نجحات حتى يطلع الصباح.':'تسنى الصباح. الميكروفونات مكتومة فالليل.'}</p>
       {!isAlive&&<p className="haunted-waiting">خرجتي من اللعبة، تقدر تبقى تتفرج ولكن ما تقدرش تختار أو تصوّت.</p>}
       {isAlive&&['haunter','faqih'].includes(myRole||'')&&<p className="haunted-choice-hint"><Flame size={16}/> اختار اللاعب مباشرة من الحلقة اللي دايرة بالعافية.</p>}
       {isAlive&&['haunter','faqih'].includes(myRole||'')&&<><div className="haunted-selected-target">{target?<>الاختيار ديالك: <b>{state.players.find(player=>player.user_id===target)?.username}</b></>: 'مازال ما اخترتي حتى لاعب'}</div><button className="haunted-primary" disabled={busy||!target} onClick={()=>setConfirmNightChoice(true)}>{myRole==='haunter'?<><Skull size={18}/> اختيار الضحية</>:<><Shield size={18}/> اختيار من نحمي</>}</button></>}
       {myRole==='villager'&&<div className="haunted-waiting">القرارات الليلية كتتدار بسرية تامة.</div>}
     </motion.div>}
 
-    {state.status==='morning'&&<motion.div className={'haunted-morning-panel '+(latestNight?.payload.killed_user_id?'has-death':'saved')} animate={reduceMotion?{}:latestNight?.payload.killed_user_id?{x:[0,-8,8,-8,8,0]}:{boxShadow:['0 0 0px #10b981','0 0 28px #10b981','0 0 0px #10b981']}} transition={{duration:reduceMotion?0.01:0.6,repeat:latestNight?.payload.killed_user_id?0:Infinity,repeatDelay:0.7}}><div className="haunted-sunrise"/><span className="haunted-morning-emoji">{latestNight?.payload.killed_user_id?<Skull size={34}/>:<Sparkles size={34}/>}</span><h2>{latestNight?.payload.killed_user_id?'لقينا لاعب ميت فالصباح':'نجا المخيم هاد الليلة!'}</h2><p>{latestNight?.payload.killed_user_id?('اللاعب '+(state.players.find(p=>p.user_id===latestNight.payload.killed_user_id)?.username||'المجهول')+' خرج من اللعبة. الدور ديالو باقي سري.'):'ما مات حتى واحد. ما كاين حتى كشف شكون تحمى ولا شكون حاول يقتل.'}</p><p className="haunted-auto-transition"><Clock3 size={15}/> الراوي غادي يفتح النقاش تلقائياً من بعد الإعلان.</p></motion.div>}
+    {!narratorVisible&&state.status==='morning'&&<motion.div className={'haunted-morning-panel '+(latestNight?.payload.killed_user_id?'has-death':'saved')} animate={reduceMotion?{}:latestNight?.payload.killed_user_id?{x:[0,-8,8,-8,8,0]}:{boxShadow:['0 0 0px #10b981','0 0 28px #10b981','0 0 0px #10b981']}} transition={{duration:reduceMotion?0.01:0.6,repeat:latestNight?.payload.killed_user_id?0:Infinity,repeatDelay:0.7}}><div className="haunted-sunrise"/><span className="haunted-morning-emoji">{latestNight?.payload.killed_user_id?<Skull size={34}/>:<Sparkles size={34}/>}</span><h2>{latestNight?.payload.killed_user_id?'لقينا لاعب ميت فالصباح':'نجا المخيم هاد الليلة!'}</h2><p>{latestNight?.payload.killed_user_id?('اللاعب '+(state.players.find(p=>p.user_id===latestNight.payload.killed_user_id)?.username||'المجهول')+' خرج من اللعبة. الدور ديالو باقي سري.'):'ما مات حتى واحد. ما كاين حتى كشف شكون تحمى ولا شكون حاول يقتل.'}</p><p className="haunted-auto-transition"><Clock3 size={15}/> الراوي غادي يفتح النقاش تلقائياً من بعد الإعلان.</p></motion.div>}
 
-    {state.status==='day'&&<div className="haunted-day-grid"><section className="haunted-vote-panel">{!isAlive&&<div className="haunted-waiting">خرجتي من اللعبة. تقدر تتابع النقاش والنتائج بلا تصويت.</div>}{latestVoteEvent&&<div className="haunted-outcome-banner">{String(latestVoteEvent.payload.message||'نتيجة التصويت تسجلات.')}{ejectedUserId ? ' '+(state.players.find(p=>p.user_id===ejectedUserId)?.username||'لاعب')+' خرج من المخيم.' : null}</div>}<h2>{state.voting_open?<><CheckCircle2 size={20}/> التصويت مفتوح دابا</>:<><Flame size={20}/> جلسة النقاش فالمخيم</>}</h2><p>{state.voting_open?'اختار لاعب حي واحد. الأصوات كتبقى سرية حتى يتحسم التصويت.':'عندكم 4 دقائق للنقاش وجمع القرائن. شخصيات المخيم غادي تشارك فالحوار، والتصويت ما كيتحل حتى يسالي الوقت.'}</p>{!state.voting_open&&<div className="haunted-discussion-timer"><Clock3/><b>{Math.floor(secondsLeft/60).toString().padStart(2,'0')}:{(secondsLeft%60).toString().padStart(2,'0')}</b><small>باقي على فتح التصويت</small></div>}{state.voting_open&&<><div className="haunted-target-grid">{isAlive&&alivePlayers.filter(p=>p.user_id!==userId).map(player=><button type="button" key={player.user_id} disabled={voted||busy} className={'haunted-target '+(target===player.user_id?'selected':'')} onClick={()=>setTarget(player.user_id)}><span>{player.avatar_url?<img src={player.avatar_url} alt=""/>:(player.username||'؟').slice(0,1)}</span><b>{player.username}</b></button>)}</div><button className="haunted-primary" disabled={busy||voted||!target||!isAlive} onClick={()=>void submitDayVote()}>{voted?'صوتك تسجل':'تأكيد التصويت'}</button><div className="haunted-vote-count"><b>{voteCount}/{aliveCount}</b><span>أصوات تسجلات</span><small>{state.vote_round===2?'إعادة التصويت بعد التعادل':'التصويت الأول'}</small></div></>}{!state.voting_open&&<p className="haunted-auto-transition"><Clock3 size={15}/> التصويت غادي يتحل تلقائياً ملي يسالي وقت النقاش.</p>}</section>
+    {!narratorVisible&&state.status==='day'&&<div className="haunted-day-grid"><section className="haunted-vote-panel">{!isAlive&&<div className="haunted-waiting">خرجتي من اللعبة. تقدر تتابع النقاش والنتائج بلا تصويت.</div>}{latestVoteEvent&&<div className="haunted-outcome-banner">{String(latestVoteEvent.payload.message||'نتيجة التصويت تسجلات.')}{ejectedUserId ? ' '+(state.players.find(p=>p.user_id===ejectedUserId)?.username||'لاعب')+' خرج من المخيم.' : null}</div>}<h2>{state.voting_open?<><CheckCircle2 size={20}/> التصويت مفتوح دابا</>:<><Flame size={20}/> جلسة النقاش فالمخيم</>}</h2><p>{state.voting_open?'اختار لاعب حي واحد. الأصوات كتبقى سرية حتى يتحسم التصويت.':'عندكم 4 دقائق للنقاش وجمع القرائن. شخصيات المخيم غادي تشارك فالحوار، والتصويت ما كيتحل حتى يسالي الوقت.'}</p>{!state.voting_open&&<div className="haunted-discussion-timer"><Clock3/><b>{Math.floor(secondsLeft/60).toString().padStart(2,'0')}:{(secondsLeft%60).toString().padStart(2,'0')}</b><small>باقي على فتح التصويت</small></div>}{state.voting_open&&<><div className="haunted-target-grid">{isAlive&&alivePlayers.filter(p=>p.user_id!==userId).map(player=><button type="button" key={player.user_id} disabled={voted||busy} className={'haunted-target '+(target===player.user_id?'selected':'')} onClick={()=>setTarget(player.user_id)}><span>{player.avatar_url?<img src={player.avatar_url} alt=""/>:(player.username||'؟').slice(0,1)}</span><b>{player.username}</b></button>)}</div><button className="haunted-primary" disabled={busy||voted||!target||!isAlive} onClick={()=>void submitDayVote()}>{voted?'صوتك تسجل':'تأكيد التصويت'}</button><div className="haunted-vote-count"><b>{voteCount}/{aliveCount}</b><span>أصوات تسجلات</span><small>{state.vote_round===2?'إعادة التصويت بعد التعادل':'التصويت الأول'}</small></div></>}{!state.voting_open&&<p className="haunted-auto-transition"><Clock3 size={15}/> التصويت غادي يتحل تلقائياً ملي يسالي وقت النقاش.</p>}</section>
 </div>}
 
     {state.status==='ended'&&<motion.div className={'haunted-end-panel '+(state.winner==='villagers'?'villagers-win':'haunter-win')} initial={reduceMotion?false:{opacity:0,scale:0.96,y:12}} animate={{opacity:1,scale:1,y:0}} transition={{duration:reduceMotion?0.01:0.55}}>{state.winner==='villagers'&&!reduceMotion&&<div className="haunted-confetti-layer" aria-hidden="true">{Array.from({length:18},(_,i)=><motion.i key={i} style={{left:(i*37)%100+'%'}} animate={{y:['-10vh','90vh'],rotate:[0,360],opacity:[1,1,0]}} transition={{duration:2.8,delay:(i%6)*0.12,ease:'linear'}} />)}</div>}<div className="haunted-win-icon">{state.winner==='villagers'?<Users size={36}/>:<Skull size={36}/>}</div><span className="haunted-kicker">THE CAMP HAS SPOKEN</span><h2>{state.winner==='villagers'?'المواطنين ربحو!':'المسكون سيطر على المخيم!'}</h2><p>ها الأدوار الحقيقية ديال جميع اللاعبين:</p><div className="haunted-role-reveal-list">{state.roles.map(item=>{const player=state.players.find(p=>p.user_id===item.user_id);return <div key={item.user_id}><span><RoleMark role={item.role} size={20}/></span><b>{player?.username||'لاعب'}</b><small>{roleCopy[item.role].name}</small></div>;})}</div><button className="haunted-primary" disabled={busy} onClick={()=>void startGame()}><RefreshCw/> لعبة جديدة</button><button className="haunted-secondary" onClick={onBack}>رجوع للّوبي</button></motion.div>}
 
-    <section className="haunted-camp-chat"><h3><MessageCircle size={17}/> دردشة المخيم <span className="haunted-chat-live">مباشر</span></h3><div className="haunted-chat-messages">{[...messages.slice(-8).map(m=>({id:m.id,user:m.user_id,system:false,text:m.body,created:m.created_at||''})),...(state.events||[]).filter(e=>e.event_type==='bot_chat').map(e=>({id:e.id,user:String(e.payload.bot_user_id||''),system:Boolean(e.payload.system),text:String(e.payload.message||''),created:e.created_at}))].sort((a,b)=>a.created.localeCompare(b.created)).slice(-12).map(m=><p key={m.id} className={'haunted-chat-line '+(m.system?'is-system':m.user===userId?'is-mine':'is-other')}><b>{m.user===userId?'أنت':m.system?'الراوي':state.players.find(p=>p.user_id===m.user)?.username||roster.find(p=>p.user_id===m.user)?.profile?.username||'لاعب'}:</b> {m.text}</p>)}</div><form onSubmit={e=>{e.preventDefault();if(chatText.trim()){void onSendChat(chatText.trim());setChatText('');}}}><input value={chatText} onChange={e=>setChatText(e.target.value)} maxLength={500} placeholder="كتب رسالة للمخيم..."/><button type="submit" disabled={!chatText.trim()}>إرسال</button></form><div className="haunted-voice-box"><div className="haunted-voice-heading"><Mic/><span><b>الصوت المباشر</b><small>{voiceStatus}</small></span></div><div className="haunted-voice-people">{state.players.filter(player=>voiceParticipantIds.includes(player.user_id)).map(player=><span key={player.user_id} className={'haunted-voice-person '+(voiceSpeakingIds.includes(player.user_id)?'is-speaking':'')}><i><Mic size={13}/></i>{player.username}{player.user_id===userId?' · أنت':''}</span>)}{voiceParticipantIds.length===0&&<small className="haunted-voice-empty">مازال حتى واحد ما دخل للصوت</small>}</div><div className="haunted-voice-actions"><button onClick={onToggleVoice} className={voiceActive?'is-connected':''}>{voiceActive?<><Headphones size={16}/> قطع الصوت</>:<><Mic size={16}/> دخل للصوت</>}</button>{voiceActive&&<button onClick={onToggleMute}>{voiceMuted?<Mic size={16}/>:<MicOff size={16} />}{voiceMuted?'حل المايك':'كتم المايك'}</button>}</div></div></section>
+    {!narratorVisible&&<section className="haunted-camp-chat"><h3><MessageCircle size={17}/> دردشة المخيم <span className="haunted-chat-live">مباشر</span></h3><div className="haunted-chat-messages" ref={chatMessagesRef} role="log" aria-live="polite" aria-relevant="additions">{[...messages.slice(-8).map(m=>({id:m.id,user:m.user_id,system:false,text:m.body,created:m.created_at||''})),...(state.events||[]).filter(e=>e.event_type==='bot_chat'&&e.round===state.round).filter(e=>state.voting_open?!/عندكم 4 دقائق|جمعو القرائن|النقاش/i.test(String(e.payload.message||'')):!/تحل التصويت|التصويت مفتوح/i.test(String(e.payload.message||''))).map(e=>({id:e.id,user:String(e.payload.bot_user_id||''),system:Boolean(e.payload.system),text:String(e.payload.message||''),created:e.created_at}))].sort((a,b)=>a.created.localeCompare(b.created)).slice(-12).map(m=><p key={m.id} className={'haunted-chat-line '+(m.system?'is-system':m.user===userId?'is-mine':'is-other')}><b>{m.user===userId?'أنت':m.system?'الراوي':state.players.find(p=>p.user_id===m.user)?.username||roster.find(p=>p.user_id===m.user)?.profile?.username||'لاعب'}:</b> {m.text}</p>)}</div><form onSubmit={e=>{e.preventDefault();if(chatText.trim()){void onSendChat(chatText.trim());setChatText('');}}}><input value={chatText} onChange={e=>setChatText(e.target.value)} maxLength={500} placeholder="كتب رسالة للمخيم..."/><button type="submit" disabled={!chatText.trim()}>إرسال</button></form><div className="haunted-voice-strip">{state.players.filter(player=>voiceParticipantIds.includes(player.user_id)).slice(0,5).map(player=><span key={player.user_id} className={'haunted-voice-person '+(voiceSpeakingIds.includes(player.user_id)?'is-speaking':'')}><Mic size={11}/>{player.username}</span>)}<small>{voiceParticipantIds.length?voiceStatus:'الصوت واجد · دخل مع صحابك'}</small></div><form className="haunted-chat-compose" onSubmit={e=>{e.preventDefault();if(chatText.trim()){void onSendChat(chatText.trim());setChatText('');}}}><input value={chatText} onChange={e=>setChatText(e.target.value)} maxLength={500} placeholder="كتب رسالة للمخيم..."/><button type="button" className={'haunted-mic-button '+(voiceActive?'is-active':'')} aria-label={voiceActive?'قطع الصوت':'دخل للصوت'} onClick={onToggleVoice}>{voiceActive?<Headphones size={18}/>:<Mic size={18}/>}</button>{voiceActive&&<button type="button" className={'haunted-mic-button '+(voiceMuted?'is-muted':'')} aria-label={voiceMuted?'حل المايك':'كتم المايك'} onClick={onToggleMute}>{voiceMuted?<MicOff size={18}/>:<Mic size={18}/>}</button>}<button type="submit" disabled={!chatText.trim()}>إرسال</button></form></section>}
     {error&&<p className="haunted-error" role="alert">{error}</p>}
     <footer className="haunted-bottom-bar"><div><span>{aliveCount} باقيين أحياء</span><small>{state.game_mode==='quick'?'طور سريع · بلا فقيه':'طور عادي'}</small></div><button className="haunted-ghost-button" onClick={onExit}>خروج من الغرفة</button></footer>
   </section>;
