@@ -32,6 +32,10 @@ let narratorFinish: (() => void) | null = null;
 let speechQueue: Array<{text:string;resolve:()=>void}> = [];
 let speechBusy = false;
 let speechGeneration = 0;
+let announcementAudio: HTMLAudioElement | null = null;
+let announcementFinish: (() => void) | null = null;
+let announcementsUrl: string | null = null;
+let announcementRequest: Promise<string | null> | null = null;
 let currentSpeechResolve: (()=>void) | null = null;
 export function stopHauntedNarrator() {
   speechGeneration++;
@@ -40,6 +44,8 @@ export function stopHauntedNarrator() {
   const activeResolve=currentSpeechResolve;currentSpeechResolve=null;activeResolve?.();
   speechBusy = false;
   if(typeof window!=='undefined'&&window.speechSynthesis)window.speechSynthesis.cancel();
+  if(announcementAudio){announcementAudio.pause();announcementAudio.currentTime=0;announcementAudio=null;}
+  const finishAnnouncement=announcementFinish;announcementFinish=null;finishAnnouncement?.();
   if(narratorAudio){narratorAudio.pause();narratorAudio.currentTime=0;narratorAudio=null;}
   const finish=narratorFinish;narratorFinish=null;finish?.();
 }
@@ -114,15 +120,104 @@ export function speakHauntedAnnouncement(text: string): Promise<void> {
 
 
 
-type HauntedAnnouncementSegment = 'morning_safe' | 'morning_death' | 'discussion' | 'voting' | 'ejected' | 'win_villagers' | 'win_haunter';
+export type HauntedAnnouncementSegment = 'night' | 'morning_safe' | 'morning_death' | 'discussion' | 'voting' | 'tie' | 'ejected' | 'win_villagers' | 'win_haunter';
 
-/** The previous combined ElevenLabs take included spoken production directions.
- * Until a clean Darija recording is available, never play that faulty file.
- * Speak only the exact in-game announcement text supplied by the game state.
- */
-export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncementSegment, fallbackText: string): Promise<void> {
-  void segment;
-  await speakHauntedAnnouncement(fallbackText);
+const announcementSegments: Record<HauntedAnnouncementSegment, [number, number]> = {
+  night: [30.98, 42.40],
+  morning_safe: [44.15, 53.98],
+  morning_death: [55.63, 66.10],
+  discussion: [68.05, 81.35],
+  voting: [82.98, 93.90],
+  tie: [95.45, 103.12],
+  ejected: [104.43, 113.22],
+  win_villagers: [114.84, 123.30],
+  win_haunter: [124.73, 132.03],
+};
+
+async function getAnnouncementsUrl(): Promise<string | null> {
+  if (announcementsUrl) return announcementsUrl;
+  if (!announcementRequest) {
+    announcementRequest = (async () => {
+      const base = String(import.meta.env.VITE_SUPABASE_URL || '').replace(/\\/+$/, '');
+      if (!base) return null;
+      const response = await fetch(base + '/functions/v1/cache-haunted-announcements', { method: 'GET', cache: 'no-store' });
+      if (!response.ok) return null;
+      const result = await response.json() as { ready?: boolean; url?: string };
+      if (result.ready && typeof result.url === 'string') announcementsUrl = result.url;
+      return announcementsUrl;
+    })().catch(() => null).finally(() => { announcementRequest = null; });
+  }
+  return announcementRequest;
 }
 
-export function preloadHauntedAnnouncements() {}
+export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncementSegment, fallbackText: string, afterText?: string): Promise<void> {
+  if (typeof window === 'undefined' || !getSoundEnabled()) return;
+
+  if (announcementAudio) {
+    announcementAudio.pause();
+    announcementAudio.currentTime = 0;
+    announcementAudio = null;
+    const finishPrevious = announcementFinish;
+    announcementFinish = null;
+    finishPrevious?.();
+  }
+
+  const url = await getAnnouncementsUrl();
+  if (!url) {
+    await speakHauntedAnnouncement(fallbackText);
+    if (afterText) await speakHauntedAnnouncement(afterText);
+    return;
+  }
+
+  const [start, end] = announcementSegments[segment];
+  const played = await new Promise<boolean>(resolve => {
+    const audio = new Audio(url);
+    announcementAudio = audio;
+    audio.preload = 'auto';
+    audio.volume = 0.98;
+    let finished = false;
+    let playbackStarted = false;
+    const finish = (ok: boolean) => {
+      if (finished) return;
+      finished = true;
+      audio.ontimeupdate = null;
+      audio.onended = null;
+      audio.onerror = null;
+      if (announcementAudio === audio) announcementAudio = null;
+      if (announcementFinish === finishDone) announcementFinish = null;
+      resolve(ok);
+    };
+    const finishDone = () => finish(true);
+    const beginPlayback = () => {
+      if (playbackStarted || finished) return;
+      playbackStarted = true;
+      void audio.play().catch(() => finish(false));
+    };
+    announcementFinish = finishDone;
+    audio.onloadedmetadata = () => {
+      audio.addEventListener('seeked', beginPlayback, { once: true });
+      try {
+        const safeStart = Math.min(start, Math.max(0, audio.duration - 0.25));
+        audio.currentTime = safeStart;
+        if (Math.abs(audio.currentTime - safeStart) < 0.05) beginPlayback();
+      } catch {
+        beginPlayback();
+      }
+    };
+    audio.ontimeupdate = () => {
+      if (playbackStarted && audio.currentTime >= end) {
+        audio.pause();
+        finish(true);
+      }
+    };
+    audio.onended = () => finish(true);
+    audio.onerror = () => finish(false);
+  });
+
+  if (!played) await speakHauntedAnnouncement(fallbackText);
+  if (afterText) await speakHauntedAnnouncement(afterText);
+}
+
+export function preloadHauntedAnnouncements() {
+  void getAnnouncementsUrl();
+}
