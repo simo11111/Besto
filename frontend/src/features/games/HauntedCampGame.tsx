@@ -66,7 +66,7 @@ export default function HauntedCampGame(props: Props) {
   useEffect(() => {
     const phase = state?.status ?? null;
     if (!phase || phase === previousPhase) return;
-    if (phase === 'night') { startNightAmbience(); onNightMute(true); if (soundOn) speakHauntedAnnouncement('سكان المخيم، هبط الليل. كل واحد يبقى فبلاصتو، والقرارات كتدار بسرية.'); }
+    if (phase === 'night') { startNightAmbience(); onNightMute(true); if (soundOn) speakHauntedAnnouncement('مرحبا بكم فالمخيم. العافية شاعلة والليل بدا. وسطكم كاين المسكون، وكل قرار غادي يبدل مجرى اللعبة. شدّو بلايصكم وكونو واجدين.'); }
     else if (phase === 'morning') { stopNightAmbience(); startMorningAmbience(); onNightMute(true); const latest = [...(state?.events ?? [])].reverse().find(e => e.event_type === 'night_resolved'); const killedId = typeof latest?.payload.killed_user_id === 'string' ? latest.payload.killed_user_id : null; if (killedId) { playHauntedSound('death'); const victim = state?.players.find(player => player.user_id === killedId)?.username || 'واحد من السكان'; if (soundOn) speakHauntedAnnouncement('طلع الصباح يا سكان الخيمة. لقينا '+victim+' خرج من المخيم هاد الليلة.'); } else { playHauntedSound('save'); if (soundOn) speakHauntedAnnouncement('طلع الصباح يا سكان الخيمة. الليلة دازت بسلام، ما مات حتى واحد.'); } }
     else { stopNightAmbience(); stopMorningAmbience(); onNightMute(false); if (phase === 'day' && soundOn) speakHauntedAnnouncement('طلع الصباح. عندكم أربع دقائق للنقاش. التصويت مازال ما تحلش.'); }
     if (phase === 'ended') playHauntedSound(state?.winner === 'villagers' ? 'win' : 'lose');
