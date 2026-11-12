@@ -48,7 +48,7 @@ export default function App(){
  const nightMuteRef=useRef(false),manualVoiceMuteRef=useRef(false);
  const roomChatChannelRef=useRef<ReturnType<NonNullable<typeof supabase>['channel']>|null>(null),directChatChannelRef=useRef<ReturnType<NonNullable<typeof supabase>['channel']>|null>(null),roomTypingTimersRef=useRef<Map<string,number>>(new Map()),directTypingTimerRef=useRef<number|null>(null);
  const voiceChannelRef=useRef<any>(null),localStreamRef=useRef<MediaStream|null>(null),peerConnectionsRef=useRef<Map<string,RTCPeerConnection>>(new Map()),remoteAudioRef=useRef<Map<string,HTMLAudioElement>>(new Map()),pendingIceRef=useRef<Map<string,RTCIceCandidateInit[]>>(new Map());
- const voiceAudioContextRef=useRef<AudioContext|null>(null),voiceAnalyserRef=useRef<Map<string,AnalyserNode>>(new Map()),voiceSourceRef=useRef<Map<string,MediaStreamAudioSourceNode>>(new Map()),voiceActivityFrameRef=useRef<number|null>(null);
+ const voiceAudioContextRef=useRef<AudioContext|null>(null),voiceAnalyserRef=useRef<Map<string,AnalyserNode>>(new Map()),voiceSourceRef=useRef<Map<string,MediaStreamAudioSourceNode>>(new Map()),voiceActivityTimerRef=useRef<number|null>(null);
  const userId=session?.user?.id;
  const selectedRoomGame=games.find(g=>g.key===selectedGame);
  const notify=(m:string)=>{setNotice(m);};
@@ -302,7 +302,7 @@ export default function App(){
   localStreamRef.current?.getTracks().forEach(track=>track.stop());localStreamRef.current=null;
   pendingIceRef.current.clear();
   voiceSourceRef.current.forEach(source=>{try{source.disconnect();}catch{}});voiceSourceRef.current.clear();voiceAnalyserRef.current.clear();
-  if(voiceActivityFrameRef.current!==null){cancelAnimationFrame(voiceActivityFrameRef.current);voiceActivityFrameRef.current=null;}
+  if(voiceActivityTimerRef.current!==null){window.clearInterval(voiceActivityTimerRef.current);voiceActivityTimerRef.current=null;}
   if(voiceAudioContextRef.current){void voiceAudioContextRef.current.close().catch(()=>undefined);voiceAudioContextRef.current=null;}
   setVoiceSpeakingIds([]);setVoiceParticipantIds([]);
   manualVoiceMuteRef.current=false;setVoiceActive(false);setVoiceMuted(false);setVoiceStatus('الصوت مطفي');
@@ -312,7 +312,7 @@ export default function App(){
    voiceAnalyserRef.current.delete(id);
   }
   function startVoiceActivityMonitor(){
-   if(voiceActivityFrameRef.current!==null)return;
+   if(voiceActivityTimerRef.current!==null)return;
    const tick=()=>{
     const active:string[]=[];
     voiceAnalyserRef.current.forEach((analyser,id)=>{
@@ -321,10 +321,9 @@ export default function App(){
      if(Math.sqrt(energy/samples.length)>.035)active.push(id);
     });
     setVoiceSpeakingIds(previous=>previous.length===active.length&&previous.every(id=>active.includes(id))?previous:active);
-    if(voiceAnalyserRef.current.size)voiceActivityFrameRef.current=requestAnimationFrame(tick);
-    else{voiceActivityFrameRef.current=null;setVoiceSpeakingIds([]);}
+    if(!voiceAnalyserRef.current.size){if(voiceActivityTimerRef.current!==null)window.clearInterval(voiceActivityTimerRef.current);voiceActivityTimerRef.current=null;setVoiceSpeakingIds([]);}
    };
-   voiceActivityFrameRef.current=requestAnimationFrame(tick);
+   voiceActivityTimerRef.current=window.setInterval(tick,100);
   }
   function attachVoiceAnalyser(id:string,stream:MediaStream){
    try{
