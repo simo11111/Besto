@@ -434,13 +434,13 @@ begin
    select count(*) into v_kills from public.haunted_night_actions na where na.game_id=p_game_id and na.haunter_target is not null and na.killed_user_id is not null and v_player.role='haunter';
    select count(*) into v_saves from public.haunted_night_actions na where na.game_id=p_game_id and na.faqih_target=na.haunter_target and na.resolved and v_player.role='faqih';
    select count(*) into v_correct from public.haunted_votes hv join public.haunted_players target on target.game_id=hv.game_id and target.user_id=hv.target_id where hv.game_id=p_game_id and hv.voter_id=v_player.user_id and target.role='haunter';
-   select (select eliminated.user_id from (
+   select coalesce((select eliminated.user_id from (
        select (payload->>'killed_user_id')::uuid as user_id,created_at from public.haunted_events
        where game_id=p_game_id and event_type='night_resolved' and payload->>'killed_user_id' is not null
        union all
        select (payload->>'ejected_user_id')::uuid as user_id,created_at from public.haunted_events
        where game_id=p_game_id and event_type='player_ejected' and payload->>'ejected_user_id' is not null
-     ) eliminated order by eliminated.created_at limit 1)=v_player.user_id into v_first;
+     ) eliminated order by eliminated.created_at limit 1)=v_player.user_id,false) into v_first;
    select not exists(select 1 from public.haunted_votes hv join public.haunted_players h on h.game_id=hv.game_id and h.user_id=hv.target_id where hv.game_id=p_game_id and h.role='haunter') into v_undetected;
    v_xp:=case v_player.role when 'haunter' then v_kills*50+case when v_won then 150 else 0 end
          when 'faqih' then v_saves*50+case when v_won then 100 else 0 end
