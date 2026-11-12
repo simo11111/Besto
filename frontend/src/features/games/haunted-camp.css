@@ -674,7 +674,7 @@
 .haunted-voice-presence{display:flex;align-items:center;gap:6px;margin:3px 0 7px;padding:5px 8px;border-radius:9px;background:rgba(57,43,79,.32);color:#c9b4e5;font-size:10px;line-height:1.4}
 .haunted-voice-presence span{color:#a8e9be}
 .haunted-chat-actions{display:flex;align-items:center;gap:6px;flex:0 0 auto}
-.haunted-chat-actions>button[type=submit]{min-width:58px}
+.haunted-chat-actions>button[type=submit]{display:grid;place-items:center;min-width:55px;width:55px;height:40px;padding:0 8px;border:1px solid rgba(186,255,66,.3);border-radius:12px;background:#baff42;color:#17200f;font-size:11px;font-weight:900}
 .haunted-inline-mic{display:inline-flex;align-items:center;justify-content:center;width:38px;height:40px;min-width:38px;border:1px solid rgba(185,143,226,.28);border-radius:11px;background:rgba(113,72,157,.2);color:#e8d5ff}
 .haunted-inline-mic.is-active{border-color:rgba(127,255,177,.5);background:rgba(36,125,78,.2);color:#b9ffd0}
 .haunted-inline-mic.is-muted{border-color:rgba(255,172,128,.5);background:rgba(143,72,48,.2);color:#ffd0b5}
