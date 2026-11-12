@@ -270,7 +270,7 @@ export default function App(){
   peerConnectionsRef.current.forEach(pc=>pc.close());peerConnectionsRef.current.clear();
   remoteAudioRef.current.forEach(audio=>{audio.pause();audio.srcObject=null;});remoteAudioRef.current.clear();
   localStreamRef.current?.getTracks().forEach(track=>track.stop());localStreamRef.current=null;
-  pendingIceRef.current.clear();setVoiceActive(false);setVoiceMuted(false);setVoiceStatus('الصوت مطفي');
+  pendingIceRef.current.clear();manualVoiceMuteRef.current=false;setVoiceActive(false);setVoiceMuted(false);setVoiceStatus('الصوت مطفي');
  }
  async function startVoice(){
   if(!supabase||!room||!userId||voiceActive)return;
