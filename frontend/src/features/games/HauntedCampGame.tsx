@@ -166,10 +166,10 @@ export default function HauntedCampGame(props: Props) {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, []);
-  const presentNarration = (key: string, text: string, useGeneratedVoice = false, segment?: 'morning_safe' | 'morning_death' | 'discussion' | 'voting' | 'ejected' | 'win_villagers' | 'win_haunter') => {
+  const presentNarration = (key: string, text: string, useGeneratedVoice = false, segment?: 'morning_safe' | 'morning_death' | 'discussion' | 'voting' | 'ejected' | 'win_villagers' | 'win_haunter', afterSegmentText?: string) => {
     narratorRunRef.current = key; setNarratorText(text); setNarratorVisible(true);
     void (async () => {
-      if (soundOn) { if (segment) await playHauntedAnnouncementSegment(segment, text); else if (useGeneratedVoice) await playHauntedNarrator(text); else await speakHauntedAnnouncement(text); }
+      if (soundOn) { if (segment) { await playHauntedAnnouncementSegment(segment, text); if (afterSegmentText) await speakHauntedAnnouncement(afterSegmentText); } else if (useGeneratedVoice) await playHauntedNarrator(text); else await speakHauntedAnnouncement(text); }
       else await new Promise(resolve => window.setTimeout(resolve, 1800));
       if (narratorRunRef.current === key) setNarratorVisible(false);
     })();
@@ -185,7 +185,7 @@ export default function HauntedCampGame(props: Props) {
       stopNightAmbience(); startMorningAmbience(); onNightMute(true);
       const latest = [...(state?.events ?? [])].reverse().find(e => e.event_type === 'night_resolved');
       const killedId = typeof latest?.payload.killed_user_id === 'string' ? latest.payload.killed_user_id : null;
-      if (killedId) { playHauntedSound('death'); const victim = state?.players.find(player => player.user_id === killedId)?.username || 'واحد من السكان'; presentNarration(state!.id+':'+state!.round+':morning','طلع الصباح يا سكان الخيمة. لقينا '+victim+' خرج من المخيم هاد الليلة.',false,'morning_death'); }
+      if (killedId) { playHauntedSound('death'); const victim = state?.players.find(player => player.user_id === killedId)?.username || 'واحد من السكان'; presentNarration(state!.id+':'+state!.round+':morning','طلع الصباح يا سكان الخيمة. لقينا '+victim+' خرج من المخيم هاد الليلة.',false,'morning_death',victim); }
       else { playHauntedSound('save'); presentNarration(state!.id+':'+state!.round+':morning','طلع الصباح يا سكان الخيمة. الليلة دازت بسلام، ما مات حتى واحد.',false,'morning_safe'); }
     } else if (phase === 'day') {
       stopNightAmbience(); stopMorningAmbience(); onNightMute(false);
