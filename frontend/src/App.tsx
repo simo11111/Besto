@@ -338,6 +338,16 @@ export default function App(){
   if(!navigator.mediaDevices?.getUserMedia){setVoiceStatus('المتصفح ما كيدعمش المايك أو الصفحة ماشي HTTPS.');return;}
   voiceStartingRef.current=true;
   try{
+   if(room.game_key==='haunted_camp'){
+    const {data:hauntedId,error:lookupError}=await supabase.rpc('get_latest_haunted_game',{p_room_id:room.id});
+    if(lookupError)throw lookupError;
+    if(hauntedId){
+     const {data:snapshot,error:stateError}=await supabase.rpc('get_haunted_game_state',{p_game_id:hauntedId});
+     if(stateError)throw stateError;
+     const currentPlayer=snapshot?.players?.find((player:any)=>player.user_id===userId);
+     if(!currentPlayer?.is_alive){setVoiceStatus('خرجتي من اللعبة. المايك مسدود عليك فهاد الجولة.');voiceStartingRef.current=false;return;}
+    }
+   }
    setVoiceStatus('كنفتح المايك...');
    const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
    if(!voiceStartingRef.current){stream.getTracks().forEach(track=>track.stop());return;}
