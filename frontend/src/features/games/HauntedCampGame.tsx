@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Shield, Skull, Moon, Sun, Volume2, VolumeX, Clock3, Users, MessageCircle, Mic, MicOff, Trophy, Sparkles, RefreshCw } from 'lucide-react';
 import { useHauntedGame } from '../../hooks/useHauntedGame';
 import { playHauntedSound, startNightAmbience, stopNightAmbience } from '../../lib/hauntedAudio';
+import { getSoundEnabled, setSoundEnabled as persistSoundEnabled } from '../../lib/audio';
 import type { HauntedRole } from '../../types/haunted';
 
 type RosterMember = { user_id: string; profile?: { username?: string; avatar_url?: string | null } };
@@ -27,7 +28,7 @@ export default function HauntedCampGame(props: Props) {
   const [target, setTarget] = useState('');
   const [chatText, setChatText] = useState('');
   const [now, setNow] = useState(Date.now());
-  const [soundOn, setSoundOn] = useState(true);
+  const [soundOn, setSoundOn] = useState(() => getSoundEnabled());
   const [previousPhase, setPreviousPhase] = useState<string | null>(null);
   const [previousEventCount, setPreviousEventCount] = useState(0);
   const { state, loading, busy, error, start, submitKill, submitProtection, resolveNight, advanceMorning, submitVote, resolveVote, refresh } =
@@ -38,9 +39,9 @@ export default function HauntedCampGame(props: Props) {
   const alivePlayers = useMemo(() => state?.players.filter(p => p.is_alive) ?? [], [state?.players]);
   const secondsLeft = state?.phase_deadline_at ? Math.max(0, Math.ceil((new Date(state.phase_deadline_at).getTime() - now) / 1000)) : 0;
   const latestNight = [...(state?.events ?? [])].reverse().find(e => e.event_type === 'night_resolved');
-  const latestVote = [...(state?.events ?? [])].reverse().find(e => ['player_ejected','vote_tie_resolved','vote_tied'].includes(e.event_type));
-  const nightReady = Boolean((state as any)?.night_actions_ready);
-  const voteCount = Number((state as any)?.vote_count ?? 0);
+  const nightReady = Boolean(state?.night_actions_ready);
+  const voteCount = Number(state?.vote_count ?? 0);
+  const isAlive = alivePlayers.some(player => player.user_id === userId);
   const aliveCount = alivePlayers.length;
   const voted = Boolean(state?.my_vote);
 
@@ -99,10 +100,9 @@ export default function HauntedCampGame(props: Props) {
     </section>;
   }
 
-  const selectedPlayer = alivePlayers.find(p => p.user_id === target);
   return <section className={'haunted-shell haunted-phase-' + state.status} aria-label="لعبة الفقيه والمسكون">
     <div className="haunted-stars" aria-hidden="true"/><div className="haunted-mist" aria-hidden="true"/>
-    <header className="haunted-topbar"><div><span className="haunted-kicker">HAUNTED CAMP · ROUND {state.round}</span><h1>ليلة فالخيمة</h1></div><div className="haunted-top-actions"><span className="haunted-round-pill">الجولة {state.round}</span><button className="haunted-icon-button" onClick={()=>setSoundOn(v=>!v)} aria-label={soundOn?'كتم المؤثرات':'تشغيل المؤثرات'}>{soundOn?<Volume2/>:<VolumeX/>}</button><button className="haunted-ghost-button" onClick={onBack}>اللوبي</button></div></header>
+    <header className="haunted-topbar"><div><span className="haunted-kicker">HAUNTED CAMP · ROUND {state.round}</span><h1>ليلة فالخيمة</h1></div><div className="haunted-top-actions"><span className="haunted-round-pill">الجولة {state.round}</span><button className="haunted-icon-button" onClick={()=>{const next=!soundOn;setSoundOn(next);persistSoundEnabled(next);}} aria-label={soundOn?'كتم المؤثرات':'تشغيل المؤثرات'}>{soundOn?<Volume2/>:<VolumeX/>}</button><button className="haunted-ghost-button" onClick={onBack}>اللوبي</button></div></header>
     <div className="haunted-phase-banner">
       {state.status==='night'?<><Moon/><span>الليل هبط على المخيم</span></>:state.status==='morning'?<><Sun/><span>طلع الصباح… شنو وقع فالليل؟</span></>:state.status==='day'?<><Sun/><span>وقت النقاش والتصويت</span></>:<><Trophy/><span>سالَت الحكاية</span></>}
       {state.status!=='ended'&&<strong><Clock3 size={15}/>{secondsLeft}ث</strong>}
@@ -111,8 +111,9 @@ export default function HauntedCampGame(props: Props) {
     {revealed&&role&&<article className="haunted-role-card"><div className="haunted-role-card-inner"><span>{role.icon}</span><small>الدور السري ديالك</small><h2>{role.title}</h2><p>{role.description}</p></div></article>}
 
     {state.status==='night'&&<div className="haunted-night-panel"><div className="haunted-moon">🌙</div><h2>{myRole==='haunter'?'اختار الضحية ديالك':myRole==='faqih'?'شكون غادي تعتق الليلة؟':'نعس… الليل ماشي وقت الكلام'}</h2><p>{myRole==='haunter'?'اختار لاعب حي واحد. القرار سري وما غادي يبان حتى واحد.':myRole==='faqih'?'اختار لاعب تحميه. ما غاديش تعرف واش الحماية نجحات حتى يطلع الصباح.':'تسنى الصباح. الميكروفونات مكتومة فالليل.'}</p>
-      {['haunter','faqih'].includes(myRole||'')&&<div className="haunted-target-grid">{alivePlayers.filter(p=>myRole==='haunter'?p.user_id!==userId:true).map(player=><button type="button" key={player.user_id} className={'haunted-target '+(target===player.user_id?'selected':'')} onClick={()=>setTarget(player.user_id)}><span>{player.avatar_url?<img src={player.avatar_url} alt=""/>:(player.username||'؟').slice(0,1)}</span><b>{player.username}</b></button>)}</div>}
-      {['haunter','faqih'].includes(myRole||'')&&<button className="haunted-primary" disabled={busy||!target} onClick={()=>void submitNightChoice()}>{myRole==='haunter'?'🗡️ تأكيد اختيار الضحية':'🛡️ تأكيد الحماية'}</button>}
+      {!isAlive&&<p className="haunted-waiting">خرجتي من اللعبة، تقدر تبقى تتفرج ولكن ما تقدرش تختار أو تصوّت.</p>}
+      {isAlive&&['haunter','faqih'].includes(myRole||'')&&<div className="haunted-target-grid">{alivePlayers.filter(p=>myRole==='haunter'?p.user_id!==userId:true).map(player=><button type="button" key={player.user_id} className={'haunted-target '+(target===player.user_id?'selected':'')} onClick={()=>setTarget(player.user_id)}><span>{player.avatar_url?<img src={player.avatar_url} alt=""/>:(player.username||'؟').slice(0,1)}</span><b>{player.username}</b></button>)}</div>}
+      {isAlive&&['haunter','faqih'].includes(myRole||'')&&<button className="haunted-primary" disabled={busy||!target} onClick={()=>void submitNightChoice()}>{myRole==='haunter'?'🗡️ تأكيد اختيار الضحية':'🛡️ تأكيد الحماية'}</button>}
       {myRole==='villager'&&<div className="haunted-waiting">القرارات الليلية كتتدار بسرية تامة.</div>}
       {isHost&&<button className="haunted-secondary" disabled={busy||(!nightReady&&secondsLeft>0)} onClick={()=>void resolveNight()}>{busy?'كنحسبو...':'حسم الليل وكشف الصباح'}</button>}
     </div>}
