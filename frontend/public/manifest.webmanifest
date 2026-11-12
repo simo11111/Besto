@@ -1,6 +1,6 @@
 {
-  "name": "MIMOX — ألعاب وتحديات مع صحابك",
-  "short_name": "MIMOX",
+  "name": "ليلة فالخيمة — ألعاب وتحديات مع صحابك",
+  "short_name": "ليلة فالخيمة",
   "lang": "ar-MA",
   "dir": "rtl",
   "start_url": "/",
@@ -9,10 +9,10 @@
   "display_override": ["standalone", "minimal-ui"],
   "background_color": "#111026",
   "theme_color": "#21133f",
-  "description": "منصة ألعاب وتحديات اجتماعية مغربية، العب مع صحابك وأنشئ غرفتك.",
+  "description": "لعبة اجتماعية مغربية: الفقيه والمسكون. جمع صحابك، كشف المسكون ونجّي المخيم.",
   "icons": [
-    { "src": "/mimox-icon.svg?v=20261107c", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "/mimox-icon.svg?v=20261107c", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+    { "src": "/night-camp-icon.svg?v=20261112a", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/night-camp-icon.svg?v=20261112a", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
   ],
   "prefer_related_applications": false
 }
