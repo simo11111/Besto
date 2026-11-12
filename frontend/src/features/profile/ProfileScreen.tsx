@@ -10,6 +10,7 @@ type Props = {
   inventory: string[];
   profileName: string;
   bio: string;
+  gender: 'male' | 'female';
   busy: boolean;
   avatarBusy: boolean;
   avatarInputRef: RefObject<HTMLInputElement>;
@@ -20,10 +21,11 @@ type Props = {
   onOpenShop: () => void;
   onProfileNameChange: (value: string) => void;
   onBioChange: (value: string) => void;
+  onGenderChange: (value: 'male' | 'female') => void;
   onCopyPlayerId: () => void;
 };
 
-export default function ProfileScreen({ profile, items, inventory, profileName, bio, busy, avatarBusy, avatarInputRef, onAvatarUpload, onEquipItem, onSave, onSignOut, onOpenShop, onProfileNameChange, onBioChange, onCopyPlayerId }: Props) {
+export default function ProfileScreen({ profile, items, inventory, profileName, bio, gender, busy, avatarBusy, avatarInputRef, onAvatarUpload, onEquipItem, onSave, onSignOut, onOpenShop, onProfileNameChange, onBioChange, onGenderChange, onCopyPlayerId }: Props) {
   return <>
     <PageHead eyebrow="PLAYER PROFILE" title="البروفايل ديالك" subtitle="طور المستوى ديالك، جمع الإنجازات وزيّن الحساب." />
     <div className="profile-hero">
@@ -53,6 +55,12 @@ export default function ProfileScreen({ profile, items, inventory, profileName, 
       <h3>تعديل المعلومات</h3>
       <button type="button" className="secondary" disabled={avatarBusy} onClick={() => avatarInputRef.current?.click()}>{avatarBusy ? 'كنرفع الصورة...' : 'تغيير صورة البروفايل'}</button>
       <label>اسم اللاعب<input value={profileName} onChange={(event) => onProfileNameChange(event.target.value)} minLength={3} maxLength={20} /></label>
+      <label>الشخصية ديالك فالمخيم
+        <select value={gender} onChange={(event) => onGenderChange(event.target.value as 'male' | 'female')}>
+          <option value="female">أنثى — شخصية أنمي بنت</option>
+          <option value="male">ذكر — شخصية أنمي ولد</option>
+        </select>
+      </label>
       <label>نبذة قصيرة<textarea value={bio} onChange={(event) => onBioChange(event.target.value)} maxLength={120} /></label>
       <button className="primary" disabled={busy}>حفظ التغييرات</button>
     </form>
