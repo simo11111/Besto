@@ -231,6 +231,28 @@ export default function App(){
  async function loadGame(g:Game){if(!supabase)return;setGame(g);setGameResult(g.result||null);if(g.game_key==='connect4'){await loadDuelState(g.id);return;}if(g.game_key==='dama'){await loadDamaState(g.id);return;}const [{data:players,error},{data:secret},{data:actions}]=await Promise.all([supabase.from('game_players').select('user_id,score').eq('session_id',g.id).order('score',{ascending:false}),supabase.rpc('get_my_game_secret',{p_session_id:g.id}),supabase.from('game_actions').select('user_id,action_key').eq('session_id',g.id)]);if(error)notify(prettyError(error));setGamePlayers((players||[]) as Player[]);setGameSecret(secret||{});setGameAction((actions||[]).some(a=>a.user_id===userId)?'sent':'');}
  async function submitAction(action:string,payload:any){unlockGameAudio();if(!supabase||!game)return;setBusy(true);const {error}=await supabase.rpc('submit_party_action',{p_session_id:game.id,p_action_key:action,p_payload:payload});setBusy(false);if(error)notify(prettyError(error));else{playGameSound('submit');notify('وصل الجواب ديالك!');setGameAction('sent');await loadGame(game);}}
  async function finishGame(){if(!supabase||!game)return;setBusy(true);const {data,error}=await supabase.rpc(game.game_key==='impostor'?'finish_impostor_game':'finish_party_game',{p_session_id:game.id});setBusy(false);if(error)notify(prettyError(error));else{playGameSound('result');setGameResult(data);setGame({...game,status:'completed'});await loadGame({...game,status:'completed'});await loadProfile();await loadLeaderboard();await loadDailyMissions();}}
+ useEffect(()=>{
+  if(!supabase||!room||room.game_key!=='haunted_camp'||!userId||!voiceActive)return;
+  let cancelled=false;
+  const enforceSpectatorAudio=async()=>{
+   try{
+    const {data:hauntedId,error:lookupError}=await supabase!.rpc('get_latest_haunted_game',{p_room_id:room.id});
+    if(cancelled||lookupError||!hauntedId)return;
+    const {data:snapshot,error:stateError}=await supabase!.rpc('get_haunted_game_state',{p_game_id:hauntedId});
+    if(cancelled)return;
+    const currentPlayer=snapshot?.players?.find((player:any)=>player.user_id===userId);
+    if(stateError||(snapshot?.status!=='ended'&&!currentPlayer?.is_alive)){
+     stopVoice();
+     notify('خرجتي من اللعبة. الصوت تسد عليك وبقيتي غير متفرج.');
+    }
+   }catch{
+    if(!cancelled){stopVoice();notify('ما قدرناش نتحققو من حالة اللاعب، تسد المايك مؤقتاً.');}
+   }
+  };
+  void enforceSpectatorAudio();
+  const timer=window.setInterval(()=>void enforceSpectatorAudio(),5000);
+  return()=>{cancelled=true;window.clearInterval(timer);};
+ },[room?.id,room?.game_key,userId,voiceActive]);
  async function sendHauntedChat(body:string){await postRoomMessage(body);}
  async function exitRoom(){if(!supabase||!room)return;stopVoice();await supabase.rpc('leave_room',{p_room_id:room.id});setRoom(null);setGame(null);setTab('home');await loadRooms();}
  useEffect(()=>{const client=supabase;if(!room||!client)return;let active=true;const beat=async()=>{if(document.visibilityState==='hidden')return;const {data,error}=await client.rpc('heartbeat_room',{p_room_id:room.id});if(active&&!error&&!data){notify('الغرفة تسدات أو سالات الجلسة ديالك.');setRoom(null);setTab('rooms');await loadRooms();}};void beat();const timer=window.setInterval(beat,10000);const onVisible=()=>{if(document.visibilityState==='visible')void beat();};document.addEventListener('visibilitychange',onVisible);return()=>{active=false;window.clearInterval(timer);document.removeEventListener('visibilitychange',onVisible);};},[room?.id,loadRooms]);
