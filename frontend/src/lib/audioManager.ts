@@ -188,7 +188,8 @@ class AudioManager {
   }
 
   private startAmbientFallback(name: HauntedSound, volume: number) {
-    if (name !== 'camp' && name !== 'night' && name !== 'morning') { this.playFallback(name); return; }
+    if (name === 'camp') { this.startCampScore(volume); return; }
+    if (name !== 'night' && name !== 'morning') { this.playFallback(name); return; }
     const ctx = this.getContext();
     if (!ctx || this.ambient.has(name)) return;
     const filter = ctx.createBiquadFilter();
