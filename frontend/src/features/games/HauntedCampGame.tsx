@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Shield, Skull, Moon, Sun, Volume2, VolumeX, Clock3, Users, MessageCircle, Mic, MicOff, Trophy, Sparkles, RefreshCw, Flame, CheckCircle2, Check, X, Headphones, Plus } from 'lucide-react';
 import { useHauntedGame } from '../../hooks/useHauntedGame';
-import { playHauntedSound, startNightAmbience, stopNightAmbience, startMorningAmbience, stopMorningAmbience, preloadHauntedSounds, setHauntedAudioMuted, speakHauntedAnnouncement, playHauntedNarrator, stopHauntedNarrator, startCampMusic, stopCampMusic } from '../../lib/hauntedAudio';
+import { playHauntedSound, startNightAmbience, stopNightAmbience, startMorningAmbience, stopMorningAmbience, preloadHauntedSounds, setHauntedAudioMuted, speakHauntedAnnouncement, playHauntedNarrator, stopHauntedNarrator, startCampMusic, stopCampMusic, unlockHauntedNarrator } from '../../lib/hauntedAudio';
 import { getSoundEnabled, setSoundEnabled as persistSoundEnabled } from '../../lib/audio';
 import type { HauntedRole } from '../../types/haunted';
 import { getHauntedBotCount } from './hauntedNpcRoster';
@@ -222,6 +222,7 @@ export default function HauntedCampGame(props: Props) {
   useEffect(() => () => { stopHauntedNarrator(); stopNightAmbience(); stopMorningAmbience(); onNightMute(false); }, [onNightMute]);
 
   async function startGame() {
+    unlockHauntedNarrator();
     const ok = await start(roomId, quickMode);
     if (ok) { setRevealed(false); }
   }
@@ -252,7 +253,7 @@ export default function HauntedCampGame(props: Props) {
 
   return <section className={'haunted-shell haunted-phase-' + state.status} aria-label="ليلة فالخيمة">
     <div className="haunted-stars" aria-hidden="true"/><div className="haunted-mist" aria-hidden="true"/>
-    <header className="haunted-topbar"><div><span className="haunted-kicker">ليلة فالخيمة · الجولة {state.round}</span><h1>ليلة فالخيمة</h1></div><div className="haunted-top-actions"><span className="haunted-round-pill">الجولة {state.round}</span><button className="haunted-icon-button" onClick={()=>{const next=!soundOn;setSoundOn(next);persistSoundEnabled(next);if(!next){stopNightAmbience();stopMorningAmbience();stopCampMusic();}else{startCampMusic();if(state.status==='night')startNightAmbience();else if(state.status==='morning')startMorningAmbience();}setHauntedAudioMuted(!next);}} aria-label={soundOn?'كتم المؤثرات':'تشغيل المؤثرات'}>{soundOn?<Volume2/>:<VolumeX/>}</button><button className="haunted-ghost-button" onClick={onBack}>اللوبي</button></div></header>
+    <header className="haunted-topbar"><div><span className="haunted-kicker">ليلة فالخيمة · الجولة {state.round}</span><h1>ليلة فالخيمة</h1></div><div className="haunted-top-actions"><span className="haunted-round-pill">الجولة {state.round}</span><button className="haunted-icon-button" onClick={()=>{unlockHauntedNarrator();const next=!soundOn;setSoundOn(next);persistSoundEnabled(next);if(!next){stopNightAmbience();stopMorningAmbience();stopCampMusic();}else{startCampMusic();if(state.status==='night')startNightAmbience();else if(state.status==='morning')startMorningAmbience();}setHauntedAudioMuted(!next);}} aria-label={soundOn?'كتم المؤثرات':'تشغيل المؤثرات'}>{soundOn?<Volume2/>:<VolumeX/>}</button><button className="haunted-ghost-button" onClick={onBack}>اللوبي</button></div></header>
     {narratorVisible ? <motion.section className="haunted-narrator-stage" role="status" aria-live="assertive" initial={reduceMotion?false:{opacity:0,scale:.97}} animate={{opacity:1,scale:1}} transition={{duration:.35}}>
       <div className="haunted-narrator-orb"><span/><i/><b/><em/></div><span className="haunted-narrator-kicker"><Volume2 size={15}/> الراوي كيهضر</span><h2>اسمع الإعلان</h2><p>{narratorText}</p><div className="haunted-narrator-wave" aria-hidden="true">{Array.from({length:25},(_,i)=><i key={i} style={{'--wave-delay':(i%7)*.09+'s'} as React.CSSProperties}/>)}</div><small>غادي ترجع الكلسة والشعلة منين يسالي الراوي الإعلان</small>
     </motion.section> : <>
