@@ -134,7 +134,7 @@ async function getAnnouncementsUrl(): Promise<string | null> {
 
 export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncementSegment, fallbackText: string): Promise<void> {
   if (typeof window === 'undefined' || !getSoundEnabled()) return;
-  if (announcementAudio) { announcementAudio.pause(); announcementAudio.currentTime = 0; announcementAudio = null; }
+  if (announcementAudio) { announcementAudio.pause(); announcementAudio.currentTime = 0; announcementAudio = null; const finishPrevious = announcementFinish; announcementFinish = null; finishPrevious?.(); }
   const url = await getAnnouncementsUrl();
   if (!url) { await speakHauntedAnnouncement(fallbackText); return; }
   const [start, end] = announcementSegments[segment];
