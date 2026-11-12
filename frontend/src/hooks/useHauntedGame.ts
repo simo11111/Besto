@@ -16,6 +16,7 @@ type HookResult = {
   advanceMorning: () => Promise<boolean>;
   submitVote: (target: string) => Promise<boolean>;
   resolveVote: () => Promise<HauntedPublicResult | null>;
+  openVoting: () => Promise<boolean>;
 };
 
 export function useHauntedGame(gameId: string | null, roomId: string, userId: string, isHost = false): HookResult {
@@ -76,6 +77,7 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
   }, [effectiveGameId]);
   const resolveNight = useCallback(() => callResult('resolve_haunted_night'), [callResult]);
   const resolveVote = useCallback(() => callResult('resolve_haunted_vote'), [callResult]);
+  const openVoting = useCallback(() => callBoolean('open_haunted_voting', {}), [callBoolean]);
 
   useEffect(() => {
     if (!supabase || !roomId || !userId) return;
@@ -143,5 +145,5 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
     return () => window.clearTimeout(timer);
   }, [state?.id, state?.status, state?.phase_deadline_at, state?.round, state?.vote_round, resolveNight, advanceMorning, resolveVote]);
 
-  return { state, loading, busy, error, refresh, start, submitKill, submitProtection, resolveNight, advanceMorning, submitVote, resolveVote };
+  return { state, loading, busy, error, refresh, start, submitKill, submitProtection, resolveNight, advanceMorning, submitVote, resolveVote, openVoting };
 }
