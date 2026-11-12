@@ -312,3 +312,25 @@
 @keyframes haunted-embers{from{opacity:.4;transform:translate(-50%,5px)}to{opacity:1;transform:translate(-50%,-7px)}}
 @media(max-width:520px){.haunted-camp-seat{width:68px;min-height:98px}.haunted-camp-seat>span{width:68px;height:76px}.haunted-camp-seat b{max-width:72px;font-size:9px}}
 @media(prefers-reduced-motion:reduce){.haunted-camp-seat .haunted-anime-art,.haunted-campfire:after,.haunted-camp-scene:after{animation:none!important}}
+
+
+/* Secret role reveal: a private, centered overlay shown only on a long press. */
+.haunted-role-cover{touch-action:none;user-select:none;-webkit-user-select:none;min-height:108px;flex-direction:column;gap:8px;width:100%;border:1px dashed rgba(220,177,255,.55);background:linear-gradient(135deg,rgba(80,39,112,.45),rgba(20,16,36,.94));color:#f4e8ff}
+.haunted-role-cover small{color:#bda9d3;font-size:12px}
+.haunted-role-overlay{position:fixed;inset:0;z-index:500;display:grid;place-items:center;padding:24px;background:rgba(4,5,14,.84);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)}
+.haunted-role-overlay .haunted-role-card{width:min(92vw,440px);min-height:300px;display:grid;place-items:center;padding:30px;border:1px solid rgba(224,185,255,.62);border-radius:28px;background:radial-gradient(ellipse at 50% 0,rgba(179,104,255,.3),transparent 62%),linear-gradient(145deg,#241635,#0e1020 76%);box-shadow:0 0 0 5px rgba(186,117,255,.08),0 28px 100px rgba(0,0,0,.72),0 0 48px rgba(165,87,255,.25);text-align:center}
+.haunted-role-card-inner{display:grid;justify-items:center;gap:10px}
+.haunted-role-card-inner>small{color:#d6b7f4;font-weight:800}
+.haunted-role-card-inner h2{font-size:clamp(30px,8vw,42px);margin:4px 0;color:#fff}
+.haunted-role-card-inner p{max-width:320px;color:#d5c5e4;line-height:1.9}
+.haunted-role-card-inner>span{font-size:11px;color:#9c88b0}
+.haunted-camp-seat .haunted-anime-art{display:block;width:100%;height:100%}
+.haunted-scene-caption{top:8px;bottom:auto}
+@media(max-width:520px){
+ .haunted-camp-seat{width:66px;min-height:96px}
+ .haunted-camp-seat>span{width:66px;height:76px}
+ .haunted-camp-seat b{max-width:68px;font-size:9px}
+ .haunted-camp-scene{overflow:hidden}
+ .haunted-role-overlay{padding:18px}
+ .haunted-role-overlay .haunted-role-card{min-height:280px;padding:24px 18px}
+}
