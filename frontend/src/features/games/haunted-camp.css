@@ -38,3 +38,162 @@
 .haunted-confetti-layer i{position:absolute;top:-12px;width:7px;height:12px;border-radius:2px;background:linear-gradient(180deg,#fbbf24,#a78bfa);will-change:transform}
 .haunted-role-card{transform-style:preserve-3d;backface-visibility:hidden;will-change:transform,opacity}
 @media(prefers-reduced-motion:reduce){.haunted-confetti-layer{display:none!important}.haunted-role-card{will-change:auto}}
+
+
+/* Interaction and responsive polish — presentation only; game state is untouched. */
+.haunted-shell {
+  border-color: rgba(177,104,255,.28);
+  box-shadow: var(--hc-shadow-lg), inset 0 1px rgba(255,255,255,.035);
+}
+.haunted-lobby-card,
+.haunted-rules-card,
+.haunted-night-panel,
+.haunted-morning-panel,
+.haunted-vote-panel,
+.haunted-discussion,
+.haunted-end-panel {
+  box-shadow: var(--hc-shadow-md), inset 0 1px rgba(255,255,255,.045);
+  backdrop-filter: blur(12px);
+}
+.haunted-player,
+.haunted-target,
+.haunted-role-reveal-list > div {
+  transition:
+    transform var(--hc-motion-fast) var(--hc-ease-standard),
+    border-color var(--hc-motion-fast) var(--hc-ease-standard),
+    background var(--hc-motion-fast) var(--hc-ease-standard),
+    box-shadow var(--hc-motion-fast) var(--hc-ease-standard);
+}
+.haunted-player:hover,
+.haunted-target:not(:disabled):hover {
+  transform: translateY(-2px);
+  border-color: rgba(198,139,255,.42);
+  background: rgba(174,91,255,.09);
+}
+.haunted-target.selected {
+  border-color: var(--hc-violet-glow);
+  box-shadow: 0 0 0 2px rgba(177,95,255,.16), var(--hc-glow-violet);
+}
+.haunted-primary {
+  min-height: 52px;
+  letter-spacing: .01em;
+  box-shadow: 0 9px 26px rgba(154,66,231,.26), inset 0 1px rgba(255,255,255,.14);
+}
+.haunted-primary:active:not(:disabled),
+.haunted-secondary:active:not(:disabled),
+.haunted-ghost-button:active:not(:disabled),
+.haunted-icon-button:active:not(:disabled) {
+  transform: translateY(1px) scale(.985);
+}
+.haunted-phase-banner {
+  min-height: 54px;
+  box-shadow: inset 0 1px rgba(255,255,255,.04);
+}
+.haunted-phase-banner strong {
+  font-variant-numeric: tabular-nums;
+}
+.haunted-role-cover {
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 1px rgba(255,255,255,.08), 0 12px 32px rgba(94,43,145,.18);
+}
+.haunted-role-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 25%, rgba(255,255,255,.07) 48%, transparent 68%);
+  transform: translateX(-120%);
+  animation: haunted-card-sheen 4.8s ease-in-out infinite;
+}
+.haunted-role-card-inner {
+  box-shadow: var(--hc-shadow-lg), var(--hc-glow-violet);
+}
+.haunted-chat-messages {
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(183,138,232,.45) transparent;
+}
+.haunted-discussion input {
+  min-height: 48px;
+}
+.haunted-discussion form button,
+.haunted-voice-box button {
+  min-height: 48px;
+  cursor: pointer;
+  transition: filter var(--hc-motion-fast), transform var(--hc-motion-fast);
+}
+.haunted-discussion form button:active,
+.haunted-voice-box button:active {
+  transform: scale(.97);
+}
+.haunted-error,
+.haunted-outcome-banner,
+.haunted-waiting {
+  line-height: 1.7;
+}
+@keyframes haunted-card-sheen {
+  0%, 18% { transform: translateX(-120%); }
+  48%, 100% { transform: translateX(120%); }
+}
+@media (min-width: 900px) {
+  .haunted-shell {
+    max-width: 1120px;
+    margin-inline: auto;
+  }
+}
+@media (max-width: 520px) {
+  .haunted-shell {
+    min-height: calc(100dvh - 24px);
+    padding: 12px;
+    border-radius: 18px;
+  }
+  .haunted-topbar {
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .haunted-topbar h1 {
+    font-size: 22px;
+  }
+  .haunted-top-actions {
+    gap: 6px;
+  }
+  .haunted-icon-button {
+    width: 44px;
+    min-height: 44px;
+  }
+  .haunted-phase-banner {
+    padding: 11px;
+    margin-block: 10px 14px;
+    font-size: 13px;
+  }
+  .haunted-roster {
+    gap: 7px;
+  }
+  .haunted-player {
+    padding: 8px 7px;
+    gap: 7px;
+  }
+  .haunted-player-name {
+    font-size: 12px;
+  }
+  .haunted-target-grid {
+    gap: 7px;
+  }
+  .haunted-target {
+    min-height: 54px;
+    padding: 8px;
+  }
+  .haunted-bottom-bar {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .haunted-role-cover::after {
+    animation: none !important;
+  }
+  .haunted-player,
+  .haunted-target {
+    transition: none !important;
+  }
+}
