@@ -19,6 +19,19 @@ describe('Haunted Camp NPC roster', () => {
     expect(getHauntedBotCount(4, true, 4)).toBe(0);
   });
 
+  it('handles the minimum four-player standard room', () => {
+    expect(getHauntedBotCount(1, false, 4)).toBe(3);
+    expect(getHauntedBotCount(4, false, 4)).toBe(0);
+  });
+
+  it('fills an eight-player standard room', () => {
+    expect(getHauntedBotCount(2, false, 8)).toBe(6);
+  });
+
+  it('never adds bots beyond the selected room capacity', () => {
+    expect(getHauntedBotCount(7, false, 6)).toBe(0);
+  });
+
   it('returns zero for invalid or empty lobbies', () => {
     expect(getHauntedBotCount(0, false, 6)).toBe(0);
     expect(getHauntedBotCount(Number.NaN, false, 6)).toBe(0);
