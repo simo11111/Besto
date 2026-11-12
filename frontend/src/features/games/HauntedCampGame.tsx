@@ -111,7 +111,7 @@ export default function HauntedCampGame(props: Props) {
       <div className="haunted-scene-moon" aria-hidden="true"/>
       <div className="haunted-scene-tent" aria-hidden="true"><span/></div>
       <div className="haunted-campfire" aria-hidden="true"><i/><b/><span/></div>
-      <div className="haunted-camp-ring">{state.players.map((player,index)=>{const angle=(index/Math.max(state.players.length,1))*Math.PI*2-Math.PI/2;const left=50+37*Math.cos(angle);const top=50+38*Math.sin(angle);return <div className={'haunted-camp-seat '+(!player.is_alive?'is-out':'')} key={player.user_id} style={{left:left+'%',top:top+'%'}}><span>{player.avatar_url?<img src={player.avatar_url} alt=""/>:(player.username||'؟').slice(0,1)}</span><b>{player.username}</b>{!player.is_alive&&<small>خرج</small>}</div>;})}</div>
+      <div className="haunted-camp-ring">{state.players.map((player,index)=>{const angle=(index/Math.max(state.players.length,1))*Math.PI*2-Math.PI/2;const left=50+37*Math.cos(angle);const top=50+38*Math.sin(angle);return <div className={'haunted-camp-seat '+(!player.is_alive?'is-out':'')} key={player.user_id} style={{left:left+'%',top:top+'%'}}><span>{player.avatar_url?<img src={player.avatar_url} alt=""/>:(player.username||'؟').slice(0,1)}</span><b>{player.username}</b>{player.is_bot&&<small>بوت</small>}{!player.is_alive&&<small>خرج</small>}</div>;})}</div>
       <span className="haunted-scene-caption">المخيم ديالكم · {alivePlayers.length} باقيين حدا العافية</span>
     </div>
     <div className="haunted-phase-banner">
