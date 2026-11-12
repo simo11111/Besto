@@ -1,4 +1,5 @@
 :root {
+  /* Existing ليلة فالخيمة palette — intentionally unchanged */
   --hc-bg-night: #0a0618;
   --hc-bg-morning: #1a0f2e;
   --hc-bg-day: #1e1338;
@@ -9,14 +10,19 @@
   --hc-safe: #10b981;
   --hc-text: #f5f3ff;
   --hc-muted: #a1a1aa;
+
+  /* Shape, spacing and depth */
   --hc-radius-sm: 8px;
   --hc-radius-md: 12px;
   --hc-radius-lg: 16px;
+  --hc-radius-xl: 20px;
+  --hc-radius-shell: 26px;
   --hc-radius-pill: 999px;
   --hc-space-1: 4px;
   --hc-space-2: 8px;
   --hc-space-3: 12px;
   --hc-space-4: 16px;
+  --hc-space-5: 20px;
   --hc-space-6: 24px;
   --hc-space-8: 32px;
   --hc-shadow-sm: 0 2px 8px rgb(0 0 0 / 18%);
@@ -24,16 +30,40 @@
   --hc-shadow-lg: 0 18px 48px rgb(0 0 0 / 38%);
   --hc-glow-violet: 0 0 24px rgb(167 139 250 / 28%);
   --hc-glow-safe: 0 0 22px rgb(16 185 129 / 24%);
+
+  /* Motion tokens: short UI feedback, slower scene transitions */
+  --hc-motion-fast: 140ms;
+  --hc-motion-base: 220ms;
+  --hc-motion-slow: 420ms;
+  --hc-ease-standard: cubic-bezier(.2, .8, .2, 1);
+  --hc-ease-emphasis: cubic-bezier(.16, 1, .3, 1);
 }
-.haunted-shell { color: var(--hc-text); }
-.haunted-shell button { min-height: 48px; }
+.haunted-shell {
+  color: var(--hc-text);
+  -webkit-tap-highlight-color: transparent;
+}
+.haunted-shell button {
+  min-height: 48px;
+  touch-action: manipulation;
+}
 .haunted-shell button:focus-visible,
 .haunted-shell input:focus-visible {
   outline: 3px solid var(--hc-violet-glow);
   outline-offset: 3px;
 }
+@media (hover: hover) and (pointer: fine) {
+  .haunted-shell button:not(:disabled) {
+    transition:
+      transform var(--hc-motion-fast) var(--hc-ease-standard),
+      filter var(--hc-motion-fast) var(--hc-ease-standard),
+      border-color var(--hc-motion-fast) var(--hc-ease-standard),
+      box-shadow var(--hc-motion-fast) var(--hc-ease-standard);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
-  .haunted-shell *, .haunted-shell *::before, .haunted-shell *::after {
+  .haunted-shell *,
+  .haunted-shell *::before,
+  .haunted-shell *::after {
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
