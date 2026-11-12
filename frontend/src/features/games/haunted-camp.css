@@ -665,3 +665,29 @@
  .haunted-shell .haunted-bottom-bar{flex:0 0 auto!important;margin:2px 0 0!important}
 }
 @media(prefers-reduced-motion:reduce){.haunted-camp-seat .haunted-anime-art{animation:none!important}}
+
+
+/* v24: one-tap voting, spectator restrictions, compact voice and visible exit. */
+.haunted-exit-top{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:6px 10px;border-radius:11px;border:1px solid rgba(255,130,145,.28);background:rgba(112,35,52,.18);color:#ffd5dc;font:inherit;font-size:11px;font-weight:850}
+.haunted-vote-direct-hint{display:flex;align-items:center;gap:8px;margin:10px 0;padding:11px 12px;border-radius:12px;border:1px solid rgba(174,135,221,.24);background:rgba(110,68,154,.12);color:#e6d9f8;font-size:12px;line-height:1.6}
+.haunted-voice-dock{display:none!important}
+.haunted-voice-presence{display:flex;align-items:center;gap:6px;margin:3px 0 7px;padding:5px 8px;border-radius:9px;background:rgba(57,43,79,.32);color:#c9b4e5;font-size:10px;line-height:1.4}
+.haunted-voice-presence span{color:#a8e9be}
+.haunted-chat-actions{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+.haunted-chat-actions>button[type=submit]{min-width:58px}
+.haunted-inline-mic{display:inline-flex;align-items:center;justify-content:center;width:38px;height:40px;min-width:38px;border:1px solid rgba(185,143,226,.28);border-radius:11px;background:rgba(113,72,157,.2);color:#e8d5ff}
+.haunted-inline-mic.is-active{border-color:rgba(127,255,177,.5);background:rgba(36,125,78,.2);color:#b9ffd0}
+.haunted-inline-mic.is-muted{border-color:rgba(255,172,128,.5);background:rgba(143,72,48,.2);color:#ffd0b5}
+.haunted-spectator-note{display:flex;align-items:center;gap:7px;margin-top:8px;padding:10px;border:1px solid rgba(255,160,170,.16);border-radius:11px;background:rgba(92,31,43,.13);color:#d8b8c1;font-size:11px;line-height:1.5}
+.haunted-chat-compose{gap:6px!important}
+.haunted-chat-compose input{min-width:0!important;flex:1 1 auto!important}
+.haunted-bottom-bar{padding-top:8px!important}
+@media(max-width:520px){
+ .haunted-topbar{gap:6px!important}
+ .haunted-top-actions{gap:5px!important;flex-wrap:nowrap!important}
+ .haunted-exit-top{min-height:32px;padding:5px 8px;font-size:10px;white-space:nowrap}
+ .haunted-chat-actions{gap:4px}
+ .haunted-inline-mic{width:36px;height:40px;min-width:36px}
+ .haunted-chat-actions>button[type=submit]{min-width:52px;padding-inline:8px}
+ .haunted-voice-presence{font-size:9px}
+}
