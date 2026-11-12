@@ -241,8 +241,8 @@ begin
    update public.haunted_games set status='morning',phase_deadline_at=now()+interval '6 seconds' where id=p_game_id;
  end if;
  insert into public.haunted_events(game_id,round,event_type,payload)
- values(p_game_id,v_game.round,'night_resolved',jsonb_build_object('killed_user_id',v_killed,'saved',v_action.haunter_target is not null and v_killed is null,'message',case when v_killed is null then 'الليلة دازت بسلام، ما مات حتى واحد.' else 'لقينا واحد من اللاعبين ميت فالصباح.' end));
- v_result:=jsonb_build_object('killed_user_id',v_killed,'saved',v_action.haunter_target is not null and v_killed is null);
+ values(p_game_id,v_game.round,'night_resolved',jsonb_build_object('killed_user_id',v_killed,'message',case when v_killed is null then 'الليلة دازت بسلام، ما مات حتى واحد.' else 'لقينا واحد من اللاعبين ميت فالصباح.' end));
+ v_result:=jsonb_build_object('killed_user_id',v_killed);
  if v_alive<=1 or v_villagers<=1 then
    perform private.finish_haunted_game(p_game_id,'haunter');
  end if;
