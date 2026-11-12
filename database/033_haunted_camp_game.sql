@@ -350,7 +350,7 @@ begin
    select count(*) into v_correct from public.haunted_votes hv join public.haunted_players target on target.game_id=hv.game_id and target.user_id=hv.target_id
    where hv.game_id=p_game_id and hv.voter_id=v_player.user_id and target.role='haunter';
    select exists(select 1 from public.haunted_players where game_id=p_game_id and user_id=v_player.user_id and not is_alive and created_at=(select min(created_at) from public.haunted_players where game_id=p_game_id and user_id=v_player.user_id)) into v_first;
-   select not exists(select 1 from public.haunted_votes hv join public.haunted_players h on h.game_id=hv.game_id and h.user_id=hv.target_id where hv.game_id=p_game_id and h.role='haunter') into v_undetected;
+   select v_player.role='haunter' and not exists(select 1 from public.haunted_votes hv join public.haunted_players h on h.game_id=hv.game_id and h.user_id=hv.target_id where hv.game_id=p_game_id and h.role='haunter') into v_undetected;
    v_xp:=case v_player.role when 'haunter' then v_kills*50+case when v_won then 150 else 0 end
          when 'faqih' then v_saves*50+case when v_won then 100 else 0 end
          else v_correct*30+case when v_won then 100 else 0 end end;
@@ -390,7 +390,7 @@ grant execute on function public.end_haunted_game(uuid) to authenticated;
 create or replace function public.get_haunted_game_state(p_game_id uuid)
 returns jsonb language plpgsql stable security definer set search_path=''
 as $$
-declare v_user uuid:=auth.uid(); v_game public.haunted_games%rowtype; v_role text; v_vote uuid; v_players jsonb; v_events jsonb; v_roles jsonb;
+declare v_user uuid:=auth.uid(); v_game public.haunted_games%rowtype; v_role text; v_vote uuid; v_players jsonb; v_events jsonb; v_roles jsonb; v_night_ready boolean:=false; v_vote_count integer:=0;
 begin
  if v_user is null then raise exception 'خاصك تدخل للحساب'; end if;
  select * into v_game from public.haunted_games where id=p_game_id;
@@ -402,11 +402,15 @@ begin
  into v_players from public.haunted_players hp join public.profiles p on p.id=hp.user_id where hp.game_id=p_game_id;
  select coalesce(jsonb_agg(jsonb_build_object('id',e.id,'round',e.round,'event_type',e.event_type,'payload',e.payload,'created_at',e.created_at) order by e.created_at),'[]'::jsonb)
  into v_events from public.haunted_events e where e.game_id=p_game_id;
+ if v_game.status='night' then
+   select coalesce((haunter_target is not null and (v_game.game_mode='quick' or faqih_target is not null)),false) into v_night_ready from public.haunted_night_actions where game_id=p_game_id and round=v_game.round;
+ end if;
+ select count(*) into v_vote_count from public.haunted_votes where game_id=p_game_id and round=v_game.round and vote_round=v_game.vote_round;
  if v_game.status='ended' then
    select coalesce(jsonb_agg(jsonb_build_object('user_id',user_id,'role',role) order by created_at),'[]'::jsonb) into v_roles
    from public.haunted_players where game_id=p_game_id;
  end if;
- return jsonb_build_object('id',v_game.id,'room_id',v_game.room_id,'status',v_game.status,'round',v_game.round,'vote_round',v_game.vote_round,'game_mode',v_game.game_mode,'winner',v_game.winner,'phase_deadline_at',v_game.phase_deadline_at,'role',v_role,'my_vote',v_vote,'players',v_players,'events',v_events,'roles',coalesce(v_roles,'[]'::jsonb));
+ return jsonb_build_object('id',v_game.id,'room_id',v_game.room_id,'status',v_game.status,'round',v_game.round,'vote_round',v_game.vote_round,'game_mode',v_game.game_mode,'winner',v_game.winner,'phase_deadline_at',v_game.phase_deadline_at,'role',v_role,'my_vote',v_vote,'players',v_players,'events',v_events,'roles',coalesce(v_roles,'[]'::jsonb),'night_actions_ready',v_night_ready,'vote_count',v_vote_count);
 end; $$;
 revoke all on function public.get_haunted_game_state(uuid) from public,anon;
 grant execute on function public.get_haunted_game_state(uuid) to authenticated;
@@ -472,7 +476,7 @@ begin
    select count(*) into v_kills from public.haunted_night_actions na where na.game_id=p_game_id and na.haunter_target is not null and na.killed_user_id is not null and v_player.role='haunter';
    select count(*) into v_saves from public.haunted_night_actions na where na.game_id=p_game_id and na.faqih_target=na.haunter_target and na.resolved and v_player.role='faqih';
    select count(*) into v_correct from public.haunted_votes hv join public.haunted_players target on target.game_id=hv.game_id and target.user_id=hv.target_id where hv.game_id=p_game_id and hv.voter_id=v_player.user_id and target.role='haunter';
-   select exists(select 1 from public.haunted_players where game_id=p_game_id and user_id=v_player.user_id and not is_alive and created_at=(select min(created_at) from public.haunted_players where game_id=p_game_id)) into v_first;
+   select exists(select 1 from public.haunted_night_actions where game_id=p_game_id and round=1 and killed_user_id=v_player.user_id) into v_first;
    select not exists(select 1 from public.haunted_votes hv join public.haunted_players h on h.game_id=hv.game_id and h.user_id=hv.target_id where hv.game_id=p_game_id and h.role='haunter') into v_undetected;
    v_xp:=case v_player.role when 'haunter' then v_kills*50+case when v_won then 150 else 0 end
          when 'faqih' then v_saves*50+case when v_won then 100 else 0 end
@@ -494,3 +498,19 @@ begin
  values(p_game_id,v_game.round,'game_ended',jsonb_build_object('winner',p_winner,'roles',coalesce(v_reveals,'[]'::jsonb)));
  return jsonb_build_object('winner',p_winner,'roles',coalesce(v_reveals,'[]'::jsonb));
 end; $$;
+
+
+create or replace function public.get_active_haunted_game(p_room_id uuid)
+returns uuid language plpgsql stable security definer set search_path=''
+as $$
+declare v_user uuid:=auth.uid(); v_game uuid;
+begin
+ if v_user is null then raise exception 'خاصك تدخل للحساب'; end if;
+ if not exists(select 1 from public.room_members where room_id=p_room_id and user_id=v_user) then
+   raise exception 'ما عندكش الحق تشوف هاد الغرفة';
+ end if;
+ select id into v_game from public.haunted_games where room_id=p_room_id and status<>'ended' order by created_at desc limit 1;
+ return v_game;
+end; $$;
+revoke all on function public.get_active_haunted_game(uuid) from public,anon;
+grant execute on function public.get_active_haunted_game(uuid) to authenticated;
