@@ -225,7 +225,7 @@ export default function HauntedCampGame(props: Props) {
     setPreviousPhase(phase);
   }, [state?.status, state?.winner, previousPhase, onNightMute, soundOn]);
   useEffect(() => {
-    if (!state || state.status !== 'night' || myRole !== 'faqih' || !haunterChosen) return;
+    if (!state || state.status !== 'night' || myRole !== 'faqih' || !haunterChosen || state.my_night_target) return;
     const key = state.id + ':' + state.round;
     if (previousHaunterChoiceRef.current === key) return;
     previousHaunterChoiceRef.current = key;
@@ -331,7 +331,7 @@ export default function HauntedCampGame(props: Props) {
       </motion.section>
     </div>}
 
-    {!narratorVisible&&state.status==='night'&&<motion.div className="haunted-night-panel" initial={reduceMotion?false:{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{duration:reduceMotion?0.01:0.5}}><div className="haunted-moon"><Moon size={28}/></div><h2>{myRole==='haunter'?'اختار الضحية ديالك':myRole==='faqih'?(haunterChosen?'دابا دورك آ الفقيه: شكون غادي تحمي؟':'تسنى اختيار المسكون…'):'نعس… الليل ماشي وقت الكلام'}</h2><p>{myRole==='haunter'?'اختار لاعب حي واحد. القرار سري وما غادي يبان حتى واحد.':myRole==='faqih'?(haunterChosen?'المسكون اختار الضحية. اختار دابا لاعب حي باش تحميه، والقرار ديالك سري.':'المسكون باقي ما اختارش الضحية. منين يسجل الاختيار غادي يوصلك الدور ديالك.'):'تسنى الصباح. الميكروفونات مكتومة فالليل.'}</p>{state.my_night_target&&<div className="haunted-night-choice-confirmed"><CheckCircle2 size={16}/> اختيارك تسجل. ما تقدرش تبدلو حتى يطلع الصباح.</div>}
+    {!narratorVisible&&state.status==='night'&&<motion.div className="haunted-night-panel" initial={reduceMotion?false:{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{duration:reduceMotion?0.01:0.5}}><div className="haunted-moon"><Moon size={28}/></div><h2>{myRole==='haunter'?(state.my_night_target?'اختيارك تسجل':'اختار الضحية ديالك'):myRole==='faqih'?(state.my_night_target?'الاختيار ديالك تسجل':haunterChosen?'دابا دورك آ الفقيه: شكون غادي تحمي؟':'تسنى اختيار المسكون…'):'نعس… الليل ماشي وقت الكلام'}</h2><p>{myRole==='haunter'?(state.my_night_target?'تسجل اختيار الضحية ديالك. القرار بقى سري.':'اختار لاعب حي واحد. القرار سري وما غادي يبان حتى واحد.'):myRole==='faqih'?(state.my_night_target?'تسجلات الحماية ديالك بسرية. تسنى الصباح باش تعرف واش نجحات.':haunterChosen?'المسكون اختار الضحية. اختار دابا لاعب حي باش تحميه، والقرار ديالك سري.':'المسكون باقي ما اختارش الضحية. منين يسجل الاختيار غادي يوصلك الدور ديالك.'):'تسنى الصباح. الميكروفونات مكتومة فالليل.'}</p>{state.my_night_target&&<div className="haunted-night-choice-confirmed"><CheckCircle2 size={16}/> اختيارك تسجل. ما تقدرش تبدلو حتى يطلع الصباح.</div>}
       {!isAlive&&<p className="haunted-waiting">خرجتي من اللعبة، تقدر تبقى تتفرج ولكن ما تقدرش تختار أو تصوّت.</p>}
       {isAlive&&myRole==='faqih'&&!haunterChosen&&<p className="haunted-choice-hint">تسنى حتى يختار المسكون، عاد غادي يتحل ليك الاختيار ديال الحماية.</p>}{isAlive&&['haunter','faqih'].includes(myRole||'')&&(myRole!=='faqih'||haunterChosen)&&<p className="haunted-choice-hint"><Flame size={16}/> ضغط مباشرة على شخصية من الحلقة، وغادي يبان ليك تأكيد قبل تسجيل القرار.</p>}
       {myRole==='villager'&&<div className="haunted-waiting">القرارات الليلية كتتدار بسرية تامة.</div>}
