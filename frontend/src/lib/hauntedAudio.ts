@@ -32,10 +32,12 @@ let narratorFinish: (() => void) | null = null;
 let speechQueue: Array<{text:string;resolve:()=>void}> = [];
 let speechBusy = false;
 let speechGeneration = 0;
+let currentSpeechResolve: (()=>void) | null = null;
 export function stopHauntedNarrator() {
   speechGeneration++;
   const pending = speechQueue.splice(0);
   pending.forEach(item => item.resolve());
+  const activeResolve=currentSpeechResolve;currentSpeechResolve=null;activeResolve?.();
   speechBusy = false;
   if(typeof window!=='undefined'&&window.speechSynthesis)window.speechSynthesis.cancel();
   if(narratorAudio){narratorAudio.pause();narratorAudio.currentTime=0;narratorAudio=null;}
@@ -69,6 +71,7 @@ function speakNext() {
   if (!item) return;
   const text = item.text;
   const generation = speechGeneration;
+  currentSpeechResolve=item.resolve;
   speechBusy = true;
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'ar-MA';
@@ -86,8 +89,8 @@ function speakNext() {
       || voices[0];
 
     if (voice) utterance.voice = voice;
-    utterance.onend = () => { if(generation !== speechGeneration)return; speechBusy = false; item.resolve(); window.setTimeout(()=>{if(generation===speechGeneration)speakNext();},180); };
-    utterance.onerror = () => { if(generation !== speechGeneration)return; speechBusy = false; item.resolve(); window.setTimeout(()=>{if(generation===speechGeneration)speakNext();},180); };
+    utterance.onend = () => { if(generation !== speechGeneration)return; currentSpeechResolve=null; speechBusy = false; item.resolve(); window.setTimeout(()=>{if(generation===speechGeneration)speakNext();},180); };
+    utterance.onerror = () => { if(generation !== speechGeneration)return; currentSpeechResolve=null; speechBusy = false; item.resolve(); window.setTimeout(()=>{if(generation===speechGeneration)speakNext();},180); };
     synth.speak(utterance);
   };
   if (synth.getVoices().length) begin();
