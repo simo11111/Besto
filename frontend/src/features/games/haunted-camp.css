@@ -497,3 +497,19 @@
  .haunted-shell .haunted-narrator-stage h2{font-size:22px}
  .haunted-shell .haunted-narrator-stage p{font-size:14px;line-height:1.7}
 }
+
+/* Compact voice controls live inside the pinned discussion chat on phones. */
+.haunted-camp-chat{display:flex;flex-direction:column;gap:6px;margin-top:auto;max-height:40dvh;overflow:hidden}
+.haunted-camp-chat .haunted-voice-dock{flex:0 0 auto;margin:0;padding:7px 9px;gap:5px;border-radius:14px;background:linear-gradient(120deg,rgba(37,29,58,.96),rgba(12,16,29,.98))}
+.haunted-camp-chat .haunted-voice-dock-head>small{font-size:9px}
+.haunted-camp-chat .haunted-voice-dock-people{min-height:32px}
+.haunted-camp-chat .haunted-voice-avatar{width:24px;height:24px}
+.haunted-camp-chat .haunted-voice-dock-actions button{min-height:34px;padding:6px 10px}
+.haunted-camp-chat .haunted-chat-messages{flex:1 1 auto;min-height:28px;max-height:96px;overscroll-behavior:contain}
+@media(max-width:520px){
+ .haunted-camp-chat{max-height:42dvh;padding-top:7px;gap:5px}
+ .haunted-camp-chat .haunted-chat-messages{max-height:78px;min-height:24px}
+ .haunted-camp-chat .haunted-voice-dock{padding:6px 8px}
+ .haunted-camp-chat .haunted-voice-dock-actions{gap:5px}
+ .haunted-camp-chat .haunted-voice-dock-actions button{min-height:34px;font-size:10px}
+}

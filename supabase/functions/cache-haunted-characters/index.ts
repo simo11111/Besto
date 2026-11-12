@@ -8,8 +8,8 @@ Deno.serve(async (request: Request) => {
   if (!supabaseUrl || !serviceKey) return Response.json({ error: "Storage service is not configured." }, { status: 500 });
   const client = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
   const publicUrl = client.storage.from(BUCKET).getPublicUrl(OBJECT_PATH).data.publicUrl;
-  const existing = await client.storage.from(BUCKET).list("game-assets", { search: "haunted-anime-sprites.png" });
-  if (existing.data?.some(file => file.name === "haunted-anime-sprites.png")) return Response.json({ ready: true, url: publicUrl, cached: true }, { headers: { "Cache-Control": "public, max-age=3600" } });
+  const existing = await client.storage.from(BUCKET).list("game-assets", { search: "haunted-anime-sprites-v1.png" });
+  if (existing.data?.some(file => file.name === "haunted-anime-sprites-v1.png")) return Response.json({ ready: true, url: publicUrl, cached: true }, { headers: { "Cache-Control": "public, max-age=3600" } });
   const upstream = await fetch(SOURCE_URL, { headers: { Accept: "image/png" } });
   if (!upstream.ok) return Response.json({ error: "Anime character source is temporarily unavailable." }, { status: 502 });
   const image = new Uint8Array(await upstream.arrayBuffer());
