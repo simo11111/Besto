@@ -766,3 +766,36 @@
  .haunted-night-role-hint b{font-size:9px}
  .haunted-night-role-hint span svg{width:14px;height:14px}
 }
+
+
+/* v25: clear, private night-turn callout; lightweight layered fire and compact narrator. */
+.haunted-night-callout{
+  position:absolute;z-index:8;left:50%;top:77%;transform:translate(-50%,-50%);
+  display:flex;align-items:center;gap:9px;width:min(88%,340px);padding:10px 13px;
+  border:1px solid rgba(255,184,143,.38);border-radius:14px;
+  background:linear-gradient(135deg,rgba(35,19,24,.96),rgba(8,9,18,.96));
+  box-shadow:0 8px 25px rgba(0,0,0,.48),0 0 22px rgba(255,128,75,.12);
+  pointer-events:none;backdrop-filter:blur(7px)
+}
+.haunted-night-callout>span{display:grid;place-items:center;width:30px;height:30px;flex:none;border-radius:10px;background:rgba(255,132,102,.14);color:#ffc0a4}
+.haunted-night-callout>div{display:grid;gap:2px;min-width:0}
+.haunted-night-callout b{font-size:12px;line-height:1.45;color:#fff2e9}
+.haunted-night-callout small{font-size:10px;line-height:1.45;color:#d6c4c2}
+.haunted-night-callout.is-faqih{border-color:rgba(143,235,180,.48);box-shadow:0 8px 25px rgba(0,0,0,.48),0 0 22px rgba(88,230,151,.13)}
+.haunted-night-callout.is-faqih>span{background:rgba(63,173,111,.18);color:#b8ffd1}
+.haunted-night-callout.is-faqih b{color:#e7fff0}
+.haunted-narrator-toast{width:min(94%,560px);pointer-events:none}
+.haunted-campfire i:before,.haunted-campfire b:before{
+  content:"";position:absolute;inset:7% 18% 5%;border-radius:78% 18% 74% 26%;
+  background:linear-gradient(180deg,rgba(255,255,226,.98),rgba(255,215,115,.9) 27%,rgba(255,121,43,.72) 66%,rgba(166,42,27,.05));
+  filter:blur(.25px) drop-shadow(0 0 9px rgba(255,164,66,.55));
+  transform-origin:50% 92%;animation:haunted-flame-tongue .52s ease-in-out infinite alternate
+}
+.haunted-campfire b:before{inset:14% 13% 7%;animation-delay:-.26s;animation-duration:.39s}
+@keyframes haunted-flame-tongue{from{transform:scaleX(.55) scaleY(.92) rotate(-7deg);opacity:.76}to{transform:scaleX(.86) scaleY(1.08) rotate(8deg);opacity:1}}
+@media(max-width:520px){
+ .haunted-night-callout{top:79%;width:min(91%,310px);padding:8px 10px;gap:7px}
+ .haunted-night-callout b{font-size:11px}
+ .haunted-night-callout small{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){.haunted-campfire i:before,.haunted-campfire b:before{animation:none!important}}
