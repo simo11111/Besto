@@ -311,7 +311,7 @@ export default function HauntedCampGame(props: Props) {
         <div><b>{myRole==='faqih'?'دابا جا دور الفقيه':'آ المسكون، اختار الضحية ديالك'}</b><small>{myRole==='faqih'?'اختار شكون بغيتي تعتق هاد الليلة.':'ضغط على الشخصية اللي بغيتي تقتل.'}</small></div>
       </motion.div>}
       {state.status==='night'&&isAlive&&(myRole==='haunter'||myRole==='faqih')&&<div className={'haunted-night-role-hint '+(myRole==='faqih'?'is-faqih':'is-haunter')} aria-live="polite"><span>{myRole==='haunter'?<Skull size={17}/>:<Shield size={17}/>}</span><b>{myRole==='haunter'?(state.my_night_target?'الضحية تحددات':'ختار شكون بغيتي تقتل'):(haunterChosen?(state.my_night_target?'الحماية تسجلات':'ختار شكون بغيتي تعتق'):'تسنى اختيار المسكون')}</b></div>}
-      <div className={'haunted-camp-ring '+(state.players.length<=6?'is-six-or-fewer':'is-many')}>{state.players.map((player,index)=>{const {left,top}=getHauntedSeatPosition(index,state.players.length);const myNightTarget=state.my_night_target===player.user_id;
+      <div className={'haunted-camp-ring '+(state.players.length<=6?'is-six-or-fewer':'is-many')}>{[...state.players].sort((a,b)=>a.user_id.localeCompare(b.user_id)).map((player,index)=>{const {left,top}=getHauntedSeatPosition(index,state.players.length);const myNightTarget=state.my_night_target===player.user_id;
       const myVoteTarget=state.my_vote===player.user_id;
       const canChoose=player.is_alive&&isAlive&&!busy&&((state.status==='night'&&!state.my_night_target&&(myRole==='haunter'||(myRole==='faqih'&&haunterChosen))&&(myRole==='faqih'||player.user_id!==userId))||(state.status==='day'&&state.voting_open&&!voted&&player.user_id!==userId));
       const selected=target===player.user_id;
