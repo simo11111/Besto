@@ -17,3 +17,8 @@ export function getHauntedSeatPosition(index: number, total: number): HauntedSea
     top: Number((50 + radiusY * Math.sin(angle)).toFixed(3)),
   };
 }
+
+/** Stable account-id ordering prevents realtime payload order from moving seats. */
+export function getHauntedStableSeatOrder<T extends { user_id: string }>(players: readonly T[]): T[] {
+  return [...players].sort((a, b) => a.user_id.localeCompare(b.user_id));
+}
