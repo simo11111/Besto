@@ -90,6 +90,8 @@ class AudioManager {
   fadeIn(name: HauntedSound, volume?: number) {
     if (this.muted || !getSoundEnabled()) return;
     const target = Math.max(0, Math.min(1, volume ?? SOUND_CONFIG[name].volume));
+    // camp-theme.mp3 is not shipped; play the lightweight original loop directly.
+    if (name === 'camp') { this.startCampScore(target); return; }
     const player = this.getPlayer(name);
     if (!player) { this.startAmbientFallback(name, target); return; }
     player.loop = true;

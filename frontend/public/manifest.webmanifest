@@ -1,5 +1,5 @@
 {
-  "name": "ليلة فالخيمة — الفقيه والمسكون",
+  "name": "ليلة فالخيمة",
   "short_name": "ليلة فالخيمة",
   "lang": "ar-MA",
   "dir": "rtl",
@@ -16,22 +16,10 @@
   "description": "لعبة اجتماعية مغربية: الفقيه والمسكون. جمع صحابك، كشف المسكون ونجّي المخيم.",
   "icons": [
     {
-      "src": "/mimox-icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/night-camp-icon.svg?v=20261113a",
+      "src": "/night-camp-icon.svg?v=20261113b",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "/night-camp-icon.svg?v=20261113a",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ],
   "prefer_related_applications": false

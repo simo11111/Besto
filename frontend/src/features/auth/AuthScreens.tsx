@@ -44,7 +44,7 @@ export function InstallAppBanner() {
 
   if (installed) return null;
   return <section className="install-app-banner" aria-label="تثبيت ليلة فالخيمة">
-    <img src="/night-camp-icon.svg?v=20261112d" alt="شعار ليلة فالخيمة" />
+    <img src="/night-camp-icon.svg?v=20261113b" alt="شعار ليلة فالخيمة" />
     <div className="install-app-copy">
       <b>خلي ليلة فالخيمة ديما معاك</b>
       <span>ثبّت التطبيق على هاتفك أو حاسوبك، وادخل ليه مباشرة من الشاشة الرئيسية.</span>
@@ -61,7 +61,7 @@ export function InstallAppBanner() {
 }
 
 export function SetupRequiredScreen() {
-  return <main className="shell"><header className="topbar"><div className="brand"><img className="brand-icon" src="/night-camp-icon.svg?v=20261112d" alt=""/>ليلة فالخيمة</div></header><section className="setup-card"><ShieldCheck/><h1>خاص ربط Supabase</h1><p>خاصنا Project URL و Publishable Key فـ .env. ما تحطش service-role key فالواجهة.</p></section></main>;
+  return <main className="shell"><header className="topbar"><div className="brand"><img className="brand-icon" src="/night-camp-icon.svg?v=20261113b" alt=""/>ليلة فالخيمة</div></header><section className="setup-card"><ShieldCheck/><h1>خاص ربط Supabase</h1><p>خاصنا Project URL و Publishable Key فـ .env. ما تحطش service-role key فالواجهة.</p></section></main>;
 }
 
 type AuthScreenProps = NoticeProps & {
