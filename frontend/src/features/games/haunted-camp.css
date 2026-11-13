@@ -1241,3 +1241,9 @@
   .haunted-shell .haunted-campfire:before,.haunted-shell .haunted-campfire:after,
   .haunted-shell .haunted-campfire span:before,.haunted-shell .haunted-campfire span:after{animation:none!important}
 }
+
+.haunted-shell .haunted-lobby-limit-note{
+  margin:9px 0 0;padding:9px 11px;border:1px solid rgba(238,154,119,.28);
+  border-radius:11px;background:rgba(144,60,48,.13);color:#f0b4a3;
+  font-size:11px;font-weight:750;line-height:1.7
+}
