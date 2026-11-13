@@ -63,7 +63,7 @@ export function setHauntedAudioMuted(muted: boolean) {
 }
 
 /** Break long Darija narration into short, complete clauses for Android TTS. */
-function splitAnnouncementText(value: string): string[] {
+export function splitHauntedAnnouncementText(value: string): string[] {
   const normalized = value.replace(/\s+/g, ' ').trim();
   if (!normalized) return [];
   const sentences = normalized.split(/(?<=[،؛.!؟])\s+/u);
@@ -112,7 +112,7 @@ function speakNext() {
   if (synth.paused) synth.resume();
   const item = speechQueue.shift();
   if (!item) return;
-  const chunks = splitAnnouncementText(item.text);
+  const chunks = splitHauntedAnnouncementText(item.text);
   const generation = speechGeneration;
   currentSpeechResolve = item.resolve;
   speechBusy = true;
