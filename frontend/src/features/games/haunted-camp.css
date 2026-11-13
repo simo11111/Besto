@@ -906,6 +906,11 @@
 
 
 /* v40 — calmer Moroccan-night palette, readable role cards and a balanced camp circle. */
+/* Let the whole game page scroll on desktop too; phase panels must never clip controls. */
+.haunted-shell[class*="haunted-phase-"]{
+  height:auto!important;min-height:100dvh!important;max-height:none!important;
+  overflow:visible!important
+}
 .haunted-shell{
   --haunted-accent:#e7b65d;
   --haunted-glow:rgba(231,182,93,.18);
