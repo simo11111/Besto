@@ -16,7 +16,13 @@
   "description": "لعبة اجتماعية مغربية: الفقيه والمسكون. جمع صحابك، كشف المسكون ونجّي المخيم.",
   "icons": [
     {
-      "src": "/night-camp-icon.svg?v=20261113b",
+      "src": "/night-camp-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/night-camp-icon.svg?v=20261113c",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

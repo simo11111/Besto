@@ -1,7 +1,7 @@
-const CACHE='night-camp-shell-v43';
-const SHELL=['/','/manifest.webmanifest','/night-camp-icon.svg?v=20261113b','/night-camp-icon.svg'];
-const AUDIO_RE=/\\.(?:mp3|ogg|wav)$/i;
-const STATIC_RE=/\\.(?:js|css|woff2?|png|svg|webp|avif)$/i;
+const CACHE='night-camp-shell-v44';
+const SHELL=['/','/manifest.webmanifest','/night-camp-icon.svg?v=20261113c','/night-camp-icon.svg','/night-camp-icon-192.png'];
+const AUDIO_RE=/\.(?:mp3|ogg|wav)$/i;
+const STATIC_RE=/\.(?:js|css|woff2?|png|svg|webp|avif)$/i;
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()));
@@ -26,8 +26,6 @@ self.addEventListener('fetch',event=>{
     return;
   }
 
-  // Audio elements may request byte ranges. Cache the full file once, then
-  // serve a correct partial response from cache when the device is offline.
   if(AUDIO_RE.test(url.pathname)&&request.headers.has('range')){
     event.respondWith((async()=>{
       const cache=await caches.open(CACHE);
@@ -42,7 +40,7 @@ self.addEventListener('fetch',event=>{
         }
       }
       const bytes=await full.arrayBuffer();
-      const match=/bytes=(\\d+)-(\\d*)/i.exec(request.headers.get('range')||'');
+      const match=/bytes=(\d+)-(\d*)/i.exec(request.headers.get('range')||'');
       if(!match)return full;
       const start=Number(match[1]);
       const end=match[2]?Math.min(Number(match[2]),bytes.byteLength-1):bytes.byteLength-1;
