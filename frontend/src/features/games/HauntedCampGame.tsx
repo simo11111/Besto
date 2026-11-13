@@ -241,7 +241,7 @@ export default function HauntedCampGame(props: Props) {
   useEffect(() => {
     if (!state || state.status !== 'day') return;
     const previous = previousVotingRef.current; previousVotingRef.current = state.voting_open;
-    if (previous === false && state.voting_open) void presentNarration(state.id+':'+state.round+':voting','دابا تحل التصويت. كل لاعب عندو صوت واحد. اختار الشخصية اللي شاك فيها. منين يتسجل صوتك غادي تبان علامة التأكيد.','voting');
+    if (previous === false && state.voting_open) void presentNarration(state.id+':'+state.round+':voting','دابا بدا التصويت. اختار اللاعب اللي كتشك فيه. صوتك سري، وعندك غير اختيار واحد.','voting');
   }, [state?.id, state?.round, state?.status, state?.voting_open, soundOn]);
   useEffect(() => { const node=chatMessagesRef.current; if(node)node.scrollTop=node.scrollHeight; }, [messages.length,state?.events.length]);
   useEffect(() => {
