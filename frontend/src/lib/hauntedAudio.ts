@@ -255,15 +255,22 @@ export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncemen
     announcementAudio = audio;
     audio.preload = 'auto';
     audio.volume = 0.98;
-    audio.playbackRate = segment === 'faqih_awake' ? 0.88 : 0.9;
+    audio.playbackRate = segment === 'faqih_awake' ? 0.92 : 0.94;
     let finished = false;
     let playbackStarted = false;
+    let loadWatchdog: number | null = null;
+    let playWatchdog: number | null = null;
     const finish = (ok: boolean) => {
       if (finished) return;
       finished = true;
+      if (loadWatchdog !== null) window.clearTimeout(loadWatchdog);
+      if (playWatchdog !== null) window.clearTimeout(playWatchdog);
       audio.ontimeupdate = null;
+      audio.onloadedmetadata = null;
+      audio.oncanplay = null;
       audio.onended = null;
       audio.onerror = null;
+      if (!ok) audio.pause();
       if (announcementAudio === audio) announcementAudio = null;
       if (announcementFinish === finishDone) announcementFinish = null;
       resolve(ok);
@@ -272,27 +279,37 @@ export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncemen
     const beginPlayback = () => {
       if (playbackStarted || finished) return;
       playbackStarted = true;
-      void audio.play().catch(() => finish(false));
+      if (loadWatchdog !== null) window.clearTimeout(loadWatchdog);
+      void audio.play().then(() => {
+        playWatchdog = window.setTimeout(() => finish(false), 35000);
+      }).catch(() => finish(false));
     };
     announcementFinish = finishDone;
     audio.onloadedmetadata = () => {
-      audio.addEventListener('seeked', beginPlayback, { once: true });
       try {
         const safeStart = Math.min(start, Math.max(0, audio.duration - 0.25));
         audio.currentTime = safeStart;
         if (Math.abs(audio.currentTime - safeStart) < 0.05) beginPlayback();
+        else audio.addEventListener('seeked', beginPlayback, { once: true });
       } catch {
         beginPlayback();
       }
     };
+    audio.oncanplay = () => {
+      if (audio.readyState >= 2 && !playbackStarted && audio.currentTime >= start - 0.1) beginPlayback();
+    };
     audio.ontimeupdate = () => {
-      if (playbackStarted && audio.currentTime >= end) {
+      // The dedicated quick/faqih files should play to their real end.
+      // The master track gets a small tail allowance so the last word is never clipped.
+      if (playbackStarted && segment !== 'night_quick' && segment !== 'faqih_awake' && audio.currentTime >= Math.min(end + 1.1, audio.duration - 0.08)) {
         audio.pause();
         finish(true);
       }
     };
     audio.onended = () => finish(true);
     audio.onerror = () => finish(false);
+    loadWatchdog = window.setTimeout(() => finish(false), 9000);
+    audio.load();
   });
 
   if (currentRun !== announcementRun) return;
