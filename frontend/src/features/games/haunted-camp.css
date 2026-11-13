@@ -1174,3 +1174,13 @@
   .haunted-shell .haunted-campfire i,.haunted-shell .haunted-campfire b,
   .haunted-shell .haunted-campfire:before{animation:none!important}
 }
+
+.haunted-shell .haunted-lobby-voice-test{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:40px;margin:7px 5px 0;padding:8px 13px;
+  border:1px solid rgba(231,182,93,.28);border-radius:12px;
+  background:rgba(231,182,93,.07);color:#f0d59b;font-size:11px;font-weight:850;
+  transition:background .18s,border-color .18s,transform .18s
+}
+.haunted-shell .haunted-lobby-voice-test:active{transform:scale(.97)}
+.haunted-shell .haunted-lobby-voice-test:disabled{opacity:.58;cursor:wait}
