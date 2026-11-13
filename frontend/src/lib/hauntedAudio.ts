@@ -83,7 +83,7 @@ export function splitHauntedAnnouncementText(value: string): string[] {
 
 function chooseNarratorVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | undefined {
   const arabic = voices.filter(voice => voice.lang.toLowerCase().startsWith('ar'));
-  if (!arabic.length) return voices.find(voice => voice.default) || voices[0];
+  if (!arabic.length) return undefined;
   const maleWords = /\b(male|man|masculine|badr|adil|yassine|mohamed|mohammed|ahmed|hamza|khaled|anas)\b|ذكر|رجالي|رجل/i;
   const femaleWords = /\b(female|woman|girl|feminine)\b|أنثى|نسائي|امرأة/i;
   const moroccanWords = /morocc|darija|maghreb|ar-ma|ma\b|مغربي/i;
@@ -97,7 +97,8 @@ function chooseNarratorVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoi
       if (femaleWords.test(name)) score -= 120;
       if (moroccanWords.test(name + ' ' + lang)) score += 45;
       if (lang === 'ar-ma') score += 35;
-      if (lang === 'ar-sa' || lang === 'ar-eg') score += 15;
+      if (lang === 'ar') score += 12;
+      if (lang === 'ar-sa' || lang === 'ar-eg') score += 5;
       if (naturalWords.test(name)) score += 12;
       if (voice.default) score += 2;
       return { voice, score };
@@ -136,10 +137,10 @@ function speakNext() {
     if (chunkIndex >= chunks.length) { finishItem(); return; }
     const utterance = new SpeechSynthesisUtterance(chunks[chunkIndex]);
     activeUtterance = utterance;
-    utterance.lang = voice?.lang || 'ar-MA';
+    utterance.lang = voice?.lang?.toLowerCase().startsWith('ar') ? voice.lang : 'ar-MA';
     // Lower pitch and a measured pace give the narrator a steadier, masculine delivery.
-    utterance.rate = 0.91;
-    utterance.pitch = 0.82;
+    utterance.rate = 0.88;
+    utterance.pitch = 0.76;
     utterance.volume = 1;
     if (voice) utterance.voice = voice;
 
@@ -166,9 +167,10 @@ function speakNext() {
       if (generation !== speechGeneration || activeUtterance !== utterance) return;
       activeUtterance = null;
       try { synth.cancel(); } catch { /* best effort */ }
-      chunkIndex++;
-      window.setTimeout(() => speakChunk(), 160);
-    }, Math.max(18000, chunks[chunkIndex].length * 280));
+      // Some Android engines omit onend; retry the same clause before advancing.
+      if (retry < 1) window.setTimeout(() => speakChunk(retry + 1), 260);
+      else { chunkIndex++; window.setTimeout(() => speakChunk(), 180); }
+    }, Math.max(24000, chunks[chunkIndex].length * 420));
     synth.speak(utterance);
   };
 
