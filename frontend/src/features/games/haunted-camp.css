@@ -799,3 +799,17 @@
  .haunted-night-callout small{font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){.haunted-campfire i:before,.haunted-campfire b:before{animation:none!important}}
+
+
+/* v37: clearer green closed-mic affordance. */
+.haunted-inline-mic.is-off{
+  border-color:rgba(119,246,158,.68)!important;
+  background:linear-gradient(145deg,rgba(28,119,70,.34),rgba(9,47,31,.42))!important;
+  color:#a9ffc4!important;
+  box-shadow:inset 0 0 0 1px rgba(145,255,180,.08),0 0 13px rgba(61,207,117,.12)
+}
+.haunted-inline-mic.is-off .haunted-mic-off-icon>svg:first-child{color:#b9ffd0}
+.haunted-inline-mic.is-off .haunted-mic-off-icon>svg:last-child{
+  background:#a4ffc0!important;color:#073019!important;
+  box-shadow:0 0 0 2px rgba(7,20,16,.9),0 0 9px rgba(108,255,159,.6)
+}
