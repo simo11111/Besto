@@ -25,16 +25,30 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const refreshRef = useRef<() => Promise<void>>(async () => undefined);
+  const refreshInFlightRef = useRef(false);
+  const refreshPendingRef = useRef(false);
   const effectiveGameId = state?.id ?? gameId ?? null;
 
   const refresh = useCallback(async () => {
     if (!supabase || !effectiveGameId || !userId) return;
+    if (refreshInFlightRef.current) {
+      refreshPendingRef.current = true;
+      return;
+    }
+    refreshInFlightRef.current = true;
     setLoading(true);
-    const { data, error: rpcError } = await supabase.rpc('get_haunted_game_state', { p_game_id: effectiveGameId });
-    setLoading(false);
-    if (rpcError) { setError(rpcError.message); return; }
-    setError('');
-    setState(data as HauntedState);
+    try {
+      do {
+        refreshPendingRef.current = false;
+        const { data, error: rpcError } = await supabase.rpc('get_haunted_game_state', { p_game_id: effectiveGameId });
+        if (rpcError) { setError(rpcError.message); break; }
+        setError('');
+        if (data) setState(data as HauntedState);
+      } while (refreshPendingRef.current);
+    } finally {
+      refreshInFlightRef.current = false;
+      setLoading(false);
+    }
   }, [effectiveGameId, userId]);
   refreshRef.current = refresh;
 
@@ -97,7 +111,7 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
         const { data: snapshot } = await supabase!.rpc('get_haunted_game_state', { p_game_id: data });
         if (!cancelled && snapshot) setState(snapshot as HauntedState);
       }
-    }, 4000);
+    }, 3000);
     return () => { cancelled = true; window.clearInterval(discover); };
   }, [effectiveGameId, roomId, userId]);
 
@@ -112,7 +126,7 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
       finally { running = false; }
     };
     void runBots();
-    const timer = window.setInterval(() => void runBots(), 2500);
+    const timer = window.setInterval(() => void runBots(), 1600);
     return () => window.clearInterval(timer);
   }, [state?.id, state?.status, isHost]);
 
@@ -136,7 +150,7 @@ export function useHauntedGame(gameId: string | null, roomId: string, userId: st
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'haunted_votes', filter: 'game_id=eq.' + state.id }, () => void refreshRef.current())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'haunted_night_actions', filter: 'game_id=eq.' + state.id }, () => void refreshRef.current())
       .subscribe((status) => { if (status === 'SUBSCRIBED') void refreshRef.current(); });
-    const poll = window.setInterval(() => { if (document.visibilityState === 'visible') void refreshRef.current(); }, 5000);
+    const poll = window.setInterval(() => { if (document.visibilityState === 'visible') void refreshRef.current(); }, 3500);
     document.addEventListener('visibilitychange', refreshOnVisible);
     return () => {
       window.clearInterval(poll);
