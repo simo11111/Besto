@@ -152,7 +152,6 @@ export default function HauntedCampGame(props: Props) {
   const latestNight = [...(state?.events ?? [])].reverse().find(e => e.event_type === 'night_resolved');
   const latestVoteEvent = [...(state?.events ?? [])].reverse().find(e => ['player_ejected','vote_tie_resolved','vote_tied'].includes(e.event_type));
   const ejectedUserId = typeof latestVoteEvent?.payload.ejected_user_id === 'string' ? latestVoteEvent.payload.ejected_user_id : null;
-  const voteCount = Number(state?.vote_count ?? 0);
   const isAlive = alivePlayers.some(player => player.user_id === userId);
   const aliveCount = alivePlayers.length;
   const voted = Boolean(state?.my_vote);
