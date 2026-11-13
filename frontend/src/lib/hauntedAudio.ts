@@ -75,38 +75,104 @@ export function setHauntedAudioMuted(muted: boolean) {
 }
 
 /** Queue spoken announcements so one bot line never cuts off the previous one. */
+function splitAnnouncementText(value: string): string[] {
+  const normalized = value.replace(/\\s+/g, ' ').trim();
+  if (!normalized) return [];
+  const sentences = normalized.split(/(?<=[،؛.!؟])\\s+/u);
+  const chunks: string[] = [];
+  for (const sentence of sentences) {
+    let rest = sentence.trim();
+    while (rest.length > 112) {
+      let cut = rest.lastIndexOf(' ', 112);
+      if (cut < 48) cut = 112;
+      chunks.push(rest.slice(0, cut).trim());
+      rest = rest.slice(cut).trim();
+    }
+    if (rest) chunks.push(rest);
+  }
+  return chunks;
+}
+
+/** Speak short clauses separately: mobile browser TTS often truncates long utterances. */
 function speakNext() {
   if (typeof window === 'undefined' || !('speechSynthesis' in window) || speechBusy || !speechQueue.length) return;
   const synth = window.speechSynthesis;
   if (synth.paused) synth.resume();
   const item = speechQueue.shift();
   if (!item) return;
-  const text = item.text;
+  const chunks = splitAnnouncementText(item.text);
   const generation = speechGeneration;
-  currentSpeechResolve=item.resolve;
+  currentSpeechResolve = item.resolve;
   speechBusy = true;
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'ar-MA';
-  utterance.rate = 0.92;
-  utterance.pitch = 0.82;
-  utterance.volume = 1;
-  let begun = false;
-  const begin = () => {
-    if (begun || generation !== speechGeneration) return;
-    begun = true;
-    const voices = synth.getVoices();
-    const voice = voices.find(item => item.lang.toLowerCase() === 'ar-ma' && /male|mohammed|hassan|adil|omar/i.test(item.name))
-      || voices.find(item => item.lang.toLowerCase() === 'ar-ma')
-      || voices.find(item => item.lang.toLowerCase().startsWith('ar') && /male|mohammed|hassan|adil|omar/i.test(item.name))
-      || voices.find(item => item.lang.toLowerCase().startsWith('ar'))
-      || voices.find(item => item.default)
-      || voices[0];
+  let chunkIndex = 0;
+  let watchdog: number | null = null;
+  let activeUtterance: SpeechSynthesisUtterance | null = null;
+  let voice = synth.getVoices().find(v => v.lang.toLowerCase() === 'ar-ma')
+    || synth.getVoices().find(v => v.lang.toLowerCase().startsWith('ar') && /google|natural|enhanced/i.test(v.name))
+    || synth.getVoices().find(v => v.lang.toLowerCase().startsWith('ar'))
+    || synth.getVoices().find(v => v.default)
+    || synth.getVoices()[0];
 
+  const finishItem = () => {
+    if (generation !== speechGeneration) return;
+    if (watchdog !== null) window.clearTimeout(watchdog);
+    activeUtterance = null;
+    currentSpeechResolve = null;
+    speechBusy = false;
+    item.resolve();
+    window.setTimeout(() => { if (generation === speechGeneration) speakNext(); }, 180);
+  };
+
+  const speakChunk = (retry = 0) => {
+    if (generation !== speechGeneration) return;
+    if (chunkIndex >= chunks.length) { finishItem(); return; }
+    const utterance = new SpeechSynthesisUtterance(chunks[chunkIndex]);
+    activeUtterance = utterance;
+    utterance.lang = voice?.lang || 'ar';
+    utterance.rate = 0.88;
+    utterance.pitch = 0.98;
+    utterance.volume = 1;
     if (voice) utterance.voice = voice;
-    utterance.onend = () => { if(generation !== speechGeneration)return; currentSpeechResolve=null; speechBusy = false; item.resolve(); window.setTimeout(()=>{if(generation===speechGeneration)speakNext();},180); };
-    utterance.onerror = () => { if(generation !== speechGeneration)return; currentSpeechResolve=null; speechBusy = false; item.resolve(); window.setTimeout(()=>{if(generation===speechGeneration)speakNext();},180); };
+    const advance = () => {
+      if (generation !== speechGeneration || activeUtterance !== utterance) return;
+      if (watchdog !== null) window.clearTimeout(watchdog);
+      activeUtterance = null;
+      chunkIndex++;
+      window.setTimeout(() => speakChunk(), 120);
+    };
+    utterance.onend = advance;
+    utterance.onerror = event => {
+      if (generation !== speechGeneration || activeUtterance !== utterance) return;
+      if (watchdog !== null) window.clearTimeout(watchdog);
+      activeUtterance = null;
+      if (retry < 1 && event.error !== 'not-allowed' && event.error !== 'canceled' && event.error !== 'interrupted') {
+        window.setTimeout(() => speakChunk(retry + 1), 250);
+      } else {
+        chunkIndex++;
+        window.setTimeout(() => speakChunk(), 120);
+      }
+    };
+    watchdog = window.setTimeout(() => {
+      if (generation !== speechGeneration || activeUtterance !== utterance) return;
+      activeUtterance = null;
+      try { synth.cancel(); } catch { /* best effort */ }
+      chunkIndex++;
+      window.setTimeout(() => speakChunk(), 180);
+    }, Math.max(18000, chunks[chunkIndex].length * 260));
     synth.speak(utterance);
   };
+
+  const begin = () => {
+    if (generation !== speechGeneration || speechQueue.length < 0) return;
+    const voices = synth.getVoices();
+    voice = voices.find(v => v.lang.toLowerCase() === 'ar-ma')
+      || voices.find(v => v.lang.toLowerCase().startsWith('ar') && /google|natural|enhanced/i.test(v.name))
+      || voices.find(v => v.lang.toLowerCase().startsWith('ar'))
+      || voices.find(v => v.default)
+      || voices[0];
+    speakChunk();
+  };
+
   if (synth.getVoices().length) begin();
   else {
     const onVoicesChanged = () => {
@@ -116,14 +182,13 @@ function speakNext() {
     synth.addEventListener('voiceschanged', onVoicesChanged);
     window.setTimeout(() => {
       synth.removeEventListener('voiceschanged', onVoicesChanged);
-      if (speechBusy && !synth.speaking) begin();
-    }, 900);
+      if (generation === speechGeneration && speechBusy && !synth.speaking) begin();
+    }, 1200);
   }
 }
-
 export function speakHauntedAnnouncement(text: string): Promise<void> {
   if(typeof window==='undefined'||!('speechSynthesis'in window)||!text.trim())return Promise.resolve();
-  return new Promise(resolve=>{window.speechSynthesis.resume();speechQueue.push({text:text.trim(),resolve});if(speechQueue.length>8){const dropped=speechQueue.splice(0,speechQueue.length-8);dropped.forEach(item=>item.resolve());}speakNext();});
+  return new Promise(resolve=>{window.speechSynthesis.resume();speechQueue.push({text:text.trim(),resolve});speakNext();});
 }
 
 
