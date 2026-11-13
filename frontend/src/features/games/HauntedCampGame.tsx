@@ -232,7 +232,7 @@ export default function HauntedCampGame(props: Props) {
     const key = state.id + ':' + state.round;
     if (previousHaunterChoiceRef.current === key) return;
     previousHaunterChoiceRef.current = key;
-    void presentNarration(key+':faqih', 'آ الفقيه، دابا جا دورك! المسكون اختار الضحية، وعندك 30 ثانية باش تختار لاعب حي تحميه. ضغط على الشخصية ديالو، والاختيار ديالك سري.', 'faqih_awake');
+    void presentNarration(key+':faqih', 'آ الفقيه، دابا جا دورك! المسكون اختار الضحية، وعندك 30 ثانية باش تختار لاعب حي تحميه. ضغط على الشخصية ديالو، والاختيار ديالك سري.');
   }, [state?.id, state?.round, state?.status, myRole, haunterChosen, nightIntroReady, soundOn]);
   useEffect(() => {
     if (!state || state.status !== 'day') return;
@@ -251,7 +251,7 @@ export default function HauntedCampGame(props: Props) {
     if (count <= previousEventCountRef.current) return;
     const fresh = state.events.slice(previousEventCountRef.current);
     fresh.forEach(event => {
-      if (event.event_type === 'faqih_turn_opened' && myRole !== 'faqih') { void presentNarration(state.id+':'+event.round+':faqih-public', 'آ سكان المخيم، المسكون اختار الضحية ديالو. دابا جا دور الفقيه! آ الفقيه، اختار شكون بغيتي تحمي وتنقذ. عندك 30 ثانية، والاختيار ديالك سري.', 'faqih_awake'); }
+      if (event.event_type === 'faqih_turn_opened' && myRole !== 'faqih') { void presentNarration(state.id+':'+event.round+':faqih-public', 'آ سكان المخيم، المسكون اختار الضحية ديالو. دابا جا دور الفقيه! آ الفقيه، اختار شكون بغيتي تحمي وتنقذ. عندك 30 ثانية، والاختيار ديالو سري.'); }
       if (event.event_type === 'bot_chat' && !event.payload.system && soundOn && event.payload.message) { const botName=event.payload.system?'الراوي':state.players.find(player=>player.user_id===String(event.payload.bot_user_id))?.username||'واحد من البوتات'; speakHauntedAnnouncement(botName+' كيقول: '+String(event.payload.message)); }
       if (event.event_type === 'vote_tied' && soundOn) void playHauntedAnnouncementSegment('tie','كاين تعادل فالأصوات. غادي نعاودو التصويت بين المرشحين. اختارو بعناية.');
       if (event.event_type === 'vote_tie_resolved' && soundOn) speakHauntedAnnouncement('بقى التعادل، وما خرج حتى واحد من المخيم.');
