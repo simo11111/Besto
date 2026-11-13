@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { getHauntedWinner, resolveNightOutcome, resolveVoteOutcome } from './hauntedRules';
+import { canUseHauntedChat, getHauntedWinner, resolveNightOutcome, resolveVoteOutcome } from './hauntedRules';
 
 describe('haunted camp rules', () => {
+  it('locks player chat throughout night and morning, including for living players', () => {
+    expect(canUseHauntedChat('night', true)).toBe(false);
+    expect(canUseHauntedChat('morning', true)).toBe(false);
+  });
+  it('allows only living players to chat during day and everyone after the game ends', () => {
+    expect(canUseHauntedChat('day', true)).toBe(true);
+    expect(canUseHauntedChat('day', false)).toBe(false);
+    expect(canUseHauntedChat('ended', false)).toBe(true);
+  });
   it('saves the target when faqih protects the same player', () => {
     expect(resolveNightOutcome('player-a', 'player-a')).toEqual({ killedUserId: null, saved: true });
   });
