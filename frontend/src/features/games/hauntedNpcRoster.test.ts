@@ -13,7 +13,12 @@ describe('Haunted Camp NPC roster', () => {
     expect(getHauntedBotCount(3, false, 10)).toBe(7);
   });
 
-  it('caps standard mode at ten even when the room supports sixteen', () => {\n    expect(getHauntedBotCount(1, false, 16)).toBe(9);\n    expect(getHauntedBotCount(10, false, 16)).toBe(0);\n  });\n\n  it('keeps quick mode at four total participants', () => {
+  it('caps standard mode at ten even when the room supports sixteen', () => {
+    expect(getHauntedBotCount(1, false, 16)).toBe(9);
+    expect(getHauntedBotCount(10, false, 16)).toBe(0);
+  });
+
+  it('keeps quick mode at four total participants', () => {
     expect(getHauntedBotCount(1, true, 10)).toBe(3);
     expect(getHauntedBotCount(3, true, 6)).toBe(1);
     expect(getHauntedBotCount(4, true, 4)).toBe(0);
