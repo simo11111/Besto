@@ -34,6 +34,11 @@ class AudioManager {
     return this.context;
   }
 
+  unlock() {
+    const ctx = this.getContext();
+    if (ctx?.state === 'suspended') void ctx.resume().catch(() => undefined);
+  }
+
   private getPlayer(name: HauntedSound) {
     let player = this.players.get(name);
     if (!player && typeof Audio !== 'undefined') {
