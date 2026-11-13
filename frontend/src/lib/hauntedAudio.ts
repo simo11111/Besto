@@ -3,7 +3,7 @@ import { getSoundEnabled } from './audio';
 
 export function unlockHauntedNarrator() { if (typeof window !== 'undefined' && 'speechSynthesis' in window) { try { window.speechSynthesis.resume(); void window.speechSynthesis.getVoices(); } catch { /* Audio unlock is best-effort on mobile browsers. */ } } }
 
-export function startCampMusic() { audioManager.fadeIn('camp', 0.18); }
+export function startCampMusic() { audioManager.unlock(); audioManager.fadeIn('camp', 0.18); }
 export function stopCampMusic() { audioManager.stop('camp'); }
 export function startDiscussionAmbience() { audioManager.startDiscussionFire(); }
 export function stopDiscussionAmbience() { audioManager.stopDiscussionFire(); }
