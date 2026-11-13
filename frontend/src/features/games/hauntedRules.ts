@@ -19,5 +19,5 @@ export function getHauntedWinner(haunterId: string, ejectedId: string | null, li
 }
 
 export function canUseHauntedChat(status: string | null | undefined, isAlive: boolean) {
-  return status === 'ended' || (status === 'day' && isAlive);
+  return status === 'ended' || (['morning', 'day'].includes(status || '') && isAlive);
 }
