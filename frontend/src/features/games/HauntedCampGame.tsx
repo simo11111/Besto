@@ -33,91 +33,13 @@ function RoleMark({ role, size = 22 }: { role: HauntedRole; size?: number }) {
 }
 
 function AnimeCampCharacter({ gender, seed }: { gender: 'male' | 'female'; seed: string }) {
-  const female = gender === 'female';
-  const palettes = [
-    { robe:'#473d86', shadow:'#242044', trim:'#e2c7ff', hair:'#20192e', eye:'#78d9ff', skin:'#f4c7ae' },
-    { robe:'#246d78', shadow:'#173b49', trim:'#a6f0e8', hair:'#38251e', eye:'#74e4d2', skin:'#e9b997' },
-    { robe:'#934b39', shadow:'#512b2b', trim:'#ffd6a2', hair:'#261c2b', eye:'#e6a6ff', skin:'#f0c5a8' },
-    { robe:'#465d9a', shadow:'#25345f', trim:'#c9dcff', hair:'#432b24', eye:'#9ecbff', skin:'#f0c3a6' },
-    { robe:'#8a416d', shadow:'#482342', trim:'#ffc8e5', hair:'#241b2b', eye:'#ffb3d7', skin:'#f4c4ad' },
-    { robe:'#526d42', shadow:'#293c2a', trim:'#d4e9a4', hair:'#29232a', eye:'#c5e98e', skin:'#e8b99b' },
-    { robe:'#a06b2f', shadow:'#53391f', trim:'#ffe0a1', hair:'#30202a', eye:'#ffd27e', skin:'#f1c5a8' },
-    { robe:'#674a9a', shadow:'#34234e', trim:'#e0c4ff', hair:'#1e1a30', eye:'#c8a9ff', skin:'#edbfa5' },
-    { robe:'#3c6385', shadow:'#1e354d', trim:'#b6e6ff', hair:'#3b2a24', eye:'#9be4ff', skin:'#f0c2a8' },
-    { robe:'#8b4b4b', shadow:'#48262f', trim:'#ffd0b7', hair:'#211c2a', eye:'#ffb49d', skin:'#f1c1a6' },
-  ];
-  const hash = Array.from(seed || 'camp').reduce((sum,char)=>((sum*31)+char.charCodeAt(0))>>>0,7);
-  const variant = hash % palettes.length;
-  const c = palettes[variant];
-  const uid = 'anime'+hash.toString(36);
-  const longHair = female && variant % 3 !== 1;
-
-  const spiky = !female && variant % 3 !== 1;
-  return <svg className={'haunted-anime-art '+(female?'is-female':'is-male')} viewBox="0 0 140 180" role="img" aria-label={female?'شخصية أنمي أنثى':'شخصية أنمي ذكر'}>
-    <defs>
-      <linearGradient id={uid+'robe'} x1="0" y1="0" x2="1" y2="1"><stop stopColor={c.robe}/><stop offset=".58" stopColor={c.shadow}/><stop offset="1" stopColor={c.robe}/></linearGradient>
-      <linearGradient id={uid+'hair'} x1="0" y1="0" x2=".8" y2="1"><stop stopColor={c.hair}/><stop offset=".55" stopColor="#171522"/><stop offset="1" stopColor={c.robe}/></linearGradient>
-      <linearGradient id={uid+'skin'} x1="0" y1="0" x2="0" y2="1"><stop stopColor="#ffe0c8"/><stop offset="1" stopColor={c.skin}/></linearGradient>
-      <linearGradient id={uid+'gold'} x1="0" y1="0" x2="1" y2="1"><stop stopColor="#fff1b5"/><stop offset=".5" stopColor="#d99b45"/><stop offset="1" stopColor="#fff0b4"/></linearGradient>
-    </defs>
-    <ellipse cx="70" cy="169" rx="47" ry="7" fill="#03040b" opacity=".5"/>
-    {/* crossed legs and boots */}
-    <path d="M48 117 Q23 128 18 145 Q17 154 31 155 Q53 155 71 140 L91 124 L79 111Z" fill={c.shadow} stroke={c.trim} strokeWidth="2.2"/>
-    <path d="M77 117 Q100 122 119 143 Q126 152 115 157 Q95 160 74 144 L55 132Z" fill={c.shadow} stroke={c.trim} strokeWidth="2.2"/>
-    <path d="M18 145 Q10 154 20 160 Q38 164 55 152 L63 143 L50 138Z" fill="#171522" stroke={c.trim} strokeWidth="1.7"/>
-    <path d="M106 143 Q119 145 127 154 Q126 163 110 163 L91 154Z" fill="#171522" stroke={c.trim} strokeWidth="1.7"/>
-    <path d="M29 149 Q42 153 54 145 M96 149 Q108 155 119 154" fill="none" stroke={c.trim} strokeWidth="1.2" opacity=".8"/>
-    {/* hair behind shoulders */}
-    {female&&longHair&&<path d="M43 50 Q29 56 31 89 L25 127 Q29 140 43 127 L54 78 M91 49 Q109 59 106 93 L116 126 Q112 140 98 127 L87 78Z" fill={'url(#'+uid+'hair)'} stroke="#171321" strokeWidth="2"/>}
-    {/* robe silhouette */}
-    <path d="M48 78 Q70 67 91 79 Q104 96 111 130 Q90 145 70 139 Q45 146 27 130 Q34 94 48 78Z" fill={'url(#'+uid+'robe)'} stroke={c.trim} strokeWidth="2.2"/>
-    <path d="M53 80 L69 111 L88 81 L98 129 Q72 141 41 129Z" fill={c.shadow} opacity=".55"/>
-    <path d="M57 80 L70 105 L84 80 L78 132 L64 132Z" fill={c.robe} stroke={c.trim} strokeWidth="1.5"/>
-    {/* wide sleeves */}
-    <path d="M48 84 Q28 83 22 105 Q17 119 33 128 L48 112 L59 96Z" fill={'url(#'+uid+'robe)'} stroke={c.trim} strokeWidth="2"/>
-    <path d="M91 84 Q111 84 119 106 Q123 119 108 129 L91 112 L81 96Z" fill={'url(#'+uid+'robe)'} stroke={c.trim} strokeWidth="2"/>
-    <path d="M25 111 L39 119 M115 111 L101 119" stroke={c.trim} strokeWidth="2.4" strokeLinecap="round"/>
-    {/* hands */}
-    <path d="M35 122 Q42 117 48 122 L52 130 Q46 137 38 132Z" fill={'url(#'+uid+'skin)'} stroke="#a86f65" strokeWidth="1"/>
-    <path d="M104 122 Q98 117 92 122 L88 130 Q94 137 102 132Z" fill={'url(#'+uid+'skin)'} stroke="#a86f65" strokeWidth="1"/>
-    {/* collar, belt and ornamental embroidery */}
-    <path d="M52 79 L70 98 L88 79 L81 74 L70 86 L59 74Z" fill={c.shadow} stroke={c.trim} strokeWidth="1.8"/>
-    <path d="M42 119 Q70 128 98 119" fill="none" stroke={c.trim} strokeWidth="2.1"/>
-    <path d="M45 128 Q70 136 95 128" fill="none" stroke={c.trim} strokeWidth="1" opacity=".65"/>
-    <path d="M70 91 L70 120 M63 105 L70 112 L77 105" fill="none" stroke={c.trim} strokeWidth="1.4"/>
-    <circle cx="70" cy="102" r="5.5" fill={'url(#'+uid+'gold)'} stroke="#fff0b2" strokeWidth="1"/>
-    <circle cx="70" cy="102" r="2" fill="#fff7d4"/>
-    {/* neck and face */}
-    <path d="M59 65 L58 80 Q70 89 82 80 L80 64Z" fill={'url(#'+uid+'skin)'}/>
-    <path d="M47 40 Q49 23 70 23 Q93 23 94 44 L90 66 Q82 79 70 80 Q56 77 49 65Z" fill={'url(#'+uid+'skin)'} stroke="#9e6c68" strokeWidth="1.2"/>
-    <ellipse cx="50" cy="54" rx="3.5" ry="6" fill={c.skin}/><ellipse cx="91" cy="54" rx="3.5" ry="6" fill={c.skin}/>
-    {/* eyes with iris, highlights and brows */}
-    <path d="M53 51 Q61 44 67 51 Q62 61 55 57Z M74 51 Q81 44 88 51 Q86 59 78 57Z" fill="#fff8f3"/>
-    <ellipse cx="61" cy="53" rx="3.3" ry="5" fill={c.eye}/><ellipse cx="81" cy="53" rx="3.3" ry="5" fill={c.eye}/>
-    <ellipse cx="61" cy="54" rx="1.4" ry="3.1" fill="#171522"/><ellipse cx="81" cy="54" rx="1.4" ry="3.1" fill="#171522"/>
-    <circle cx="62" cy="51" r="1.4" fill="#fff"/><circle cx="82" cy="51" r="1.4" fill="#fff"/>
-    <path d="M52 47 Q60 42 67 47 M74 47 Q82 42 89 47" fill="none" stroke={c.hair} strokeWidth="2.2" strokeLinecap="round"/>
-    <path d="M69 60 Q71 62 73 60 M66 68 Q70 71 74 68" fill="none" stroke="#a65d66" strokeWidth="1.4" strokeLinecap="round"/>
-    <ellipse cx="53" cy="63" rx="4" ry="2" fill="#f08e9c" opacity=".3"/><ellipse cx="87" cy="63" rx="4" ry="2" fill="#f08e9c" opacity=".3"/>
-    {/* signature hair silhouettes */}
-    {female
-      ? <path d={longHair?"M44 50 Q32 25 48 13 Q66 0 85 13 Q103 27 91 53 L84 45 L80 31 Q70 40 62 31 Q55 43 48 42 L47 61Z":"M44 48 Q34 25 49 13 Q68 2 86 15 Q100 29 91 50 L82 42 L76 34 L68 41 L60 31 L52 43Z"} fill={'url(#'+uid+'hair)'} stroke="#171321" strokeWidth="2"/>
-      : <path d={spiky?"M43 45 Q34 27 42 18 L33 10 L53 15 Q56 1 69 8 L76 1 L81 17 Q98 9 101 24 L94 31 L94 50 L84 39 L78 32 L70 42 L62 31 L54 44Z":"M43 48 Q36 26 50 14 Q71 0 88 16 Q98 27 91 49 L82 40 L76 31 L67 40 L59 30 L51 43Z"} fill={'url(#'+uid+'hair)'} stroke="#171321" strokeWidth="2"/>}
-    {/* fringe shine and strands */}
-    <path d="M48 23 Q61 9 78 18 M54 30 Q62 22 68 21 M80 22 Q89 24 91 32" fill="none" stroke="#fff" strokeOpacity=".18" strokeWidth="2.2" strokeLinecap="round"/>
-    {female&&<><path d="M41 22 Q27 13 27 28 Q31 37 45 35 M96 22 Q110 13 111 28 Q107 37 94 35" fill="none" stroke={c.trim} strokeWidth="3" strokeLinecap="round"/><circle cx="43" cy="29" r="3" fill={c.trim}/><circle cx="97" cy="29" r="3" fill={c.trim}/></>}
-    {!female&&variant%4===0&&<path d="M53 17 L70 8 L87 17" fill="none" stroke={c.trim} strokeWidth="2.5" strokeLinecap="round"/>}
-    {/* shoulder ornaments and fine anime linework */}
-    <circle cx="48" cy="88" r="3" fill={'url(#'+uid+'gold)'}/><circle cx="92" cy="88" r="3" fill={'url(#'+uid+'gold)'}/>
-    <path d="M47 91 Q39 100 43 111 M93 91 Q101 100 97 111 M56 89 Q61 96 62 103 M84 89 Q79 96 78 103" fill="none" stroke={c.trim} strokeWidth="1.15" opacity=".75"/>
-    <path d="M47 98 L53 103 L47 108 M93 98 L87 103 L93 108" fill="none" stroke="#fff0c7" strokeWidth=".9" opacity=".55"/>
-    <path d="M54 34 Q59 29 65 31 M76 31 Q84 28 88 35 M50 39 Q55 35 59 36 M83 36 Q88 34 91 40" fill="none" stroke="#fff" strokeWidth="1.1" opacity=".34" strokeLinecap="round"/>
-    <path d="M55 58 Q61 64 67 59 M73 59 Q80 64 86 58" fill="none" stroke="#fff" strokeWidth=".75" opacity=".4"/>
-    <circle cx="58" cy="52" r=".8" fill="#fff"/><circle cx="78" cy="52" r=".8" fill="#fff"/>
-    <path d="M64 117 L70 123 L76 117 M60 125 L70 131 L80 125" fill="none" stroke="#fff0bf" strokeWidth="1" opacity=".65"/>
-    {female?<><path d="M42 38 Q35 42 39 50 M98 38 Q105 42 101 50" fill="none" stroke={c.trim} strokeWidth="1.4"/><circle cx="39" cy="52" r="2" fill={'url(#'+uid+'gold)'}/><circle cx="101" cy="52" r="2" fill={'url(#'+uid+'gold)'}/></>:<path d="M48 27 Q70 19 92 27" fill="none" stroke={c.trim} strokeWidth="1.8" opacity=".55"/>}
-  </svg>;
+  const palette = gender === 'female' ? 'female' : 'male';
+  const safeSeed = encodeURIComponent(seed || 'camp');
+  return <div className={'haunted-anime-art is-'+palette} role="img" aria-label={gender==='female'?'شخصية أنمي':'شخصية أنمي'}>
+    <img loading="lazy" decoding="async" src={'https://api.dicebear.com/9.x/adventurer/png?seed='+safeSeed+'&size=192&backgroundColor=transparent'} alt="" />
+  </div>;
 }
+
 export default function HauntedCampGame(props: Props) {
   const { gameId, roomId, userId, isHost, maxPlayers, roster, messages, onBack, onExit, onSendChat, voiceActive, voiceParticipantIds, voiceSpeakingIds, onToggleVoice, onNightMute, onRewardsUpdated } = props;
   const reduceMotion = useReducedMotion();
@@ -198,7 +120,7 @@ export default function HauntedCampGame(props: Props) {
     if (phase === 'night') {
       preloadHauntedAnnouncements(); stopDiscussionAmbience(); startNightAmbience(); onNightMute(true);
       setNightIntroReady(false);
-      void presentNarration(state!.id+':'+state!.round+':night', state?.game_mode==='quick'?'هبط الليل على المخيم... آ المسكون، دورك دابا. اختار لاعب واحد فالسر، ومن بعد غادي يجي دور الفقيه باش يختار شكون يحمي.':'هبط الليل على المخيم... آ المسكون، اختار لاعب واحد فالسر. من بعد غادي يجي دور الفقيه باش يختار شكون يحمي.', state?.game_mode==='quick'?'night_quick':'night').finally(() => setNightIntroReady(true));
+      void presentNarration(state!.id+':'+state!.round+':night', state?.game_mode==='quick'?'هبط الليل على المخيم... آ المسكون، دورك دابا. عندك 30 ثانية تختار ضحية وحدة فالسر.':'هبط الليل على المخيم... آ المسكون، عندك 30 ثانية تختار ضحية وحدة فالسر.', state?.game_mode==='quick'?'night_quick':'night').finally(() => setNightIntroReady(true));
     } else if (phase === 'morning') {
       stopNightAmbience(); stopDiscussionAmbience(); startMorningAmbience(); onNightMute(false);
       const latest = [...(state?.events ?? [])].reverse().find(e => e.event_type === 'night_resolved');
@@ -331,7 +253,7 @@ export default function HauntedCampGame(props: Props) {
     </div>
     <div className="haunted-phase-banner">
       {state.status==='night'?<><Moon/><span>الليل هبط على المخيم</span></>:state.status==='morning'?<><Sun/><span>طلع الصباح… شنو وقع فالليل؟</span></>:state.status==='day'?<><Sun/><span>وقت النقاش والتصويت</span></>:<><Trophy/><span>سالَت الحكاية</span></>}
-      {state.status!=='ended'&&<strong>{state.status==='night'&&haunterChosen&&myRole==='faqih'?'وقت الفقيه':state.status==='night'&&haunterChosen?'اختيار الفقيه':state.status==='night'?'وقت المسكون':''}<Clock3 size={15}/>{Math.floor(secondsLeft/60).toString().padStart(2,'0')}:{(secondsLeft%60).toString().padStart(2,'0')}</strong>}
+      {state.status!=='ended'&&<strong>{state.status==='night'&&haunterChosen&&myRole==='faqih'?'وقت الفقيه':state.status==='night'&&haunterChosen?'اختيار الفقيه':state.status==='night'&&myRole==='haunter'?'وقت المسكون':state.status==='night'?'الاختيار السري':''}<Clock3 size={15}/>{Math.floor(secondsLeft/60).toString().padStart(2,'0')}:{(secondsLeft%60).toString().padStart(2,'0')}</strong>}
     </div>
     {revealed&&role&&<div className="haunted-role-overlay" role="dialog" aria-modal="true" aria-label="بطاقتك السرية" onClick={()=>setRevealed(false)}>
       <motion.article className={'haunted-role-card haunted-role-'+myRole} initial={reduceMotion?false:{rotateY:70,opacity:0,scale:.86,y:24}} animate={reduceMotion?{opacity:1,scale:1}:{rotateY:0,opacity:1,scale:1,y:0}} transition={{duration:reduceMotion?0.01:0.72,ease:[.2,.8,.2,1]}} onClick={e=>e.stopPropagation()}>
