@@ -232,7 +232,7 @@ export default function HauntedCampGame(props: Props) {
     const key = state.id + ':' + state.round;
     if (previousHaunterChoiceRef.current === key) return;
     previousHaunterChoiceRef.current = key;
-    void presentNarration(key+':faqih', 'آ الفقيه، المسكون اختار الضحية ديالو. دابا جا دورك. اختار شكون بغيتي تعتق هاد الليلة. ضغط على الشخصية باش تحميها، والقرار ديالك سري.', 'faqih_awake');
+    void presentNarration(key+':faqih', 'آ الفقيه، دابا جا دورك! المسكون اختار الضحية، وعندك 30 ثانية باش تختار لاعب حي تحميه. ضغط على الشخصية ديالو، والاختيار ديالك سري.', 'faqih_awake');
   }, [state?.id, state?.round, state?.status, myRole, haunterChosen, nightIntroReady, soundOn]);
   useEffect(() => {
     if (!state || state.status !== 'day') return;
@@ -251,7 +251,7 @@ export default function HauntedCampGame(props: Props) {
     if (count <= previousEventCountRef.current) return;
     const fresh = state.events.slice(previousEventCountRef.current);
     fresh.forEach(event => {
-      if (event.event_type === 'faqih_turn_opened' && myRole !== 'faqih') { void presentNarration(state.id+':'+event.round+':faqih-public', 'المسكون اختار الضحية. دابا جا دور الفقيه باش يختار شكون ينقذ المخيم.', 'faqih_awake'); }
+      if (event.event_type === 'faqih_turn_opened' && myRole !== 'faqih') { void presentNarration(state.id+':'+event.round+':faqih-public', 'آ سكان المخيم، المسكون اختار الضحية ديالو. دابا جا دور الفقيه! آ الفقيه، اختار شكون بغيتي تحمي وتنقذ. عندك 30 ثانية، والاختيار ديالك سري.', 'faqih_awake'); }
       if (event.event_type === 'bot_chat' && !event.payload.system && soundOn && event.payload.message) { const botName=event.payload.system?'الراوي':state.players.find(player=>player.user_id===String(event.payload.bot_user_id))?.username||'واحد من البوتات'; speakHauntedAnnouncement(botName+' كيقول: '+String(event.payload.message)); }
       if (event.event_type === 'vote_tied' && soundOn) void playHauntedAnnouncementSegment('tie','كاين تعادل فالأصوات. غادي نعاودو التصويت بين المرشحين. اختارو بعناية.');
       if (event.event_type === 'vote_tie_resolved' && soundOn) speakHauntedAnnouncement('بقى التعادل، وما خرج حتى واحد من المخيم.');
@@ -301,7 +301,7 @@ export default function HauntedCampGame(props: Props) {
         <div><b>{myRole==='faqih'?'دابا جا دور الفقيه':'آ المسكون، اختار الضحية ديالك'}</b><small>{myRole==='faqih'?'اختار شكون بغيتي تعتق هاد الليلة.':'ضغط على الشخصية اللي بغيتي تقتل.'}</small></div>
       </motion.div>}
       {state.status==='night'&&isAlive&&(myRole==='haunter'||myRole==='faqih')&&<div className={'haunted-night-role-hint '+(myRole==='faqih'?'is-faqih':'is-haunter')} aria-live="polite"><span>{myRole==='haunter'?<Skull size={17}/>:<Shield size={17}/>}</span><b>{myRole==='haunter'?(state.my_night_target?'الضحية تحددات':'ختار شكون بغيتي تقتل'):(haunterChosen?(state.my_night_target?'الحماية تسجلات':'ختار شكون بغيتي تعتق'):'تسنى اختيار المسكون')}</b></div>}
-      <div className={'haunted-camp-ring '+(state.players.length<=6?'is-six-or-fewer':'is-many')}>{state.players.map((player,index)=>{const angle=(index/Math.max(state.players.length,1))*Math.PI*2-Math.PI/2;const ringX=state.players.length>=8?39:32;const ringY=state.players.length>=8?28:21;const left=50+ringX*Math.cos(angle);const top=50+ringY*Math.sin(angle);const myNightTarget=state.my_night_target===player.user_id;
+      <div className={'haunted-camp-ring '+(state.players.length<=6?'is-six-or-fewer':'is-many')}>{state.players.map((player,index)=>{const angle=(index/Math.max(state.players.length,1))*Math.PI*2-Math.PI/2;const ringX=state.players.length>=8?39:38;const ringY=state.players.length>=8?28:31;const left=50+ringX*Math.cos(angle);const top=50+ringY*Math.sin(angle);const myNightTarget=state.my_night_target===player.user_id;
       const myVoteTarget=state.my_vote===player.user_id;
       const canChoose=player.is_alive&&isAlive&&!busy&&((state.status==='night'&&!state.my_night_target&&(myRole==='haunter'||(myRole==='faqih'&&haunterChosen))&&(myRole==='faqih'||player.user_id!==userId))||(state.status==='day'&&state.voting_open&&!voted&&player.user_id!==userId));
       const selected=target===player.user_id;
@@ -321,7 +321,7 @@ export default function HauntedCampGame(props: Props) {
     </div>
     <div className="haunted-phase-banner">
       {state.status==='night'?<><Moon/><span>الليل هبط على المخيم</span></>:state.status==='morning'?<><Sun/><span>طلع الصباح… شنو وقع فالليل؟</span></>:state.status==='day'?<><Sun/><span>وقت النقاش والتصويت</span></>:<><Trophy/><span>سالَت الحكاية</span></>}
-      {state.status!=='ended'&&<strong><Clock3 size={15}/>{Math.floor(secondsLeft/60).toString().padStart(2,'0')}:{(secondsLeft%60).toString().padStart(2,'0')}</strong>}
+      {state.status!=='ended'&&<strong>{state.status==='night'&&haunterChosen&&myRole==='faqih'?'وقت الفقيه':state.status==='night'&&haunterChosen?'اختيار الفقيه':state.status==='night'?'وقت المسكون':''}<Clock3 size={15}/>{Math.floor(secondsLeft/60).toString().padStart(2,'0')}:{(secondsLeft%60).toString().padStart(2,'0')}</strong>}
     </div>
     {revealed&&role&&<div className="haunted-role-overlay" role="dialog" aria-modal="true" aria-label="بطاقتك السرية" onClick={()=>setRevealed(false)}>
       <motion.article className={'haunted-role-card haunted-role-'+myRole} initial={reduceMotion?false:{rotateY:70,opacity:0,scale:.86,y:24}} animate={reduceMotion?{opacity:1,scale:1}:{rotateY:0,opacity:1,scale:1,y:0}} transition={{duration:reduceMotion?0.01:0.72,ease:[.2,.8,.2,1]}} onClick={e=>e.stopPropagation()}>
