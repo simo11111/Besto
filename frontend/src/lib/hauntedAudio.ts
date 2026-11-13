@@ -32,6 +32,36 @@ export function playHauntedSound(name: Exclude<HauntedSound, 'night'> | 'night')
   else audioManager.play(name, 0.7);
 }
 
+const NARRATOR_AUDIO_URL = 'https://gtsdrmfvtialuxhfxtvz.supabase.co/storage/v1/object/public/game-assets/audio/narrator-night-v4.mp3';
+let narratorAudio: HTMLAudioElement | null = null;
+let narratorAudioReady = false;
+async function ensureNarratorAudio() {
+  if (typeof window === 'undefined') return false;
+  if (narratorAudioReady) return true;
+  try {
+    const response = await fetch('https://gtsdrmfvtialuxhfxtvz.supabase.co/functions/v1/cache-haunted-narrator', { cache: 'no-store' });
+    if (!response.ok) return false;
+    const payload = await response.json();
+    if (!payload?.ready) return false;
+    narratorAudio = new Audio(NARRATOR_AUDIO_URL);
+    narratorAudio.preload = 'auto';
+    narratorAudio.volume = 0.96;
+    narratorAudioReady = true;
+    narratorAudio.load();
+    return true;
+  } catch { return false; }
+}
+async function playNarratorAudio() {
+  if (!await ensureNarratorAudio() || !narratorAudio) return false;
+  try {
+    narratorAudio.pause();
+    narratorAudio.currentTime = 0;
+    narratorAudio.playbackRate = 1.12;
+    await narratorAudio.play();
+    return true;
+  } catch { return false; }
+}
+
 type SpeechQueueItem = { text: string; resolve: () => void };
 let speechQueue: SpeechQueueItem[] = [];
 let speechBusy = false;
@@ -214,6 +244,10 @@ export async function playHauntedAnnouncementSegment(
   afterText?: string,
 ): Promise<void> {
   if (typeof window === 'undefined' || !getSoundEnabled()) return;
+  if (_segment === 'night' || _segment === 'night_quick') {
+    const played = await playNarratorAudio();
+    if (played) return;
+  }
   await speakHauntedAnnouncement(fallbackText);
   if (afterText) await speakHauntedAnnouncement(afterText);
 }
