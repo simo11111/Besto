@@ -1235,3 +1235,9 @@
   .haunted-shell .haunted-campfire b{height:47px!important}
   .haunted-shell .haunted-campfire span{width:74px!important}
 }
+
+@media(prefers-reduced-motion:reduce){
+  .haunted-shell .haunted-campfire i,.haunted-shell .haunted-campfire b,
+  .haunted-shell .haunted-campfire:before,.haunted-shell .haunted-campfire:after,
+  .haunted-shell .haunted-campfire span:before,.haunted-shell .haunted-campfire span:after{animation:none!important}
+}
