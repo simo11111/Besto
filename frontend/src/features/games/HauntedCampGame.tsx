@@ -299,8 +299,13 @@ export default function HauntedCampGame(props: Props) {
     </motion.aside>}
     <div className="haunted-camp-scene" aria-label="مخيم اللاعبين حول النار">
       <div className="haunted-scene-sun" aria-hidden="true"/><div className="haunted-scene-moon" aria-hidden="true"/>
-      <div className="haunted-scene-tent" aria-hidden="true"><span/></div>
-      <div className="haunted-campfire" aria-hidden="true"><i/><b/><span/></div>
+      <div className="haunted-scene-stars" aria-hidden="true"><i/><i/><i/><i/><i/><i/><i/><i/></div>
+      <div className="haunted-scene-tent" aria-hidden="true"><span/><b/><i/></div>
+      <div className="haunted-scene-ground" aria-hidden="true"><i/><b/></div>
+      <div className="haunted-scene-firelight" aria-hidden="true"/>
+      <div className="haunted-scene-smoke" aria-hidden="true"><i/><i/><i/><i/></div>
+      <div className="haunted-campfire" aria-hidden="true"><i/><b/><em/><span/><strong/></div>
+      <div className="haunted-scene-embers" aria-hidden="true"><i/><i/><i/><i/><i/><i/><i/><i/><i/><i/></div>
       {state.status==='night'&&isAlive&&((myRole==='haunter'&&!state.my_night_target)||(myRole==='faqih'&&haunterChosen&&!state.my_night_target))&&<motion.div className={'haunted-night-callout '+(myRole==='faqih'?'is-faqih':'is-haunter')} initial={reduceMotion?false:{opacity:0,scale:.94,y:8}} animate={{opacity:1,scale:1,y:0}} transition={{duration:reduceMotion?0.01:.24}} role="status" aria-live="assertive">
         <span>{myRole==='faqih'?<Shield size={18}/>:<Skull size={18}/>}</span>
         <div><b>{myRole==='faqih'?'دابا جا دور الفقيه':'آ المسكون، اختار الضحية ديالك'}</b><small>{myRole==='faqih'?'اختار شكون بغيتي تعتق هاد الليلة.':'ضغط على الشخصية اللي بغيتي تقتل.'}</small></div>
