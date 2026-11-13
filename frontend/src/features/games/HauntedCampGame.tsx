@@ -147,7 +147,7 @@ export default function HauntedCampGame(props: Props) {
   const myRole = state?.role;
   const role = myRole ? roleCopy[myRole] : null;
   const alivePlayers = useMemo(() => state?.players.filter(p => p.is_alive) ?? [], [state?.players]);
-  const targetPlayerCount = quickMode ? Math.min(4, maxPlayers) : maxPlayers;
+  const targetPlayerCount = Math.min(quickMode ? 4 : 10, maxPlayers);
   const lobbyBotCount = getHauntedBotCount(roster.length, quickMode, targetPlayerCount);
   const secondsLeft = state?.phase_deadline_at ? Math.max(0, Math.ceil((new Date(state.phase_deadline_at).getTime() - now) / 1000)) : 0;
   const latestNight = [...(state?.events ?? [])].reverse().find(e => e.event_type === 'night_resolved');
