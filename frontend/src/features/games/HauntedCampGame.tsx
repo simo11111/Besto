@@ -21,9 +21,9 @@ type Props = {
 };
 
 const roleCopy: Record<HauntedRole, { name: string; title: string; description: string }> = {
-  haunter: { name: 'المسكون', title: 'نتا المسكون', description: 'كل ليلة اختار لاعب حي باش تخرجو من المخيم. خليك مخفي وحاول ما يتكشفش أمرك.' },
-  faqih: { name: 'الفقيه', title: 'نتا الفقيه', description: 'كل ليلة اختار لاعب تحميه. ما عندك حتى معلومة على المسكون، والنتيجة كتبان غير مع الصباح.' },
-  villager: { name: 'مواطن', title: 'نتا من سكان المخيم', description: 'ما عندكش اختيار فالليل. نهاراً ناقش مع صحابك وصوّت على اللي شاك فيه.' }
+  haunter: { name: 'المسكون', title: 'نتا المسكون', description: 'كل ليلة اختار لاعب حي باش يخرج من المخيم. خليك متخفي، وخلّي الشك يدور على شي حد آخر.' },
+  faqih: { name: 'الفقيه', title: 'نتا الفقيه', description: 'من بعد اختيار المسكون، اختار لاعب حي تحميه. إلا كان هو الضحية، كتنجّيه. النتيجة كتبان مع الصباح.' },
+  villager: { name: 'مواطن', title: 'نتا من سكان المخيم', description: 'ما عندكش اختيار فالليل. فالنهار ناقش القرائن مع صحابك وصوّت باش تكشف المسكون.' }
 };
 
 function RoleMark({ role, size = 22 }: { role: HauntedRole; size?: number }) {
@@ -197,16 +197,16 @@ export default function HauntedCampGame(props: Props) {
     if (phase === 'night') {
       preloadHauntedAnnouncements(); stopDiscussionAmbience(); startNightAmbience(); onNightMute(true);
       setNightIntroReady(false);
-      void presentNarration(state!.id+':'+state!.round+':night', state?.game_mode==='quick'?'هبط الليل على المخيم. آ المسكون، دابا اختار الضحية ديالك بسرية.':'هبط الليل على المخيم. آ المسكون، اختار الضحية ديالك بسرية. من بعد ما تسجل الاختيار، غادي يجي دور الفقيه باش يختار شكون ينقذ.', state?.game_mode==='quick'?'night_quick':'night').finally(() => setNightIntroReady(true));
+      void presentNarration(state!.id+':'+state!.round+':night', state?.game_mode==='quick'?'هبط الليل على المخيم... آ المسكون، دورك دابا. اختار لاعب واحد فالسر، ومن بعد غادي يجي دور الفقيه باش يختار شكون يحمي.':'هبط الليل على المخيم... آ المسكون، اختار لاعب واحد فالسر. من بعد غادي يجي دور الفقيه باش يختار شكون يحمي.', state?.game_mode==='quick'?'night_quick':'night').finally(() => setNightIntroReady(true));
     } else if (phase === 'morning') {
       stopNightAmbience(); stopDiscussionAmbience(); startMorningAmbience(); onNightMute(false);
       const latest = [...(state?.events ?? [])].reverse().find(e => e.event_type === 'night_resolved');
       const killedId = typeof latest?.payload.killed_user_id === 'string' ? latest.payload.killed_user_id : null;
-      if (killedId) { playHauntedSound('death'); const victim = state?.players.find(player => player.user_id === killedId)?.username || 'واحد من السكان'; void presentNarration(state!.id+':'+state!.round+':morning','صباح الخير يا سكان الخيمة. للأسف، واحد منكم ما بقاش بيناتنا.','morning_death',victim+' خرج من المخيم. الدور ديالو غادي يبقى سري.'); }
-      else { playHauntedSound('save'); void presentNarration(state!.id+':'+state!.round+':morning','صباح الخير يا سكان الخيمة. الليلة دازت بلا خسائر، ما مات حتى واحد.','morning_safe'); }
+      if (killedId) { playHauntedSound('death'); const victim = state?.players.find(player => player.user_id === killedId)?.username || 'واحد من السكان'; void presentNarration(state!.id+':'+state!.round+':morning','صباح الخير يا سكان المخيم. للأسف، الليلة فقدنا واحد من صحابنا.','morning_death',victim+' خرج من المخيم. الدور ديالو غادي يبقى سري.'); }
+      else { playHauntedSound('save'); void presentNarration(state!.id+':'+state!.round+':morning','صباح الخير يا سكان المخيم. الليلة دازت بسلام، وما مات حتى واحد.','morning_safe'); }
     } else if (phase === 'day') {
       stopNightAmbience(); stopMorningAmbience(); startDiscussionAmbience(); onNightMute(false);
-      void presentNarration(state!.id+':'+state!.round+':day','دابا بدا وقت النقاش. عندكم جوج دقايق باش تجمعو القرائن وتعرفو شكون هو المسكون. كل واحد يقول شنو لاحظ، ومن بعد غادي يتحل التصويت.','discussion');
+      void presentNarration(state!.id+':'+state!.round+':day','طلع النهار. عندكم جوج دقايق تناقشو وتجمعو الشكوك. كل واحد يقول شنو لاحظ، ومن بعد غادي يتحل التصويت.','discussion');
     } else { stopNightAmbience(); stopMorningAmbience(); stopDiscussionAmbience(); onNightMute(false); setNarratorVisible(false); }
     if (phase === 'ended') {
       playHauntedSound(state?.winner === 'villagers' ? 'win' : 'lose');
