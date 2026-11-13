@@ -1442,3 +1442,18 @@
   .haunted-shell .haunted-campfire b,.haunted-shell .haunted-campfire em,
   .haunted-shell .haunted-scene-embers i,.haunted-shell .haunted-camp-seat.is-speaking:after{animation:none!important}
 }
+
+/* v42 — stable-seat visual polish and low-end Android performance. */
+.haunted-shell .haunted-camp-seat .haunted-anime-art{animation:camp-character-breathe 4.8s ease-in-out infinite!important;transform-origin:50% 100%}
+.haunted-shell .haunted-camp-seat:nth-child(2n) .haunted-anime-art{animation-delay:-2.1s!important}
+@keyframes camp-character-breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5px)}}
+@media(max-width:720px){
+.haunted-shell .haunted-lobby-card,.haunted-shell .haunted-rules-card,.haunted-shell .haunted-night-panel,.haunted-shell .haunted-morning-panel,.haunted-shell .haunted-vote-panel,.haunted-shell .haunted-discussion,.haunted-shell .haunted-end-panel{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.haunted-shell .haunted-camp-seat{filter:drop-shadow(0 3px 4px rgba(0,0,0,.34))}
+.haunted-shell .haunted-camp-seat:after{display:none}
+.haunted-shell .haunted-scene-firelight{filter:none;opacity:.8}
+.haunted-shell .haunted-scene-smoke i{filter:blur(3px)}
+.haunted-shell .haunted-scene-embers i{box-shadow:0 0 4px rgba(255,151,60,.55)}
+.haunted-shell .haunted-campfire:before{filter:blur(12px)!important}
+}
+@media(prefers-reduced-motion:reduce){.haunted-shell .haunted-camp-seat .haunted-anime-art{animation:none!important}}
