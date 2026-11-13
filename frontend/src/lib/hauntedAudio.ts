@@ -162,8 +162,10 @@ function speakNext() {
     synth.speak(utterance);
   };
 
+  let voiceSelectionStarted = false;
   const begin = () => {
-    if (generation !== speechGeneration || speechQueue.length < 0) return;
+    if (generation !== speechGeneration || voiceSelectionStarted) return;
+    voiceSelectionStarted = true;
     const voices = synth.getVoices();
     voice = voices.find(v => v.lang.toLowerCase() === 'ar-ma')
       || voices.find(v => v.lang.toLowerCase().startsWith('ar') && /google|natural|enhanced/i.test(v.name))
