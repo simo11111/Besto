@@ -815,75 +815,6 @@
 }
 
 
-/* v38 — realistic layered campfire and clear spacing around the fire. */
-.haunted-campfire{
-  width:132px!important;height:142px!important;z-index:2;
-  filter:drop-shadow(0 8px 12px rgba(0,0,0,.55));
-}
-.haunted-campfire:before{
-  inset:24px -48px -18px!important;
-  background:radial-gradient(ellipse at 50% 70%,rgba(255,218,130,.58),rgba(255,113,39,.27) 36%,rgba(166,44,25,.1) 58%,transparent 76%)!important;
-  filter:blur(16px)!important;
-  animation:haunted-firelight 1.15s ease-in-out infinite alternate!important;
-}
-.haunted-campfire i,.haunted-campfire b{
-  bottom:28px!important;width:25px!important;height:88px!important;
-  border-radius:62% 38% 58% 42%!important;
-  background:linear-gradient(180deg,#fffce0 0%,#fff0a0 16%,#ffc04f 43%,#ff742d 72%,rgba(184,48,24,.05) 100%)!important;
-  clip-path:polygon(50% 0,66% 19%,94% 42%,83% 68%,66% 89%,50% 100%,30% 88%,12% 66%,18% 43%,37% 23%)!important;
-  box-shadow:0 0 16px rgba(255,143,54,.9),0 0 34px rgba(255,91,32,.42)!important;
-  transform-origin:50% 100%!important;
-  animation:haunted-real-flame .52s ease-in-out infinite alternate!important;
-}
-.haunted-campfire i{left:38px!important;transform:rotate(-13deg)!important}
-.haunted-campfire b{left:69px!important;bottom:25px!important;height:72px!important;width:21px!important;transform:rotate(15deg)!important;animation-delay:-.27s!important}
-.haunted-campfire i:before,.haunted-campfire b:before{
-  content:"";position:absolute;inset:9% 25% 12%;border-radius:60% 40% 55% 45%;
-  background:linear-gradient(180deg,#fff 0%,#fff7c9 28%,#ffd36d 62%,rgba(255,130,40,.08));
-  filter:blur(1px);opacity:.9;
-}
-.haunted-campfire i:after,.haunted-campfire b:after{
-  content:"";position:absolute;left:40%;top:8%;width:22%;height:46%;
-  border-radius:50%;background:rgba(255,255,229,.8);filter:blur(3px);
-}
-.haunted-campfire span{
-  bottom:15px!important;width:92px!important;height:15px!important;
-  border-radius:10px!important;
-  background:linear-gradient(180deg,#9b6541 0%,#5a3828 38%,#2a1b19 100%)!important;
-  box-shadow:0 5px 0 #211817,0 8px 12px rgba(0,0,0,.48)!important;
-  transform:rotate(-8deg)!important;
-}
-.haunted-campfire span:before,.haunted-campfire span:after{
-  content:"";position:absolute;width:76px;height:13px;left:8px;top:0;
-  border-radius:10px;background:linear-gradient(180deg,#b47a4b,#70442d 45%,#35221d);
-  box-shadow:inset 0 2px 2px rgba(255,205,139,.24),0 3px 5px rgba(0,0,0,.35);
-}
-.haunted-campfire span:before{transform:rotate(20deg)}
-.haunted-campfire span:after{transform:rotate(-19deg);background:linear-gradient(180deg,#865333,#4c2c21 55%,#241916)}
-@keyframes haunted-real-flame{
-  0%{transform:scaleX(.82) scaleY(.91) rotate(-7deg);filter:brightness(.94)}
-  45%{transform:scaleX(1.08) scaleY(1.04) rotate(4deg);filter:brightness(1.12)}
-  100%{transform:scaleX(.9) scaleY(1.12) rotate(-3deg);filter:brightness(1.2)}
-}
-@keyframes haunted-firelight{from{opacity:.68;transform:scale(.91)}to{opacity:1;transform:scale(1.12)}}
-.haunted-camp-ring.is-six-or-fewer .haunted-camp-seat{z-index:5}
-.haunted-camp-ring.is-six-or-fewer .haunted-camp-seat>span:has(.haunted-anime-art){
-  filter:drop-shadow(0 4px 5px rgba(0,0,0,.62));
-}
-.haunted-phase-banner strong{display:flex;align-items:center;gap:5px}
-@media(max-width:520px){
- .haunted-campfire{width:112px!important;height:124px!important}
- .haunted-campfire i{left:31px!important;height:76px!important;bottom:25px!important}
- .haunted-campfire b{left:59px!important;height:63px!important;bottom:23px!important}
- .haunted-campfire span{width:80px!important}
- .haunted-campfire span:before,.haunted-campfire span:after{width:66px}
- .haunted-phase-banner strong{font-size:10px}
-}
-@media(prefers-reduced-motion:reduce){
- .haunted-campfire:before,.haunted-campfire i,.haunted-campfire b{animation:none!important}
-}
-
-
 /* v39 — live conversation layout and clear microphone state feedback. */
 .haunted-camp-chat{
   border-top:1px solid rgba(190,151,255,.2)!important;
@@ -971,4 +902,270 @@
 }
 @media(prefers-reduced-motion:reduce){
  .haunted-chat-live i,.haunted-chat-line,.haunted-inline-mic.is-active:after,.haunted-mic-speaking i{animation:none!important}
+}
+
+
+/* v40 — calmer Moroccan-night palette, readable role cards and a balanced camp circle. */
+.haunted-shell{
+  --haunted-accent:#e7b65d;
+  --haunted-glow:rgba(231,182,93,.18);
+  border-color:rgba(231,182,93,.18)!important;
+  background:
+    radial-gradient(ellipse at 50% -12%,rgba(82,74,108,.3),transparent 48%),
+    linear-gradient(155deg,#10182a 0%,#0b1120 58%,#090e1b 100%)!important;
+}
+.haunted-shell .haunted-topbar{align-items:center;gap:10px}
+.haunted-shell .haunted-topbar h1{color:#f7f1e5;text-shadow:0 2px 16px rgba(231,182,93,.1)}
+.haunted-shell .haunted-round-pill{
+  color:#f2d69b;background:rgba(231,182,93,.1);
+  border:1px solid rgba(231,182,93,.2)
+}
+.haunted-shell .haunted-phase-banner{
+  border-color:rgba(231,182,93,.25);
+  background:linear-gradient(110deg,rgba(231,182,93,.1),rgba(42,49,69,.5));
+  box-shadow:inset 0 1px rgba(255,255,255,.035)
+}
+.haunted-shell .haunted-phase-banner>svg{color:#f0c878}
+.haunted-shell .haunted-phase-banner strong{color:#f3dba7}
+.haunted-shell .haunted-primary{
+  background:linear-gradient(115deg,#eab84e,#f2c96e)!important;
+  color:#201a12!important;border:1px solid rgba(255,229,163,.5)!important;
+  box-shadow:0 8px 22px rgba(219,163,58,.16)!important
+}
+.haunted-shell .haunted-secondary{
+  border:1px solid rgba(231,182,93,.25)!important;
+  background:rgba(231,182,93,.055)!important;color:#ead8b3!important
+}
+.haunted-shell .haunted-camp-scene{
+  height:clamp(260px,65vw,350px);
+  border-color:rgba(231,182,93,.2);
+  background:
+    radial-gradient(ellipse at 50% 77%,rgba(239,139,55,.15),transparent 35%),
+    radial-gradient(ellipse at 50% 0,rgba(81,84,124,.13),transparent 58%),
+    linear-gradient(180deg,#0b1222 0%,#141a2b 58%,#0c1321 100%);
+  box-shadow:inset 0 -35px 70px rgba(0,0,0,.36),0 15px 38px rgba(0,0,0,.24)
+}
+.haunted-shell .haunted-scene-moon{
+  background:radial-gradient(circle at 35% 32%,#fff5d9,#dfc38d 72%,#a88b59);
+  box-shadow:0 0 28px rgba(238,207,145,.22)
+}
+.haunted-shell .haunted-scene-tent{
+  background:linear-gradient(115deg,#8b6b50,#55405a 60%,#1b2234);
+  filter:drop-shadow(0 8px 12px rgba(0,0,0,.55))
+}
+.haunted-shell .haunted-campfire{
+  z-index:2;filter:drop-shadow(0 5px 10px rgba(0,0,0,.55))
+}
+.haunted-shell .haunted-campfire:before{
+  background:rgba(255,139,48,.22);
+  filter:blur(17px)
+}
+.haunted-shell .haunted-camp-ring{z-index:4}
+.haunted-shell .haunted-camp-ring.is-six-or-fewer .haunted-camp-seat{
+  width:82px!important;min-height:100px!important;gap:1px!important
+}
+.haunted-shell .haunted-camp-ring.is-six-or-fewer .haunted-camp-seat>span:has(.haunted-anime-art){
+  width:68px!important;height:84px!important
+}
+.haunted-shell .haunted-camp-ring.is-many .haunted-camp-seat{
+  width:66px!important;min-height:82px!important;gap:0!important
+}
+.haunted-shell .haunted-camp-ring.is-many .haunted-camp-seat>span:has(.haunted-anime-art){
+  width:52px!important;height:66px!important
+}
+.haunted-shell .haunted-camp-seat b{
+  max-width:90px!important;min-height:20px!important;margin-top:0!important;
+  padding:4px 7px!important;border:1px solid rgba(237,210,158,.2)!important;
+  border-radius:9px!important;background:rgba(6,12,23,.94)!important;
+  color:#fff7e8!important;font-size:10px!important;line-height:1.15!important;
+  box-shadow:0 3px 10px rgba(0,0,0,.42)!important
+}
+.haunted-shell .haunted-camp-seat small{
+  padding:2px 6px!important;border-color:rgba(231,182,93,.2)!important;
+  background:rgba(8,14,26,.96)!important;font-size:8px!important
+}
+.haunted-shell .haunted-camp-seat.is-selected b{
+  color:#ffe1a2!important;border-color:rgba(240,191,100,.72)!important
+}
+.haunted-shell .haunted-camp-seat.is-speaking:before{
+  border-color:rgba(111,235,171,.78)!important;
+  box-shadow:0 0 0 4px rgba(83,217,146,.1),0 0 22px rgba(83,217,146,.34)!important
+}
+.haunted-shell .haunted-scene-caption{
+  border-color:rgba(231,182,93,.18);background:rgba(6,12,22,.82);color:#e7d4ad
+}
+.haunted-shell .haunted-role-overlay{
+  padding:16px!important;background:rgba(3,8,18,.88)!important;
+  backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px)
+}
+.haunted-shell .haunted-role-card{
+  position:relative;width:min(92vw,390px)!important;margin:0!important;
+  border-radius:25px;overflow:hidden;filter:drop-shadow(0 22px 42px rgba(0,0,0,.5))
+}
+.haunted-shell .haunted-role-card-inner{
+  position:relative;display:flex;flex-direction:column;align-items:center;gap:11px;
+  padding:27px 23px 22px!important;border:1px solid rgba(231,182,93,.42)!important;
+  border-radius:25px!important;
+  background:
+    radial-gradient(circle at 50% 0,rgba(231,182,93,.14),transparent 44%),
+    linear-gradient(150deg,#1a263c 0%,#111a2d 58%,#0d1423 100%)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.07),0 18px 48px rgba(0,0,0,.35)!important
+}
+.haunted-shell .haunted-role-card-inner:before{
+  content:"";position:absolute;top:0;left:18%;right:18%;height:2px;
+  background:linear-gradient(90deg,transparent,#f3cf83,transparent)
+}
+.haunted-shell .haunted-role-card-kicker{
+  color:#e8c985!important;font-size:10px!important;letter-spacing:.04em!important
+}
+.haunted-shell .haunted-role-card-inner>svg{
+  box-sizing:content-box;padding:15px;border:1px solid rgba(231,182,93,.35);
+  border-radius:50%;background:rgba(231,182,93,.08);
+  color:#f0c875;filter:drop-shadow(0 0 13px rgba(231,182,93,.2))
+}
+.haunted-shell .haunted-role-card-inner small{
+  color:#c8bba2!important;font-size:11px!important
+}
+.haunted-shell .haunted-role-card-inner h2{
+  margin:0!important;color:#fff4df!important;font-size:29px!important;font-weight:950
+}
+.haunted-shell .haunted-role-card-inner strong{
+  padding:7px 13px;border:1px solid rgba(231,182,93,.22);border-radius:99px;
+  background:rgba(231,182,93,.09);color:#f0d49b!important;font-size:13px!important
+}
+.haunted-shell .haunted-role-card-inner p{
+  max-width:300px;margin:0!important;color:#d5d9e2!important;
+  font-size:13px;line-height:1.9!important
+}
+.haunted-shell .haunted-role-card-hint{
+  padding:6px 10px;border-radius:9px;background:rgba(255,255,255,.045);
+  color:#aeb8c8!important;font-size:10px!important
+}
+.haunted-shell .haunted-role-haunter .haunted-role-card-inner{border-color:rgba(232,112,100,.48)!important}
+.haunted-shell .haunted-role-haunter .haunted-role-card-inner>svg{color:#f08a7d;border-color:rgba(232,112,100,.38);background:rgba(232,112,100,.09)}
+.haunted-shell .haunted-role-faqih .haunted-role-card-inner{border-color:rgba(231,182,93,.58)!important}
+.haunted-shell .haunted-role-villager .haunted-role-card-inner{border-color:rgba(112,204,157,.42)!important}
+.haunted-shell .haunted-role-villager .haunted-role-card-inner>svg{color:#86d7ad;border-color:rgba(112,204,157,.34);background:rgba(112,204,157,.08)}
+.haunted-shell .haunted-role-close{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-width:132px;min-height:42px;padding:9px 18px;border:1px solid rgba(231,182,93,.35);
+  border-radius:13px;background:linear-gradient(110deg,#e5b454,#f0cd7e);
+  color:#201a12;font-weight:900
+}
+.haunted-shell .haunted-end-panel{
+  border-color:rgba(231,182,93,.25)!important;
+  background:
+    radial-gradient(ellipse at 50% 0,rgba(231,182,93,.12),transparent 55%),
+    linear-gradient(150deg,#172239,#0d1526)!important
+}
+.haunted-shell .haunted-end-panel h2{color:#fff0d2}
+.haunted-shell .haunted-end-explanation{
+  margin:9px auto 14px!important;max-width:520px;color:#e6c982!important;
+  font-weight:800;line-height:1.8
+}
+.haunted-shell .haunted-end-roles-title{margin:0 0 10px;color:#d7dce6;font-size:12px}
+.haunted-shell .haunted-role-reveal-list{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important
+}
+.haunted-shell .haunted-role-reveal-list>div{
+  min-width:0;padding:12px 8px!important;border:1px solid rgba(231,182,93,.16)!important;
+  border-radius:15px!important;background:linear-gradient(145deg,rgba(35,48,70,.86),rgba(17,27,44,.95))!important
+}
+.haunted-shell .haunted-role-reveal-list>div span{
+  display:grid;place-items:center;width:38px;height:38px;border-radius:50%;
+  border:1px solid rgba(231,182,93,.2);background:rgba(231,182,93,.08);color:#efcc82
+}
+.haunted-shell .haunted-role-reveal-list>div b{
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff4e2
+}
+.haunted-shell .haunted-role-reveal-list>div small{color:#d5bd8a}
+.haunted-shell .haunted-vote-private-note{
+  margin:10px 0 0!important;padding:9px 11px;border:1px solid rgba(231,182,93,.15);
+  border-radius:11px;background:rgba(231,182,93,.055);color:#d8c69f!important;
+  font-size:11px;line-height:1.7
+}
+.haunted-shell .haunted-camp-chat{
+  margin-top:12px;border:1px solid rgba(193,205,224,.11)!important;
+  border-radius:19px;background:linear-gradient(180deg,rgba(17,27,44,.98),rgba(10,17,30,.99))!important;
+  padding:13px!important
+}
+.haunted-shell .haunted-camp-chat h3{color:#f1e7d5}
+.haunted-shell .haunted-chat-count{
+  border-color:rgba(231,182,93,.16);background:rgba(231,182,93,.07);color:#dfc58f
+}
+.haunted-shell .haunted-camp-chat .haunted-chat-messages{
+  max-height:210px!important;min-height:86px!important;
+  border-color:rgba(191,205,226,.1)!important;
+  background:linear-gradient(180deg,rgba(8,15,27,.86),rgba(8,13,24,.94))!important
+}
+.haunted-shell .haunted-camp-chat .haunted-chat-line.is-mine{
+  background:linear-gradient(140deg,rgba(60,102,80,.32),rgba(27,59,48,.36))!important;
+  border-color:rgba(121,203,155,.2)!important
+}
+.haunted-shell .haunted-camp-chat .haunted-chat-line.is-other{
+  background:linear-gradient(140deg,rgba(36,49,72,.95),rgba(24,35,54,.98))!important;
+  border-color:rgba(191,205,226,.12)!important
+}
+.haunted-shell .haunted-camp-chat .haunted-chat-line.is-bot{
+  background:linear-gradient(140deg,rgba(61,58,75,.48),rgba(29,37,55,.98))!important;
+  border-color:rgba(221,184,111,.2)!important
+}
+.haunted-shell .haunted-camp-chat .haunted-chat-line.is-bot .haunted-chat-meta b{color:#edcc8a!important}
+.haunted-shell .haunted-chat-compose input{
+  border-color:rgba(191,205,226,.16)!important;
+  background:linear-gradient(145deg,#18243a,#101a2d)!important;color:#fff5e4!important
+}
+.haunted-shell .haunted-inline-mic.is-off{
+  background:linear-gradient(145deg,rgba(35,130,82,.34),rgba(11,63,42,.58))!important;
+  border-color:rgba(125,235,164,.6)!important;color:#baffd0!important
+}
+.haunted-shell .haunted-inline-mic.is-active{
+  background:linear-gradient(145deg,rgba(35,130,82,.52),rgba(11,63,42,.7))!important;
+  border-color:rgba(125,255,177,.72)!important;color:#c6ffda!important
+}
+.haunted-shell .haunted-bottom-bar{border-color:rgba(231,182,93,.13)}
+.haunted-shell .haunted-bottom-bar>div{color:#e7d8bb}
+.haunted-shell .haunted-bottom-bar small{color:#9eacbf}
+.haunted-shell .haunted-night-panel,.haunted-shell .haunted-morning-panel,
+.haunted-shell .haunted-vote-panel,.haunted-shell .haunted-discussion,
+.haunted-shell .haunted-end-panel{
+  border-color:rgba(231,182,93,.15)!important;
+  background:linear-gradient(150deg,rgba(28,40,60,.96),rgba(14,23,39,.97))!important
+}
+.haunted-shell .haunted-narrator-toast{
+  border-color:rgba(231,182,93,.25)!important;
+  background:linear-gradient(120deg,rgba(23,34,53,.97),rgba(17,26,42,.98))!important
+}
+.haunted-shell .haunted-narrator-toast b{color:#f0d08d!important}
+.haunted-shell .haunted-night-callout{
+  border-color:rgba(231,182,93,.28)!important;
+  background:rgba(12,20,34,.95)!important
+}
+.haunted-shell .haunted-night-callout>span{color:#f0c879!important}
+@media(max-width:520px){
+  .haunted-shell[class*="haunted-phase-"]{
+    height:auto!important;min-height:100dvh!important;max-height:none!important;
+    overflow:visible!important;display:block!important;
+    padding:calc(9px + env(safe-area-inset-top,0px)) 10px calc(12px + env(safe-area-inset-bottom,0px))!important
+  }
+  .haunted-shell .haunted-camp-scene{height:270px!important;margin-bottom:12px!important}
+  .haunted-shell .haunted-camp-ring.is-six-or-fewer .haunted-camp-seat{width:74px!important;min-height:90px!important}
+  .haunted-shell .haunted-camp-ring.is-six-or-fewer .haunted-camp-seat>span:has(.haunted-anime-art){width:61px!important;height:76px!important}
+  .haunted-shell .haunted-camp-ring.is-many .haunted-camp-seat{width:60px!important;min-height:76px!important}
+  .haunted-shell .haunted-camp-ring.is-many .haunted-camp-seat>span:has(.haunted-anime-art){width:48px!important;height:62px!important}
+  .haunted-shell .haunted-camp-seat b{max-width:78px!important;font-size:9px!important;padding:3px 6px!important}
+  .haunted-shell .haunted-camp-seat small{font-size:7px!important}
+  .haunted-shell .haunted-role-card-inner{padding:23px 17px 19px!important;gap:9px}
+  .haunted-shell .haunted-role-card-inner h2{font-size:26px!important}
+  .haunted-shell .haunted-role-card-inner p{font-size:12px}
+  .haunted-shell .haunted-end-panel{padding:16px 12px!important}
+  .haunted-shell .haunted-role-reveal-list{gap:7px!important}
+  .haunted-shell .haunted-role-reveal-list>div{padding:10px 6px!important}
+  .haunted-shell .haunted-camp-chat{padding:10px!important}
+  .haunted-shell .haunted-camp-chat .haunted-chat-messages{max-height:220px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .haunted-shell .haunted-camp-seat .haunted-anime-art,
+  .haunted-shell .haunted-campfire i,.haunted-shell .haunted-campfire b,
+  .haunted-shell .haunted-campfire:before{animation:none!important}
 }
