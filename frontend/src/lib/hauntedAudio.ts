@@ -76,9 +76,9 @@ export function setHauntedAudioMuted(muted: boolean) {
 
 /** Queue spoken announcements so one bot line never cuts off the previous one. */
 function splitAnnouncementText(value: string): string[] {
-  const normalized = value.replace(/\\s+/g, ' ').trim();
+  const normalized = value.replace(/\s+/g, ' ').trim();
   if (!normalized) return [];
-  const sentences = normalized.split(/(?<=[،؛.!؟])\\s+/u);
+  const sentences = normalized.split(/(?<=[،؛.!؟])\s+/u);
   const chunks: string[] = [];
   for (const sentence of sentences) {
     let rest = sentence.trim();
