@@ -1,7 +1,13 @@
 import { audioManager, type HauntedSound } from './audioManager';
 import { getSoundEnabled } from './audio';
 
-export function unlockHauntedNarrator() { if (typeof window !== 'undefined' && 'speechSynthesis' in window) { try { window.speechSynthesis.resume(); void window.speechSynthesis.getVoices(); } catch { /* Audio unlock is best-effort on mobile browsers. */ } } }
+export function unlockHauntedNarrator() {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+  try {
+    window.speechSynthesis.resume();
+    void window.speechSynthesis.getVoices();
+  } catch { /* Audio unlock is best-effort on mobile browsers. */ }
+}
 
 export function startCampMusic() { audioManager.unlock(); audioManager.fadeIn('camp', 0.18); }
 export function stopCampMusic() { audioManager.stop('camp'); }
@@ -9,72 +15,54 @@ export function startDiscussionAmbience() { audioManager.startDiscussionFire(); 
 export function stopDiscussionAmbience() { audioManager.stopDiscussionFire(); }
 
 export function preloadHauntedSounds() {
-  void audioManager.preload(['role','death','save','vote','eject','win','lose']);
+  void audioManager.preload(['role', 'death', 'save', 'vote', 'eject', 'win', 'lose']);
 }
 export function startNightAmbience() {
   audioManager.stop('morning');
   audioManager.fadeIn('night', 0.3);
 }
-export function stopNightAmbience() {
-  audioManager.stop('night');
-}
+export function stopNightAmbience() { audioManager.stop('night'); }
 export function startMorningAmbience() {
   audioManager.stop('night');
   audioManager.fadeIn('morning', 0.3);
 }
-export function stopMorningAmbience() {
-  audioManager.stop('morning');
-}
+export function stopMorningAmbience() { audioManager.stop('morning'); }
 export function playHauntedSound(name: Exclude<HauntedSound, 'night'> | 'night') {
   if (name === 'morning') startMorningAmbience();
   else audioManager.play(name, 0.7);
 }
-let narratorAudio: HTMLAudioElement | null = null;
-let narratorFinish: (() => void) | null = null;
-let speechQueue: Array<{text:string;resolve:()=>void}> = [];
+
+type SpeechQueueItem = { text: string; resolve: () => void };
+let speechQueue: SpeechQueueItem[] = [];
 let speechBusy = false;
 let speechGeneration = 0;
-let announcementAudio: HTMLAudioElement | null = null;
-let announcementFinish: (() => void) | null = null;
-let announcementRun = 0;
-let announcementsUrl: string | null = null;
-let quickAnnouncementsUrl: string | null = null;
-let faqihAnnouncementsUrl: string | null = null;
-let announcementRequest: Promise<string | null> | null = null;
-let currentSpeechResolve: (()=>void) | null = null;
+let currentSpeechResolve: (() => void) | null = null;
+
+/** Stop the current utterance and resolve every queued promise cleanly. */
 export function stopHauntedNarrator() {
-  announcementRun++;
   speechGeneration++;
   const pending = speechQueue.splice(0);
   pending.forEach(item => item.resolve());
-  const activeResolve=currentSpeechResolve;currentSpeechResolve=null;activeResolve?.();
+  const activeResolve = currentSpeechResolve;
+  currentSpeechResolve = null;
+  activeResolve?.();
   speechBusy = false;
-  if(typeof window!=='undefined'&&window.speechSynthesis)window.speechSynthesis.cancel();
-  if(announcementAudio){announcementAudio.pause();announcementAudio.currentTime=0;announcementAudio=null;}
-  const finishAnnouncement=announcementFinish;announcementFinish=null;finishAnnouncement?.();
-  if(narratorAudio){narratorAudio.pause();narratorAudio.currentTime=0;narratorAudio=null;}
-  const finish=narratorFinish;narratorFinish=null;finish?.();
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try { window.speechSynthesis.cancel(); } catch { /* best effort */ }
+  }
 }
+
 export async function playHauntedNarrator(fallbackText: string): Promise<void> {
-  if(typeof window==='undefined'||!getSoundEnabled())return;
-  stopHauntedNarrator();
-  let source='/sounds/narrator-night.mp3';
-  try {
-    const response=await fetch('/api/warm-narrator',{cache:'no-store'});
-    if(response.ok){const result=await response.json() as {ready?:boolean;url?:string};if(result.ready&&result.url)source=result.url;}
-  } catch { /* The Pages audio proxy remains a fallback if persistent storage is unavailable. */ }
-  return new Promise(resolve=>{const audio=new Audio(source);narratorAudio=audio;audio.preload='auto';audio.volume=.96;audio.playbackRate=1.08;let finished=false;let usedFallback=source==='/sounds/narrator-night.mp3';
-    const done=()=>{if(finished)return;finished=true;audio.onended=null;audio.onerror=null;if(narratorAudio===audio)narratorAudio=null;if(narratorFinish===done)narratorFinish=null;resolve();}; narratorFinish=done;
-    audio.onended=done;
-    audio.onerror=()=>{if(!usedFallback){usedFallback=true;audio.src='/sounds/narrator-night.mp3';void audio.play().catch(()=>{if(narratorAudio===audio)narratorAudio=null;void speakHauntedAnnouncement(fallbackText).then(done);});return;}if(narratorAudio===audio)narratorAudio=null;void speakHauntedAnnouncement(fallbackText).then(done);};
-    void audio.play().catch(()=>{if(!usedFallback){usedFallback=true;audio.src='/sounds/narrator-night.mp3';void audio.play().catch(()=>{if(narratorAudio===audio)narratorAudio=null;void speakHauntedAnnouncement(fallbackText).then(done);});return;}if(narratorAudio===audio)narratorAudio=null;void speakHauntedAnnouncement(fallbackText).then(done);});});
+  if (typeof window === 'undefined' || !getSoundEnabled()) return;
+  await speakHauntedAnnouncement(fallbackText);
 }
+
 export function setHauntedAudioMuted(muted: boolean) {
   audioManager.setMuted(muted);
   if (muted) stopHauntedNarrator();
 }
 
-/** Queue spoken announcements so one bot line never cuts off the previous one. */
+/** Break long Darija narration into short, complete clauses for Android TTS. */
 function splitAnnouncementText(value: string): string[] {
   const normalized = value.replace(/\s+/g, ' ').trim();
   if (!normalized) return [];
@@ -82,9 +70,9 @@ function splitAnnouncementText(value: string): string[] {
   const chunks: string[] = [];
   for (const sentence of sentences) {
     let rest = sentence.trim();
-    while (rest.length > 112) {
-      let cut = rest.lastIndexOf(' ', 112);
-      if (cut < 48) cut = 112;
+    while (rest.length > 104) {
+      let cut = rest.lastIndexOf(' ', 104);
+      if (cut < 42) cut = 104;
       chunks.push(rest.slice(0, cut).trim());
       rest = rest.slice(cut).trim();
     }
@@ -93,7 +81,31 @@ function splitAnnouncementText(value: string): string[] {
   return chunks;
 }
 
-/** Speak short clauses separately: mobile browser TTS often truncates long utterances. */
+function chooseNarratorVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | undefined {
+  const arabic = voices.filter(voice => voice.lang.toLowerCase().startsWith('ar'));
+  if (!arabic.length) return voices.find(voice => voice.default) || voices[0];
+  const maleWords = /\b(male|man|masculine|badr|adil|yassine|mohamed|mohammed|ahmed|hamza|khaled|anas)\b|ذكر|رجالي|رجل/i;
+  const femaleWords = /\b(female|woman|girl|feminine)\b|أنثى|نسائي|امرأة/i;
+  const moroccanWords = /morocc|darija|maghreb|ar-ma|ma\b|مغربي/i;
+  const naturalWords = /natural|enhanced|premium|google/i;
+  return arabic
+    .map(voice => {
+      const name = voice.name.toLowerCase();
+      const lang = voice.lang.toLowerCase();
+      let score = 0;
+      if (maleWords.test(name)) score += 100;
+      if (femaleWords.test(name)) score -= 120;
+      if (moroccanWords.test(name + ' ' + lang)) score += 45;
+      if (lang === 'ar-ma') score += 35;
+      if (lang === 'ar-sa' || lang === 'ar-eg') score += 15;
+      if (naturalWords.test(name)) score += 12;
+      if (voice.default) score += 2;
+      return { voice, score };
+    })
+    .sort((a, b) => b.score - a.score)[0]?.voice;
+}
+
+/** Speak one queued announcement at a time; no external TTS service or paid API. */
 function speakNext() {
   if (typeof window === 'undefined' || !('speechSynthesis' in window) || speechBusy || !speechQueue.length) return;
   const synth = window.speechSynthesis;
@@ -107,11 +119,7 @@ function speakNext() {
   let chunkIndex = 0;
   let watchdog: number | null = null;
   let activeUtterance: SpeechSynthesisUtterance | null = null;
-  let voice = synth.getVoices().find(v => v.lang.toLowerCase() === 'ar-ma')
-    || synth.getVoices().find(v => v.lang.toLowerCase().startsWith('ar') && /google|natural|enhanced/i.test(v.name))
-    || synth.getVoices().find(v => v.lang.toLowerCase().startsWith('ar'))
-    || synth.getVoices().find(v => v.default)
-    || synth.getVoices()[0];
+  let voice = chooseNarratorVoice(synth.getVoices());
 
   const finishItem = () => {
     if (generation !== speechGeneration) return;
@@ -120,7 +128,7 @@ function speakNext() {
     currentSpeechResolve = null;
     speechBusy = false;
     item.resolve();
-    window.setTimeout(() => { if (generation === speechGeneration) speakNext(); }, 180);
+    window.setTimeout(() => { if (generation === speechGeneration) speakNext(); }, 150);
   };
 
   const speakChunk = (retry = 0) => {
@@ -128,17 +136,19 @@ function speakNext() {
     if (chunkIndex >= chunks.length) { finishItem(); return; }
     const utterance = new SpeechSynthesisUtterance(chunks[chunkIndex]);
     activeUtterance = utterance;
-    utterance.lang = voice?.lang || 'ar';
-    utterance.rate = 0.88;
-    utterance.pitch = 0.98;
+    utterance.lang = voice?.lang || 'ar-MA';
+    // Lower pitch and a measured pace give the narrator a steadier, masculine delivery.
+    utterance.rate = 0.91;
+    utterance.pitch = 0.82;
     utterance.volume = 1;
     if (voice) utterance.voice = voice;
+
     const advance = () => {
       if (generation !== speechGeneration || activeUtterance !== utterance) return;
       if (watchdog !== null) window.clearTimeout(watchdog);
       activeUtterance = null;
       chunkIndex++;
-      window.setTimeout(() => speakChunk(), 120);
+      window.setTimeout(() => speakChunk(), 100);
     };
     utterance.onend = advance;
     utterance.onerror = event => {
@@ -146,10 +156,10 @@ function speakNext() {
       if (watchdog !== null) window.clearTimeout(watchdog);
       activeUtterance = null;
       if (retry < 1 && event.error !== 'not-allowed' && event.error !== 'canceled' && event.error !== 'interrupted') {
-        window.setTimeout(() => speakChunk(retry + 1), 250);
+        window.setTimeout(() => speakChunk(retry + 1), 220);
       } else {
         chunkIndex++;
-        window.setTimeout(() => speakChunk(), 120);
+        window.setTimeout(() => speakChunk(), 100);
       }
     };
     watchdog = window.setTimeout(() => {
@@ -157,8 +167,8 @@ function speakNext() {
       activeUtterance = null;
       try { synth.cancel(); } catch { /* best effort */ }
       chunkIndex++;
-      window.setTimeout(() => speakChunk(), 180);
-    }, Math.max(18000, chunks[chunkIndex].length * 260));
+      window.setTimeout(() => speakChunk(), 160);
+    }, Math.max(18000, chunks[chunkIndex].length * 280));
     synth.speak(utterance);
   };
 
@@ -166,12 +176,7 @@ function speakNext() {
   const begin = () => {
     if (generation !== speechGeneration || voiceSelectionStarted) return;
     voiceSelectionStarted = true;
-    const voices = synth.getVoices();
-    voice = voices.find(v => v.lang.toLowerCase() === 'ar-ma')
-      || voices.find(v => v.lang.toLowerCase().startsWith('ar') && /google|natural|enhanced/i.test(v.name))
-      || voices.find(v => v.lang.toLowerCase().startsWith('ar'))
-      || voices.find(v => v.default)
-      || voices[0];
+    voice = chooseNarratorVoice(synth.getVoices());
     speakChunk();
   };
 
@@ -188,138 +193,31 @@ function speakNext() {
     }, 1200);
   }
 }
+
 export function speakHauntedAnnouncement(text: string): Promise<void> {
-  if(typeof window==='undefined'||!('speechSynthesis'in window)||!text.trim())return Promise.resolve();
-  return new Promise(resolve=>{window.speechSynthesis.resume();speechQueue.push({text:text.trim(),resolve});speakNext();});
+  if (typeof window === 'undefined' || !('speechSynthesis' in window) || !text.trim()) return Promise.resolve();
+  return new Promise(resolve => {
+    window.speechSynthesis.resume();
+    speechQueue.push({ text: text.trim(), resolve });
+    speakNext();
+  });
 }
-
-
 
 export type HauntedAnnouncementSegment = 'night' | 'night_quick' | 'faqih_awake' | 'morning_safe' | 'morning_death' | 'discussion' | 'voting' | 'tie' | 'ejected' | 'win_villagers' | 'win_haunter';
 
-const announcementSegments: Record<HauntedAnnouncementSegment, [number, number]> = {
-  night: [30.98, 42.40],
-  night_quick: [0, 7.15],
-  faqih_awake: [0, 9.334],
-  morning_safe: [44.15, 53.98],
-  morning_death: [55.63, 66.10],
-  discussion: [68.05, 81.35],
-  voting: [82.98, 93.90],
-  tie: [95.45, 103.12],
-  ejected: [104.43, 113.22],
-  win_villagers: [114.84, 123.30],
-  win_haunter: [124.73, 132.03],
-};
-
-async function getAnnouncementsUrl(): Promise<string | null> {
-  if (announcementsUrl) return announcementsUrl;
-  if (!announcementRequest) {
-    announcementRequest = (async () => {
-      const base = String(import.meta.env.VITE_SUPABASE_URL || '').replace(/\/+$/, '');
-      if (!base) return null;
-      const response = await fetch(base + '/functions/v1/cache-haunted-announcements', { method: 'GET', cache: 'no-store' });
-      if (!response.ok) return null;
-      const result = await response.json() as { ready?: boolean; url?: string; quick_url?: string; faqih_url?: string };
-      if (result.ready && typeof result.url === 'string') announcementsUrl = result.url;
-      if (result.ready && typeof result.quick_url === 'string') quickAnnouncementsUrl = result.quick_url;
-      if (result.ready && typeof result.faqih_url === 'string') faqihAnnouncementsUrl = result.faqih_url;
-      return announcementsUrl;
-    })().catch(() => null).finally(() => { announcementRequest = null; });
-  }
-  return announcementRequest;
-}
-
-export async function playHauntedAnnouncementSegment(segment: HauntedAnnouncementSegment, fallbackText: string, afterText?: string): Promise<void> {
+/** All narration now uses the same device voice so the tone never jumps between clips. */
+export async function playHauntedAnnouncementSegment(
+  _segment: HauntedAnnouncementSegment,
+  fallbackText: string,
+  afterText?: string,
+): Promise<void> {
   if (typeof window === 'undefined' || !getSoundEnabled()) return;
-  const currentRun = ++announcementRun;
-
-  if (announcementAudio) {
-    announcementAudio.pause();
-    announcementAudio.currentTime = 0;
-    announcementAudio = null;
-    const finishPrevious = announcementFinish;
-    announcementFinish = null;
-    finishPrevious?.();
-  }
-
-  const masterUrl = await getAnnouncementsUrl();
-  if (currentRun !== announcementRun) return;
-  const url = segment === 'night_quick' ? quickAnnouncementsUrl : segment === 'faqih_awake' ? faqihAnnouncementsUrl : masterUrl;
-  if (!url) {
-    await speakHauntedAnnouncement(fallbackText);
-    if (afterText) await speakHauntedAnnouncement(afterText);
-    return;
-  }
-
-  const [start, end] = announcementSegments[segment];
-  const played = await new Promise<boolean>(resolve => {
-    const audio = new Audio(url);
-    announcementAudio = audio;
-    audio.preload = 'auto';
-    audio.volume = 0.98;
-    audio.playbackRate = segment === 'faqih_awake' ? 0.92 : 0.94;
-    let finished = false;
-    let playbackStarted = false;
-    let loadWatchdog: number | null = null;
-    let playWatchdog: number | null = null;
-    const finish = (ok: boolean) => {
-      if (finished) return;
-      finished = true;
-      if (loadWatchdog !== null) window.clearTimeout(loadWatchdog);
-      if (playWatchdog !== null) window.clearTimeout(playWatchdog);
-      audio.ontimeupdate = null;
-      audio.onloadedmetadata = null;
-      audio.oncanplay = null;
-      audio.onended = null;
-      audio.onerror = null;
-      if (!ok) audio.pause();
-      if (announcementAudio === audio) announcementAudio = null;
-      if (announcementFinish === finishDone) announcementFinish = null;
-      resolve(ok);
-    };
-    const finishDone = () => finish(true);
-    const beginPlayback = () => {
-      if (playbackStarted || finished) return;
-      playbackStarted = true;
-      if (loadWatchdog !== null) window.clearTimeout(loadWatchdog);
-      void audio.play().then(() => {
-        playWatchdog = window.setTimeout(() => finish(false), 35000);
-      }).catch(() => finish(false));
-    };
-    announcementFinish = finishDone;
-    audio.onloadedmetadata = () => {
-      try {
-        const safeStart = Math.min(start, Math.max(0, audio.duration - 0.25));
-        audio.currentTime = safeStart;
-        if (Math.abs(audio.currentTime - safeStart) < 0.05) beginPlayback();
-        else audio.addEventListener('seeked', beginPlayback, { once: true });
-      } catch {
-        beginPlayback();
-      }
-    };
-    audio.oncanplay = () => {
-      if (audio.readyState >= 2 && !playbackStarted && audio.currentTime >= start - 0.1) beginPlayback();
-    };
-    audio.ontimeupdate = () => {
-      // The dedicated quick/faqih files should play to their real end.
-      // The master track gets a small tail allowance so the last word is never clipped.
-      if (playbackStarted && segment !== 'night_quick' && segment !== 'faqih_awake' && audio.currentTime >= Math.min(end + 1.1, audio.duration - 0.08)) {
-        audio.pause();
-        finish(true);
-      }
-    };
-    audio.onended = () => finish(true);
-    audio.onerror = () => finish(false);
-    loadWatchdog = window.setTimeout(() => finish(false), 9000);
-    audio.load();
-  });
-
-  if (currentRun !== announcementRun) return;
-  if (!played) await speakHauntedAnnouncement(fallbackText);
-  if (currentRun !== announcementRun) return;
+  await speakHauntedAnnouncement(fallbackText);
   if (afterText) await speakHauntedAnnouncement(afterText);
 }
 
 export function preloadHauntedAnnouncements() {
-  void getAnnouncementsUrl();
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try { void chooseNarratorVoice(window.speechSynthesis.getVoices()); } catch { /* best effort */ }
+  }
 }
