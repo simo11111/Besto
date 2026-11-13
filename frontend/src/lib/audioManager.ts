@@ -136,24 +136,42 @@ class AudioManager {
     if (this.muted || !getSoundEnabled() || this.discussionFire) return;
     const ctx = this.getContext();
     if (!ctx) return;
-    const length = Math.max(1, Math.floor(ctx.sampleRate * 2.4));
-    const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+    // One small looping buffer: warm fire noise with sparse crackles for mobile.
+    const sampleRate = ctx.sampleRate;
+    const seconds = 3.6;
+    const length = Math.max(1, Math.floor(sampleRate * seconds));
+    const buffer = ctx.createBuffer(1, length, sampleRate);
     const data = buffer.getChannelData(0);
     let brown = 0;
     for (let i = 0; i < length; i++) {
-      brown = (brown + 0.018 * (Math.random() * 2 - 1)) / 1.018;
-      data[i] = brown * 3.2;
+      brown = (brown + 0.028 * (Math.random() * 2 - 1)) / 1.028;
+      data[i] = brown * 2.1;
+    }
+    for (let pop = 0; pop < 19; pop++) {
+      const first = Math.floor(Math.random() * (length - Math.floor(sampleRate * 0.06)));
+      const duration = Math.floor(sampleRate * (0.012 + Math.random() * 0.045));
+      const strength = 0.12 + Math.random() * 0.24;
+      const decayRate = sampleRate * (0.004 + Math.random() * 0.003);
+      for (let j = 0; j < duration && first + j < length; j++) {
+        data[first + j] += (Math.random() * 2 - 1) * strength * Math.exp(-j / decayRate);
+      }
+    }
+    const fadeFrames = Math.floor(sampleRate * 0.08);
+    for (let i = 0; i < fadeFrames; i++) {
+      const fade = i / fadeFrames;
+      data[i] *= fade;
+      data[length - 1 - i] *= fade;
     }
     const source = ctx.createBufferSource();
     source.buffer = buffer;
     source.loop = true;
     const filter = ctx.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.value = 1450;
-    filter.Q.value = 0.55;
+    filter.frequency.value = 1850;
+    filter.Q.value = 0.48;
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-    gain.gain.setTargetAtTime(0.012, ctx.currentTime, 1.8);
+    gain.gain.setTargetAtTime(0.018, ctx.currentTime, 1.35);
     source.connect(filter);
     filter.connect(gain);
     gain.connect(ctx.destination);
