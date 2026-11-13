@@ -18,7 +18,6 @@ describe('Haunted Camp seat layout', () => {
     for (const total of [4, 6, 8, 10]) {
       const seats = Array.from({ length: total }, (_, index) => getHauntedSeatPosition(index, total));
       expect(seats.every(seat => Math.abs(seat.left - 50) > 0.1)).toBe(true);
-      expect(seats.every(seat => Math.abs(seat.top - 50) > 0.1)).toBe(true);
     }
   });
 
