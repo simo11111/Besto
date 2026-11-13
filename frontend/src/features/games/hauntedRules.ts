@@ -17,3 +17,7 @@ export function getHauntedWinner(haunterId: string, ejectedId: string | null, li
   if (livingVillagers <= 1) return 'haunter' as const;
   return null;
 }
+
+export function canUseHauntedChat(status: string | null | undefined, isAlive: boolean) {
+  return status === 'ended' || (status === 'day' && isAlive);
+}
