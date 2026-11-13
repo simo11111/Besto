@@ -5,10 +5,11 @@ export type HauntedSeatPosition = { left: number; top: number };
  * a seat so nobody sits directly in front of the flame at the top/bottom.
  */
 export function getHauntedSeatPosition(index: number, total: number): HauntedSeatPosition {
-  const count = Math.max(1, Math.floor(total));
+  const count = Number.isFinite(total) ? Math.max(1, Math.floor(total)) : 1;
+  const safeIndex = Number.isFinite(index) ? Math.max(0, Math.floor(index)) : 0;
   const step = (Math.PI * 2) / count;
   const stagger = count % 2 === 0 ? step / 2 : 0;
-  const angle = index * step - Math.PI / 2 + stagger;
+  const angle = safeIndex * step - Math.PI / 2 + stagger;
   const radiusX = count >= 8 ? 40 : count >= 6 ? 38 : 37;
   const radiusY = count >= 8 ? 29 : count >= 6 ? 31 : 30;
   return {
