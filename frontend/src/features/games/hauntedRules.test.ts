@@ -4,9 +4,10 @@ import { canUseHauntedChat, getHauntedWinner, resolveNightOutcome, resolveVoteOu
 describe('haunted camp rules', () => {
   it('locks player chat throughout night and morning, including for living players', () => {
     expect(canUseHauntedChat('night', true)).toBe(false);
-    expect(canUseHauntedChat('morning', true)).toBe(false);
+    expect(canUseHauntedChat('morning', true)).toBe(true);
   });
-  it('allows only living players to chat during day and everyone after the game ends', () => {
+  it('allows living players to chat at dawn and during day, and everyone after the game ends', () => {
+    expect(canUseHauntedChat('morning', true)).toBe(true);
     expect(canUseHauntedChat('day', true)).toBe(true);
     expect(canUseHauntedChat('day', false)).toBe(false);
     expect(canUseHauntedChat('ended', false)).toBe(true);
