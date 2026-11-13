@@ -813,3 +813,72 @@
   background:#a4ffc0!important;color:#073019!important;
   box-shadow:0 0 0 2px rgba(7,20,16,.9),0 0 9px rgba(108,255,159,.6)
 }
+
+
+/* v38 — realistic layered campfire and clear spacing around the fire. */
+.haunted-campfire{
+  width:132px!important;height:142px!important;z-index:2;
+  filter:drop-shadow(0 8px 12px rgba(0,0,0,.55));
+}
+.haunted-campfire:before{
+  inset:24px -48px -18px!important;
+  background:radial-gradient(ellipse at 50% 70%,rgba(255,218,130,.58),rgba(255,113,39,.27) 36%,rgba(166,44,25,.1) 58%,transparent 76%)!important;
+  filter:blur(16px)!important;
+  animation:haunted-firelight 1.15s ease-in-out infinite alternate!important;
+}
+.haunted-campfire i,.haunted-campfire b{
+  bottom:28px!important;width:25px!important;height:88px!important;
+  border-radius:62% 38% 58% 42%!important;
+  background:linear-gradient(180deg,#fffce0 0%,#fff0a0 16%,#ffc04f 43%,#ff742d 72%,rgba(184,48,24,.05) 100%)!important;
+  clip-path:polygon(50% 0,66% 19%,94% 42%,83% 68%,66% 89%,50% 100%,30% 88%,12% 66%,18% 43%,37% 23%)!important;
+  box-shadow:0 0 16px rgba(255,143,54,.9),0 0 34px rgba(255,91,32,.42)!important;
+  transform-origin:50% 100%!important;
+  animation:haunted-real-flame .52s ease-in-out infinite alternate!important;
+}
+.haunted-campfire i{left:38px!important;transform:rotate(-13deg)!important}
+.haunted-campfire b{left:69px!important;bottom:25px!important;height:72px!important;width:21px!important;transform:rotate(15deg)!important;animation-delay:-.27s!important}
+.haunted-campfire i:before,.haunted-campfire b:before{
+  content:"";position:absolute;inset:9% 25% 12%;border-radius:60% 40% 55% 45%;
+  background:linear-gradient(180deg,#fff 0%,#fff7c9 28%,#ffd36d 62%,rgba(255,130,40,.08));
+  filter:blur(1px);opacity:.9;
+}
+.haunted-campfire i:after,.haunted-campfire b:after{
+  content:"";position:absolute;left:40%;top:8%;width:22%;height:46%;
+  border-radius:50%;background:rgba(255,255,229,.8);filter:blur(3px);
+}
+.haunted-campfire span{
+  bottom:15px!important;width:92px!important;height:15px!important;
+  border-radius:10px!important;
+  background:linear-gradient(180deg,#9b6541 0%,#5a3828 38%,#2a1b19 100%)!important;
+  box-shadow:0 5px 0 #211817,0 8px 12px rgba(0,0,0,.48)!important;
+  transform:rotate(-8deg)!important;
+}
+.haunted-campfire span:before,.haunted-campfire span:after{
+  content:"";position:absolute;width:76px;height:13px;left:8px;top:0;
+  border-radius:10px;background:linear-gradient(180deg,#b47a4b,#70442d 45%,#35221d);
+  box-shadow:inset 0 2px 2px rgba(255,205,139,.24),0 3px 5px rgba(0,0,0,.35);
+}
+.haunted-campfire span:before{transform:rotate(20deg)}
+.haunted-campfire span:after{transform:rotate(-19deg);background:linear-gradient(180deg,#865333,#4c2c21 55%,#241916)}
+@keyframes haunted-real-flame{
+  0%{transform:scaleX(.82) scaleY(.91) rotate(-7deg);filter:brightness(.94)}
+  45%{transform:scaleX(1.08) scaleY(1.04) rotate(4deg);filter:brightness(1.12)}
+  100%{transform:scaleX(.9) scaleY(1.12) rotate(-3deg);filter:brightness(1.2)}
+}
+@keyframes haunted-firelight{from{opacity:.68;transform:scale(.91)}to{opacity:1;transform:scale(1.12)}}
+.haunted-camp-ring.is-six-or-fewer .haunted-camp-seat{z-index:5}
+.haunted-camp-ring.is-six-or-fewer .haunted-camp-seat>span:has(.haunted-anime-art){
+  filter:drop-shadow(0 4px 5px rgba(0,0,0,.62));
+}
+.haunted-phase-banner strong{display:flex;align-items:center;gap:5px}
+@media(max-width:520px){
+ .haunted-campfire{width:112px!important;height:124px!important}
+ .haunted-campfire i{left:31px!important;height:76px!important;bottom:25px!important}
+ .haunted-campfire b{left:59px!important;height:63px!important;bottom:23px!important}
+ .haunted-campfire span{width:80px!important}
+ .haunted-campfire span:before,.haunted-campfire span:after{width:66px}
+ .haunted-phase-banner strong{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .haunted-campfire:before,.haunted-campfire i,.haunted-campfire b{animation:none!important}
+}
