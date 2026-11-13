@@ -1247,3 +1247,198 @@
   border-radius:11px;background:rgba(144,60,48,.13);color:#f0b4a3;
   font-size:11px;font-weight:750;line-height:1.7
 }
+
+/* v41 — cinematic camp scene: layered fire, smoke, sparks, tent fabric and warm character lighting. */
+.haunted-shell .haunted-camp-scene{
+  isolation:isolate;overflow:hidden;
+  background:
+    radial-gradient(ellipse at 50% 68%,rgba(255,133,48,.18),transparent 31%),
+    radial-gradient(ellipse at 50% 100%,rgba(111,71,54,.34),transparent 58%),
+    linear-gradient(180deg,#0b1222 0%,#111a2b 52%,#171b27 100%)!important;
+}
+.haunted-shell .haunted-scene-stars{
+  position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.8
+}
+.haunted-shell .haunted-scene-stars i{
+  position:absolute;width:2px;height:2px;border-radius:50%;background:#fff0ce;
+  box-shadow:0 0 7px rgba(255,232,190,.7);animation:camp-star-twinkle 3.2s ease-in-out infinite alternate
+}
+.haunted-shell .haunted-scene-stars i:nth-child(1){left:12%;top:18%}
+.haunted-shell .haunted-scene-stars i:nth-child(2){left:28%;top:10%;animation-delay:-1.1s}
+.haunted-shell .haunted-scene-stars i:nth-child(3){left:72%;top:13%;animation-delay:-2s}
+.haunted-shell .haunted-scene-stars i:nth-child(4){left:88%;top:26%;animation-delay:-.6s}
+.haunted-shell .haunted-scene-stars i:nth-child(5){left:19%;top:55%;animation-delay:-1.7s}
+.haunted-shell .haunted-scene-stars i:nth-child(6){left:81%;top:57%;animation-delay:-2.4s}
+.haunted-shell .haunted-scene-stars i:nth-child(7){left:43%;top:17%;animation-delay:-.3s}
+.haunted-shell .haunted-scene-stars i:nth-child(8){left:62%;top:7%;animation-delay:-1.4s}
+@keyframes camp-star-twinkle{from{opacity:.25;transform:scale(.7)}to{opacity:1;transform:scale(1.45)}}
+.haunted-shell .haunted-scene-ground{
+  position:absolute;z-index:0;left:-8%;right:-8%;bottom:-12%;height:42%;
+  border-radius:50% 50% 0 0/22% 22% 0 0;
+  background:
+    radial-gradient(ellipse at 50% 8%,rgba(255,150,67,.2),transparent 30%),
+    repeating-linear-gradient(164deg,transparent 0 19px,rgba(203,173,131,.035) 20px 21px,transparent 22px 36px),
+    linear-gradient(180deg,rgba(93,76,68,.72),#28232b 62%,#151923);
+  box-shadow:inset 0 10px 25px rgba(255,190,112,.08),0 -8px 32px rgba(0,0,0,.18)
+}
+.haunted-shell .haunted-scene-ground i,.haunted-shell .haunted-scene-ground b{
+  position:absolute;bottom:35%;width:28px;height:5px;border-radius:99px;
+  background:linear-gradient(90deg,#393039,#a17a55,#49352f);opacity:.65;transform:rotate(-17deg)
+}
+.haunted-shell .haunted-scene-ground i{left:13%}
+.haunted-shell .haunted-scene-ground b{right:13%;transform:rotate(13deg);width:19px}
+.haunted-shell .haunted-scene-tent{
+  z-index:1!important;left:auto!important;right:5%!important;bottom:7%!important;top:auto!important;
+  width:118px!important;height:94px!important;opacity:.94;
+  clip-path:polygon(50% 0,100% 100%,0 100%);
+  border:0!important;border-radius:0!important;filter:drop-shadow(0 10px 12px rgba(0,0,0,.55));
+  background:linear-gradient(112deg,#594263 0%,#9a6a8f 43%,#49344f 70%,#201d31 100%)!important
+}
+.haunted-shell .haunted-scene-tent:before{
+  content:"";position:absolute;inset:0;clip-path:polygon(50% 0,52% 100%,0 100%);
+  background:linear-gradient(100deg,rgba(255,215,177,.3),rgba(255,255,255,.03) 65%,transparent)
+}
+.haunted-shell .haunted-scene-tent:after{
+  content:"";position:absolute;left:43%;bottom:0;width:23%;height:47%;
+  clip-path:polygon(50% 0,100% 100%,0 100%);
+  background:linear-gradient(180deg,#171626,#080e1b);opacity:.88
+}
+.haunted-shell .haunted-scene-tent span{
+  position:absolute;left:49%;bottom:0;width:3px;height:90%;
+  background:rgba(255,225,192,.2);transform:rotate(1deg)
+}
+.haunted-shell .haunted-scene-tent b,.haunted-shell .haunted-scene-tent i{display:none}
+.haunted-shell .haunted-scene-firelight{
+  position:absolute;z-index:1;left:50%;top:59%;width:210px;height:170px;
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+  background:radial-gradient(ellipse,rgba(255,157,71,.2),rgba(255,103,38,.075) 42%,transparent 72%);
+  filter:blur(12px);animation:camp-firelight 1.25s ease-in-out infinite alternate
+}
+@keyframes camp-firelight{0%{opacity:.55;transform:translate(-50%,-50%) scale(.92)}100%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}}
+.haunted-shell .haunted-scene-smoke{
+  position:absolute;z-index:3;left:50%;top:47%;width:90px;height:90px;
+  transform:translateX(-50%);pointer-events:none
+}
+.haunted-shell .haunted-scene-smoke i{
+  position:absolute;bottom:0;left:50%;width:22px;height:30px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(202,202,214,.22),rgba(161,164,183,.08) 55%,transparent 74%);
+  filter:blur(6px);animation:camp-smoke-drift 4.2s ease-out infinite
+}
+.haunted-shell .haunted-scene-smoke i:nth-child(2){animation-delay:-1.1s;left:39%;scale:.8}
+.haunted-shell .haunted-scene-smoke i:nth-child(3){animation-delay:-2.2s;left:58%;scale:1.15}
+.haunted-shell .haunted-scene-smoke i:nth-child(4){animation-delay:-3.1s;left:44%;scale:.7}
+@keyframes camp-smoke-drift{
+  0%{opacity:0;transform:translate(0,0) scale(.55)}
+  18%{opacity:.65}
+  100%{opacity:0;transform:translate(var(--smoke-drift,14px),-88px) scale(2.15)}
+}
+.haunted-shell .haunted-campfire{
+  z-index:4!important;left:50%!important;top:65%!important;
+  width:94px!important;height:105px!important;transform:translate(-50%,-50%)!important;
+  filter:drop-shadow(0 8px 9px rgba(0,0,0,.5))!important
+}
+.haunted-shell .haunted-campfire:before{
+  inset:12px -45px -18px!important;
+  background:radial-gradient(ellipse,rgba(255,171,77,.54),rgba(247,92,35,.2) 42%,transparent 74%)!important;
+  filter:blur(22px)!important;animation:camp-fire-glow .72s ease-in-out infinite alternate!important
+}
+@keyframes camp-fire-glow{0%{opacity:.55;transform:scale(.9)}100%{opacity:1;transform:scale(1.13)}}
+.haunted-shell .haunted-campfire i,.haunted-shell .haunted-campfire b,
+.haunted-shell .haunted-campfire em{
+  position:absolute!important;bottom:13px!important;left:50%!important;
+  width:19px!important;height:63px!important;display:block!important;
+  border-radius:78% 18% 68% 32%!important;transform-origin:50% 95%!important;
+  background:linear-gradient(180deg,#fff9d7 0%,#ffe28a 18%,#ffb13f 48%,#f45d27 78%,rgba(174,42,27,.04) 100%)!important;
+  box-shadow:0 0 10px rgba(255,221,131,.95),0 0 26px rgba(255,120,37,.85),0 0 45px rgba(255,81,30,.28)!important;
+  filter:blur(.2px)!important;animation:camp-flame-dance .42s ease-in-out infinite alternate!important
+}
+.haunted-shell .haunted-campfire i{margin-left:-23px!important;height:61px!important;transform:rotate(-18deg) scaleX(.84)!important}
+.haunted-shell .haunted-campfire b{margin-left:4px!important;height:74px!important;width:17px!important;transform:rotate(17deg) scaleX(.9)!important;animation-delay:-.21s!important}
+.haunted-shell .haunted-campfire em{
+  margin-left:-8px!important;bottom:12px!important;width:15px!important;height:48px!important;
+  transform:rotate(2deg) scaleX(.82)!important;animation-delay:-.12s!important;animation-duration:.34s!important;
+  background:linear-gradient(180deg,#fffde7 0%,#fff0a5 23%,#ff9c38 60%,#e94a28 100%)!important
+}
+@keyframes camp-flame-dance{
+  0%{border-radius:78% 18% 68% 32%;filter:brightness(.94) blur(.25px);scale:.94 1}
+  35%{border-radius:66% 34% 73% 27%;scale:1.04 .94}
+  70%{border-radius:88% 12% 58% 42%;scale:.96 1.06}
+  100%{border-radius:72% 28% 76% 24%;filter:brightness(1.16) blur(.1px);scale:1.03 .98}
+}
+.haunted-shell .haunted-campfire span{
+  position:absolute!important;z-index:2;left:50%!important;bottom:1px!important;
+  width:79px!important;height:13px!important;transform:translateX(-50%) rotate(-4deg)!important;
+  border-radius:99px!important;background:linear-gradient(180deg,#9b6848,#54372e 55%,#241b21)!important;
+  box-shadow:0 5px 0 #17151d,0 9px 15px rgba(0,0,0,.62),inset 0 2px 4px rgba(255,214,159,.28)!important
+}
+.haunted-shell .haunted-campfire span:before,.haunted-shell .haunted-campfire span:after{
+  content:"";position:absolute;top:-5px;width:9px;height:8px;border-radius:50%;
+  background:#f5a04d;box-shadow:0 0 9px #ff8c3b
+}
+.haunted-shell .haunted-campfire span:before{left:16px}
+.haunted-shell .haunted-campfire span:after{right:18px}
+.haunted-shell .haunted-campfire strong{display:block;position:absolute;z-index:5;left:50%;bottom:8px;width:68px;height:5px;transform:translateX(-50%) rotate(5deg);border-radius:99px;background:linear-gradient(90deg,#30232a,#9b6040,#34242a);box-shadow:0 2px 0 rgba(0,0,0,.6)}
+.haunted-shell .haunted-campfire:after{
+  z-index:6!important;bottom:31px!important;width:72px!important;height:86px!important;
+  background:
+    radial-gradient(2px 2px at 18% 78%,#ffe6a1 98%,transparent),
+    radial-gradient(2px 2px at 74% 54%,#ffad53 98%,transparent),
+    radial-gradient(1.5px 1.5px at 50% 24%,#fff0bd 98%,transparent),
+    radial-gradient(1px 1px at 34% 42%,#ff8a35 98%,transparent)!important;
+  animation:camp-spark-drift 1.3s ease-in-out infinite alternate!important
+}
+@keyframes camp-spark-drift{from{opacity:.35;transform:translate(-50%,5px)}to{opacity:1;transform:translate(-50%,-12px)}}
+.haunted-shell .haunted-scene-embers{
+  position:absolute;z-index:5;left:50%;top:57%;width:160px;height:105px;
+  transform:translate(-50%,-50%);pointer-events:none
+}
+.haunted-shell .haunted-scene-embers i{
+  position:absolute;bottom:5px;left:50%;width:3px;height:3px;border-radius:50%;
+  background:#ffd88b;box-shadow:0 0 8px 2px rgba(255,151,60,.8);
+  animation:camp-ember-rise 2.1s ease-out infinite
+}
+.haunted-shell .haunted-scene-embers i:nth-child(1){margin-left:-34px;animation-delay:-.2s}
+.haunted-shell .haunted-scene-embers i:nth-child(2){margin-left:21px;animation-delay:-1.4s}
+.haunted-shell .haunted-scene-embers i:nth-child(3){margin-left:4px;animation-delay:-.8s}
+.haunted-shell .haunted-scene-embers i:nth-child(4){margin-left:-14px;animation-delay:-1.8s}
+.haunted-shell .haunted-scene-embers i:nth-child(5){margin-left:42px;animation-delay:-.5s}
+.haunted-shell .haunted-scene-embers i:nth-child(6){margin-left:-47px;animation-delay:-1.1s}
+.haunted-shell .haunted-scene-embers i:nth-child(7){margin-left:12px;animation-delay:-.1s}
+.haunted-shell .haunted-scene-embers i:nth-child(8){margin-left:-4px;animation-delay:-1.6s}
+.haunted-shell .haunted-scene-embers i:nth-child(9){margin-left:31px;animation-delay:-.9s}
+.haunted-shell .haunted-scene-embers i:nth-child(10){margin-left:-25px;animation-delay:-1.3s}
+@keyframes camp-ember-rise{
+  0%{opacity:0;transform:translate(0,0) scale(.5)}
+  18%{opacity:1}
+  100%{opacity:0;transform:translate(var(--ember-drift,12px),-82px) scale(.1)}
+}
+.haunted-shell .haunted-camp-ring{z-index:8!important}
+.haunted-shell .haunted-camp-seat{
+  filter:drop-shadow(0 7px 7px rgba(0,0,0,.48));
+  transition:filter .2s ease,transform .2s ease
+}
+.haunted-shell .haunted-camp-seat:after{
+  content:"";position:absolute;z-index:-1;left:50%;top:36%;width:66px;height:56px;
+  transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(ellipse,rgba(255,166,87,.2),transparent 70%);
+  opacity:.7;pointer-events:none
+}
+.haunted-shell .haunted-camp-seat.is-speaking:after{
+  background:radial-gradient(ellipse,rgba(109,239,170,.24),transparent 72%);
+  opacity:1;animation:camp-speaker-pulse .8s ease-in-out infinite alternate
+}
+@keyframes camp-speaker-pulse{from{transform:translate(-50%,-50%) scale(.85)}to{transform:translate(-50%,-50%) scale(1.2)}}
+.haunted-shell .haunted-camp-seat.is-selectable:active{filter:brightness(1.22) drop-shadow(0 0 12px rgba(255,190,105,.5))}
+@media(max-width:520px){
+  .haunted-shell .haunted-camp-scene{height:280px!important}
+  .haunted-shell .haunted-scene-tent{width:94px!important;height:76px!important;right:2%!important}
+  .haunted-shell .haunted-campfire{top:65%!important;scale:.88}
+  .haunted-shell .haunted-scene-smoke{top:48%}
+  .haunted-shell .haunted-scene-embers{top:57%;scale:.86}
+}
+@media(prefers-reduced-motion:reduce){
+  .haunted-shell .haunted-scene-stars i,.haunted-shell .haunted-scene-firelight,
+  .haunted-shell .haunted-scene-smoke i,.haunted-shell .haunted-campfire i,
+  .haunted-shell .haunted-campfire b,.haunted-shell .haunted-campfire em,
+  .haunted-shell .haunted-scene-embers i,.haunted-shell .haunted-camp-seat.is-speaking:after{animation:none!important}
+}
