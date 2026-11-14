@@ -33,10 +33,12 @@ function RoleMark({ role, size = 22 }: { role: HauntedRole; size?: number }) {
 }
 
 function AnimeCampCharacter({ gender, seed }: { gender: 'male' | 'female'; seed: string }) {
-  const palette = gender === 'female' ? 'female' : 'male';
-  const safeSeed = encodeURIComponent(seed || 'camp');
-  return <div className={'haunted-anime-art is-'+palette} role="img" aria-label={gender==='female'?'شخصية أنمي':'شخصية أنمي'}>
-    <img loading="lazy" decoding="async" src={'https://api.dicebear.com/9.x/adventurer/png?seed='+safeSeed+'&size=192&backgroundColor=transparent'} alt="" />
+  const female = gender === 'female';
+  const variant = Math.abs(Array.from(seed || 'camp').reduce((sum, char) => sum + char.charCodeAt(0), 0)) % 2;
+  const left = female ? (variant ? '-100%' : '0%') : (variant ? '-100%' : '0%');
+  const top = female ? (variant ? '-100%' : '0%') : (variant ? '0%' : '-100%');
+  return <div className={'haunted-anime-art is-'+(female?'female':'male')} role="img" aria-label={female?'شخصية أنمي':'شخصية أنمي'}>
+    <img loading="lazy" decoding="async" src="https://gtsdrmfvtialuxhfxtvz.supabase.co/storage/v1/object/public/avatars/game-assets/haunted-anime-sprites-v1.png" alt="" style={{position:'absolute',width:'200%',height:'200%',maxWidth:'none',left,top,objectFit:'fill'}} />
   </div>;
 }
 
