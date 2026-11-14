@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Shield, Skull, Moon, Sun, Volume2, VolumeX, Clock3, Users, MessageCircle, Mic, MicOff, Trophy, Sparkles, RefreshCw, Flame, CheckCircle2, Check, X, LogOut, Plus } from 'lucide-react';
+import { Shield, Skull, Moon, Sun, Volume2, VolumeX, Clock3, Users, MessageCircle, Mic, MicOff, Trophy, Sparkles, RefreshCw, Flame, CheckCircle2, Check, X, LogOut, Plus, Settings } from 'lucide-react';
 import { useHauntedGame } from '../../hooks/useHauntedGame';
 import { playHauntedSound, startNightAmbience, stopNightAmbience, startMorningAmbience, stopMorningAmbience, preloadHauntedSounds, setHauntedAudioMuted, speakHauntedAnnouncement, playHauntedAnnouncementSegment, preloadHauntedAnnouncements, stopHauntedNarrator, startCampMusic, stopCampMusic, startDiscussionAmbience, stopDiscussionAmbience, unlockHauntedNarrator } from '../../lib/hauntedAudio';
 import { getSoundEnabled, setSoundEnabled as persistSoundEnabled } from '../../lib/audio';
@@ -52,6 +52,8 @@ export default function HauntedCampGame(props: Props) {
   const [chatText, setChatText] = useState('');
   const [now, setNow] = useState(Date.now());
   const [soundOn, setSoundOn] = useState(() => getSoundEnabled());
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [motionOn, setMotionOn] = useState(true);
   const [voicePreviewing, setVoicePreviewing] = useState(false);
   const [previousPhase, setPreviousPhase] = useState<string | null>(null);
   const [narratorVisible, setNarratorVisible] = useState(false);
@@ -214,9 +216,17 @@ export default function HauntedCampGame(props: Props) {
     </section>;
   }
 
-  return <section className={'haunted-shell haunted-phase-' + state.status} aria-label="ليلة فالخيمة">
+  return <section className={'haunted-shell haunted-phase-' + state.status + (motionOn ? '' : ' motion-off')} aria-label="ليلة فالخيمة">
     <div className="haunted-stars" aria-hidden="true"/><div className="haunted-mist" aria-hidden="true"/>
-    <header className="haunted-topbar"><div><span className="haunted-kicker">ليلة فالخيمة · الجولة {state.round}</span><h1>ليلة فالخيمة</h1></div><div className="haunted-top-actions"><span className="haunted-round-pill">الجولة {state.round}</span>{role&&myRole&&<span className="haunted-round-pill"><RoleMark role={myRole} size={14}/> دورك: {role.name}</span>}<button className="haunted-icon-button" onClick={()=>{unlockHauntedNarrator();const next=!soundOn;setSoundOn(next);persistSoundEnabled(next);if(!next){stopNightAmbience();stopMorningAmbience();stopDiscussionAmbience();stopCampMusic();}else{startCampMusic();if(state.status==='night')startNightAmbience();else if(state.status==='morning')startMorningAmbience();else if(state.status==='day')startDiscussionAmbience();}setHauntedAudioMuted(!next);}} aria-label={soundOn?'كتم المؤثرات':'تشغيل المؤثرات'}>{soundOn?<Volume2/>:<VolumeX/>}</button><button className="haunted-ghost-button" onClick={onBack}>اللوبي</button><button className="haunted-exit-top" onClick={onExit}><LogOut size={15}/> خروج</button></div></header>
+    <header className="haunted-topbar"><div><span className="haunted-kicker">ليلة فالخيمة · الجولة {state.round}</span><h1>ليلة فالخيمة</h1></div><div className="haunted-top-actions"><span className="haunted-round-pill">الجولة {state.round}</span>{role&&myRole&&<span className="haunted-round-pill"><RoleMark role={myRole} size={14}/> دورك: {role.name}</span>}<button className="haunted-icon-button" onClick={()=>{unlockHauntedNarrator();const next=!soundOn;setSoundOn(next);persistSoundEnabled(next);if(!next){stopNightAmbience();stopMorningAmbience();stopDiscussionAmbience();stopCampMusic();}else{startCampMusic();if(state.status==='night')startNightAmbience();else if(state.status==='morning')startMorningAmbience();else if(state.status==='day')startDiscussionAmbience();}setHauntedAudioMuted(!next);}} aria-label={soundOn?'كتم المؤثرات':'تشغيل المؤثرات'}>{soundOn?<Volume2/>:<VolumeX/>}</button><button className="haunted-icon-button" onClick={()=>setSettingsOpen(true)} aria-label="الإعدادات"><Settings size={18}/></button><button className="haunted-ghost-button" onClick={onBack}>اللوبي</button><button className="haunted-exit-top" onClick={onExit}><LogOut size={15}/> خروج</button></div></header>
+    {settingsOpen&&<div className="haunted-settings-backdrop" role="presentation" onClick={()=>setSettingsOpen(false)}>
+      <section className="haunted-settings-panel" role="dialog" aria-modal="true" aria-labelledby="haunted-settings-title" onClick={event=>event.stopPropagation()}>
+        <div className="haunted-settings-heading"><h2 id="haunted-settings-title">إعدادات المخيم</h2><button type="button" className="haunted-icon-button" onClick={()=>setSettingsOpen(false)} aria-label="إغلاق"><X size={17}/></button></div>
+        <label className="haunted-setting-row"><span><Volume2 size={17}/> الأصوات والمؤثرات</span><input type="checkbox" checked={soundOn} onChange={event=>{const next=event.target.checked;setSoundOn(next);persistSoundEnabled(next);setHauntedAudioMuted(!next);if(next){unlockHauntedNarrator();startCampMusic();}else{stopHauntedNarrator();stopCampMusic();stopNightAmbience();stopMorningAmbience();stopDiscussionAmbience();}}}/></label>
+        <label className="haunted-setting-row"><span><Sparkles size={17}/> الحركات السينمائية</span><input type="checkbox" checked={motionOn} onChange={event=>setMotionOn(event.target.checked)}/></label>
+        <p>الإعدادات كتطبق مباشرة على هاد الجهاز. اختيار الدور والتصويت كيبقاو سريين.</p>
+      </section>
+    </div>}
     {narratorVisible&&<motion.aside className="haunted-narrator-toast" role="status" aria-live="assertive" initial={reduceMotion?false:{opacity:0,y:-8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-5}} transition={{duration:.18}}>
       <span className="haunted-narrator-toast-icon"><Volume2 size={17}/></span><div><b>الراوي</b><p>{narratorText}</p></div><span className="haunted-narrator-toast-wave" aria-hidden="true"><i/><i/><i/><i/><i/></span>
     </motion.aside>}

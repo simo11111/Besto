@@ -1495,3 +1495,15 @@
 @media(max-width:520px){.haunted-shell .haunted-camp-scene{height:clamp(245px,70vw,330px)!important;background-position:center 58%;}.haunted-shell .haunted-camp-seat .haunted-anime-art{max-width:76px;max-height:92px;}.haunted-shell .haunted-chat-messages{max-height:28dvh;}.haunted-shell .haunted-narrator-toast{grid-template-columns:auto minmax(0,1fr);}}
 @media(min-width:900px){.haunted-shell .haunted-camp-scene{height:min(48vw,520px);}.haunted-shell .haunted-chat-messages{max-height:38dvh;}}
 @media(prefers-reduced-motion:reduce){.haunted-shell .haunted-camp-seat .haunted-anime-art{animation:none!important;}}
+
+/* In-game settings and user-controlled motion. */
+.haunted-settings-backdrop{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:16px;background:rgba(2,4,12,.78);backdrop-filter:blur(12px);}
+.haunted-settings-panel{width:min(100%,440px);padding:20px;border:1px solid rgba(206,160,255,.32);border-radius:22px;background:linear-gradient(145deg,#1b1b31,#0b1020);box-shadow:0 24px 90px rgba(0,0,0,.55);color:#f6f0ff;}
+.haunted-settings-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;}
+.haunted-settings-heading h2{margin:0;font-size:19px;}
+.haunted-setting-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-top:1px solid rgba(255,255,255,.08);font-size:14px;font-weight:750;}
+.haunted-setting-row span{display:flex;align-items:center;gap:10px;}
+.haunted-setting-row input{width:22px;height:22px;accent-color:#b65cff;flex:none;}
+.haunted-settings-panel p{margin:14px 0 0;color:#b8aecb;font-size:12px;line-height:1.7;}
+.haunted-shell.motion-off *, .haunted-shell.motion-off *:before, .haunted-shell.motion-off *:after{animation:none!important;transition:none!important;}
+@media(max-width:520px){.haunted-settings-panel{padding:16px;border-radius:18px;}}
