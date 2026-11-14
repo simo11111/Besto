@@ -158,12 +158,12 @@ export default function HauntedCampGame(props: Props) {
     setPreviousPhase(phase);
   }, [state?.status, state?.winner, previousPhase, onNightMute, soundOn]);
   useEffect(() => {
-    if (!state || state.status !== 'night' || myRole !== 'faqih' || !haunterChosen || !nightIntroReady || state.my_night_target) return;
+    if (!state || state.status !== 'night' || !haunterChosen || !nightIntroReady || state.my_night_target) return;
     const key = state.id + ':' + state.round;
     if (previousHaunterChoiceRef.current === key) return;
     previousHaunterChoiceRef.current = key;
-    void presentNarration(key+':faqih', 'آ الفقيه، دابا جا دورك! المسكون اختار الضحية، وعندك 20 ثانية باش تختار لاعب حي تحميه. ضغط على الشخصية ديالو، والاختيار ديالك سري.');
-  }, [state?.id, state?.round, state?.status, myRole, haunterChosen, nightIntroReady, soundOn]);
+    void presentNarration(key+(myRole==='faqih'?':faqih':':faqih-public'), myRole==='faqih'?'آ الفقيه، دابا جا دورك! المسكون اختار الضحية، وعندك 20 ثانية باش تختار لاعب حي تحميه. ضغط على الشخصية ديالو، والاختيار ديالك سري.':'المسكون اختار الضحية ديالو. دابا جا دور الفقيه، عندو 20 ثانية باش يحمي واحد من سكان المخيم.');
+  }, [state?.id, state?.round, state?.status, myRole, haunterChosen, nightIntroReady, soundOn, state?.my_night_target]);
   useEffect(() => {
     if (!state || state.status !== 'day') return;
     const previous = previousVotingRef.current; previousVotingRef.current = state.voting_open;
@@ -230,7 +230,7 @@ export default function HauntedCampGame(props: Props) {
     {narratorVisible&&<motion.aside className="haunted-narrator-toast" role="status" aria-live="assertive" initial={reduceMotion?false:{opacity:0,y:-8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-5}} transition={{duration:.18}}>
       <span className="haunted-narrator-toast-icon"><Volume2 size={17}/></span><div><b>الراوي</b><p>{narratorText}</p></div><span className="haunted-narrator-toast-wave" aria-hidden="true"><i/><i/><i/><i/><i/></span>
     </motion.aside>}
-    <div className="haunted-camp-scene" aria-label="مخيم اللاعبين حول النار">
+    <div className="haunted-camp-scene" aria-label="مخيم اللاعبين حول النار"><img className="haunted-scene-backdrop" src="/images/camp-scene.webp" alt="" fetchPriority="high" decoding="async"/>
       <div className="haunted-scene-sun" aria-hidden="true"/><div className="haunted-scene-moon" aria-hidden="true"/>
       <div className="haunted-scene-stars" aria-hidden="true"><i/><i/><i/><i/><i/><i/><i/><i/></div>
       <div className="haunted-scene-tent" aria-hidden="true"><span/><b/><i/></div>
