@@ -1521,3 +1521,97 @@
 @media(max-width:390px){.haunted-shell[class*="haunted-phase-"]{padding-inline:8px!important;gap:6px}.haunted-shell .haunted-camp-scene{flex-basis:clamp(190px,29dvh,240px);height:clamp(190px,29dvh,240px)}.haunted-shell .haunted-camp-seat{width:clamp(54px,16vw,64px)}.haunted-shell .haunted-camp-seat>span{width:clamp(34px,10vw,42px);height:clamp(34px,10vw,42px)}.haunted-shell .haunted-camp-chat{padding:9px}.haunted-shell .haunted-chat-line{font-size:12px;line-height:1.55}}
 @media(min-width:700px){.haunted-shell .haunted-camp-scene{flex-basis:min(42dvh,430px);height:min(42dvh,430px);max-width:900px;margin-inline:auto}.haunted-shell .haunted-night-panel,.haunted-shell .haunted-morning-panel,.haunted-shell .haunted-day-grid,.haunted-shell .haunted-end-panel{max-width:900px;width:100%;margin-inline:auto}}
 @supports not (height:100dvh){.haunted-shell[class*="haunted-phase-"]{height:100vh;max-height:100vh}.haunted-shell .haunted-camp-scene{flex-basis:30vh;height:30vh}}
+
+
+/* v47 — natural page flow, compact mobile chat, restored firelight and active turn prompt. */
+.haunted-shell[class*="haunted-phase-"]{
+  position:relative!important;inset:auto!important;left:auto!important;top:auto!important;
+  width:100%!important;height:auto!important;min-height:100dvh!important;max-height:none!important;
+  overflow:visible!important;display:flex!important;flex-direction:column!important;
+  padding:calc(10px + env(safe-area-inset-top,0px)) clamp(9px,2.5vw,22px) calc(18px + env(safe-area-inset-bottom,0px))!important;
+  gap:10px!important;overscroll-behavior:auto!important;
+}
+.haunted-shell[class*="haunted-phase-"]>.haunted-stars,
+.haunted-shell[class*="haunted-phase-"]>.haunted-mist{position:absolute;inset:0;pointer-events:none}
+.haunted-shell .haunted-camp-scene{flex:0 0 auto!important;width:100%;height:clamp(250px,54vw,390px)!important;min-height:250px;max-height:none!important;margin:0 auto!important}
+.haunted-shell .haunted-phase-banner{flex:0 0 auto!important;margin:0!important}
+.haunted-shell .haunted-night-panel,
+.haunted-shell .haunted-morning-panel,
+.haunted-shell .haunted-day-grid,
+.haunted-shell .haunted-end-panel{flex:0 0 auto!important;max-height:none!important;min-height:0!important;overflow:visible!important;width:100%;margin:0 auto!important}
+.haunted-shell .haunted-day-grid{display:block!important;padding:0!important}
+.haunted-shell .haunted-vote-panel{max-width:760px;margin:0 auto!important;padding:clamp(12px,2.6vw,20px)!important}
+.haunted-shell .haunted-vote-panel h2{font-size:clamp(16px,3.5vw,21px)!important}
+.haunted-shell .haunted-vote-panel>p{font-size:clamp(12px,2.7vw,14px)!important;line-height:1.65!important;margin:6px 0!important}
+.haunted-shell .haunted-camp-chat{
+  position:relative!important;inset:auto!important;bottom:auto!important;z-index:5!important;
+  flex:0 0 auto!important;width:100%!important;max-height:none!important;min-height:0!important;
+  overflow:visible!important;margin:2px 0 0!important;padding:10px!important;
+  border:1px solid rgba(194,151,255,.18)!important;border-radius:16px!important;
+  background:linear-gradient(155deg,rgba(13,17,31,.96),rgba(8,10,19,.98))!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.2)!important;backdrop-filter:none!important;
+}
+.haunted-shell .haunted-camp-chat h3{margin:0 0 6px!important;font-size:12px!important}
+.haunted-shell .haunted-camp-chat .haunted-chat-messages{
+  flex:0 0 auto!important;width:100%!important;min-height:0!important;
+  max-height:160px!important;overflow-y:auto!important;overflow-x:hidden!important;
+  padding:5px!important;gap:5px!important;
+}
+.haunted-shell .haunted-camp-chat .haunted-chat-line{font-size:11px!important;line-height:1.5!important;padding:7px 9px!important;margin:0!important}
+.haunted-shell .haunted-chat-compose{margin-top:7px!important;gap:6px!important}
+.haunted-shell .haunted-chat-compose input{min-height:40px!important;height:40px!important;font-size:13px!important}
+.haunted-shell .haunted-chat-compose button{min-height:40px!important}
+.haunted-shell .haunted-scene-firelight,
+.haunted-shell .haunted-scene-smoke,
+.haunted-shell .haunted-campfire,
+.haunted-shell .haunted-scene-embers{display:block!important}
+.haunted-shell .haunted-scene-firelight{opacity:.9!important;filter:none!important}
+.haunted-shell .haunted-campfire{opacity:1!important;visibility:visible!important}
+.haunted-shell .haunted-campfire:before{opacity:.9!important}
+.haunted-shell .haunted-anime-art{overflow:hidden!important;isolation:isolate}
+.haunted-shell .haunted-anime-art img{max-width:none!important;object-fit:fill!important}
+.haunted-shell .haunted-anime-art.is-female{animation:haunted-female-idle 4.1s ease-in-out infinite!important;filter:drop-shadow(0 5px 8px rgba(255,133,190,.24))}
+.haunted-shell .haunted-anime-art.is-male{animation:haunted-male-idle 3.6s ease-in-out infinite!important;filter:drop-shadow(0 5px 8px rgba(115,181,255,.22))}
+.haunted-shell .haunted-camp-seat:nth-child(3n) .haunted-anime-art{animation-delay:-1.7s!important}
+.haunted-turn-center{
+  position:absolute!important;z-index:30!important;left:50%!important;top:50%!important;
+  width:min(84%,340px)!important;transform:translate(-50%,-50%)!important;
+  display:grid!important;justify-items:center!important;gap:6px!important;
+  padding:13px 16px!important;border:1px solid rgba(255,202,128,.55)!important;border-radius:18px!important;
+  background:linear-gradient(145deg,rgba(20,17,31,.96),rgba(8,12,23,.95))!important;
+  box-shadow:0 12px 38px rgba(0,0,0,.55),0 0 28px rgba(255,145,70,.2)!important;
+  text-align:center!important;pointer-events:none!important;backdrop-filter:blur(8px);
+}
+.haunted-turn-center>span{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;color:#ffd49a;background:rgba(255,151,76,.14)}
+.haunted-turn-center>b{font-size:16px;color:#fff1dc}
+.haunted-turn-center>small{font-size:11px;line-height:1.6;color:#d8c8b8}
+.haunted-turn-center>em{font-size:10px;font-style:normal;color:#ffd28d}
+.haunted-phase-night .haunted-camp-scene{background-color:#090d1b}
+.haunted-phase-morning .haunted-camp-scene,
+.haunted-phase-day .haunted-camp-scene{filter:brightness(1.12) saturate(1.08)}
+.haunted-phase-night .haunted-scene-sun{opacity:0!important}
+.haunted-phase-night .haunted-scene-moon{opacity:1!important}
+.haunted-phase-morning .haunted-scene-moon,
+.haunted-phase-day .haunted-scene-moon{opacity:0!important}
+.haunted-phase-morning .haunted-scene-sun,
+.haunted-phase-day .haunted-scene-sun{opacity:1!important}
+@keyframes haunted-female-idle{0%,100%{transform:translateY(0) rotate(-.35deg) scale(1)}50%{transform:translateY(-4px) rotate(.35deg) scale(1.018)}}
+@keyframes haunted-male-idle{0%,100%{transform:translateY(0) rotate(.25deg) scale(1)}50%{transform:translateY(-3px) rotate(-.3deg) scale(1.014)}}
+@media(max-width:520px){
+ .haunted-shell[class*="haunted-phase-"]{padding:calc(8px + env(safe-area-inset-top,0px)) 8px calc(16px + env(safe-area-inset-bottom,0px))!important;gap:8px!important}
+ .haunted-shell .haunted-topbar{flex-wrap:wrap;min-height:44px}
+ .haunted-shell .haunted-camp-scene{height:clamp(238px,64vw,300px)!important;min-height:238px!important}
+ .haunted-shell .haunted-camp-seat{width:clamp(54px,15vw,68px)!important;min-height:86px!important}
+ .haunted-shell .haunted-camp-seat>span{width:100%!important;height:76px!important}
+ .haunted-shell .haunted-camp-seat b{max-width:70px!important;font-size:9px!important}
+ .haunted-shell .haunted-night-panel,.haunted-shell .haunted-morning-panel{padding:12px!important}
+ .haunted-shell .haunted-vote-panel{padding:12px 11px!important}
+ .haunted-shell .haunted-camp-chat{padding:8px!important;margin:0!important}
+ .haunted-shell .haunted-camp-chat .haunted-chat-messages{max-height:126px!important}
+ .haunted-turn-center{width:min(88%,310px)!important;padding:11px 13px!important}
+ .haunted-turn-center>b{font-size:14px}
+ .haunted-turn-center>small{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .haunted-shell .haunted-anime-art.is-female,.haunted-shell .haunted-anime-art.is-male{animation:none!important}
+}
