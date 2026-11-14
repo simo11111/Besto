@@ -230,7 +230,7 @@ export default function HauntedCampGame(props: Props) {
     {narratorVisible&&<motion.aside className="haunted-narrator-toast" role="status" aria-live="assertive" initial={reduceMotion?false:{opacity:0,y:-8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-5}} transition={{duration:.18}}>
       <span className="haunted-narrator-toast-icon"><Volume2 size={17}/></span><div><b>الراوي</b><p>{narratorText}</p></div><span className="haunted-narrator-toast-wave" aria-hidden="true"><i/><i/><i/><i/><i/></span>
     </motion.aside>}
-    <div className="haunted-camp-scene" aria-label="مخيم اللاعبين حول النار"><img className="haunted-scene-backdrop" src="/images/camp-scene.webp" alt="" fetchPriority="high" decoding="async"/>
+    <div className="haunted-camp-scene" aria-label="مخيم اللاعبين حول النار">
       <div className="haunted-scene-sun" aria-hidden="true"/><div className="haunted-scene-moon" aria-hidden="true"/>
       <div className="haunted-scene-stars" aria-hidden="true"><i/><i/><i/><i/><i/><i/><i/><i/></div>
       <div className="haunted-scene-tent" aria-hidden="true"><span/><b/><i/></div>
