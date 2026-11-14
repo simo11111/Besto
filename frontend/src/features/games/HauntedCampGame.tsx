@@ -34,7 +34,7 @@ function RoleMark({ role, size = 22 }: { role: HauntedRole; size?: number }) {
 
 function AnimeCampCharacter({ gender, seed }: { gender: 'male' | 'female'; seed: string }) {
   const female = gender === 'female';
-  const variant = Math.abs(Array.from(seed || 'camp').reduce((sum, char) => sum + char.charCodeAt(0), 0)) % 2;
+  const variant = Math.abs(Array.from(seed || 'camp').reduce((sum, char) => sum + char.charCodeAt(0), 0)) % 4;
   // The atlas is a 4-column x 2-row sheet: male row first, female row second.
   const column = variant % 4;
   const left = '-' + (column * 100) + '%';
@@ -243,10 +243,6 @@ export default function HauntedCampGame(props: Props) {
       <div className="haunted-campfire" aria-hidden="true"><i/><b/><em/><span/><strong/></div>
       <div className="haunted-scene-embers" aria-hidden="true"><i/><i/><i/><i/><i/><i/><i/><i/><i/><i/></div>
       {state.status==='night'&&isAlive&&nightIntroReady&&((myRole==='haunter'&&!state.my_night_target)||(myRole==='faqih'&&haunterChosen&&!state.my_night_target))&&<motion.div className="haunted-turn-center" initial={reduceMotion?false:{opacity:0,scale:.92,y:12}} animate={{opacity:1,scale:1,y:0}} transition={{duration:reduceMotion?0.01:.28}} role="status" aria-live="assertive"><span>{myRole==='faqih'?<Shield size={22}/>:<Skull size={22}/>}</span><b>{myRole==='faqih'?'دابا جا دورك آ الفقيه':'آ المسكون، اختار الضحية ديالك'}</b><small>{myRole==='faqih'?'اختار لاعب حي تحميه قبل ما يسالي الوقت.':'اختار لاعب حي واحد فالسر قبل ما يسالي الوقت.'}</small><em>{secondsLeft} ثانية باقية</em></motion.div>}
-      {state.status==='night'&&isAlive&&((myRole==='haunter'&&!state.my_night_target)||(myRole==='faqih'&&haunterChosen&&!state.my_night_target))&&<motion.div className={'haunted-night-callout '+(myRole==='faqih'?'is-faqih':'is-haunter')} initial={reduceMotion?false:{opacity:0,scale:.94,y:8}} animate={{opacity:1,scale:1,y:0}} transition={{duration:reduceMotion?0.01:.24}} role="status" aria-live="assertive">
-        <span>{myRole==='faqih'?<Shield size={18}/>:<Skull size={18}/>}</span>
-        <div><b>{myRole==='faqih'?'دابا جا دور الفقيه':'آ المسكون، اختار الضحية ديالك'}</b><small>{myRole==='faqih'?'اختار شكون بغيتي تعتق هاد الليلة.':'ضغط على الشخصية اللي بغيتي تقتل.'}</small></div>
-      </motion.div>}
       {state.status==='night'&&isAlive&&(myRole==='haunter'||myRole==='faqih')&&<div className={'haunted-night-role-hint '+(myRole==='faqih'?'is-faqih':'is-haunter')} aria-live="polite"><span>{myRole==='haunter'?<Skull size={17}/>:<Shield size={17}/>}</span><b>{myRole==='haunter'?(state.my_night_target?'الضحية تحددات':'ختار شكون بغيتي تقتل'):(haunterChosen?(state.my_night_target?'الحماية تسجلات':'ختار شكون بغيتي تعتق'):'تسنى اختيار المسكون')}</b></div>}
       <div className={'haunted-camp-ring '+(state.players.length<=6?'is-six-or-fewer':'is-many')}>{getHauntedStableSeatOrder(state.players).map((player,index)=>{const {left,top}=getHauntedSeatPosition(index,state.players.length);const myNightTarget=state.my_night_target===player.user_id;
       const myVoteTarget=state.my_vote===player.user_id;
