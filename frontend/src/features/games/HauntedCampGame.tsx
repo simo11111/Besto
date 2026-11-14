@@ -37,7 +37,7 @@ function AnimeCampCharacter({ gender, seed }: { gender: 'male' | 'female'; seed:
   const variant = Math.abs(Array.from(seed || 'camp').reduce((sum, char) => sum + char.charCodeAt(0), 0)) % 2;
   const left = female ? '-100%' : '0%';
   const top = variant ? '-100%' : '0%';
-  return <div className={'haunted-anime-art is-'+(female?'female':'male')} role="img" aria-label={female?'شخصية أنمي':'شخصية أنمي'}>
+  return <div className={'haunted-anime-art is-'+(female?'female':'male')} role="img" aria-label={female?'شخصية أنمي':'شخصية أنمي'} style={{position:'relative',overflow:'hidden'}}> 
     <img loading="lazy" decoding="async" src="https://gtsdrmfvtialuxhfxtvz.supabase.co/storage/v1/object/public/avatars/game-assets/haunted-anime-sprites-v1.png" alt="" style={{position:'absolute',width:'200%',height:'200%',maxWidth:'none',left,top,objectFit:'fill'}} />
   </div>;
 }
