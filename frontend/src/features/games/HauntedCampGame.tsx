@@ -126,7 +126,8 @@ export default function HauntedCampGame(props: Props) {
     if (phase === 'night') {
       preloadHauntedAnnouncements(); stopDiscussionAmbience(); startNightAmbience(); onNightMute(true);
       setNightIntroReady(false);
-      void presentNarration(state!.id+':'+state!.round+':night','هبط الليل على المخيم. آ المسكون، دابا جا دورك. اختار ضحية وحدة فالسر، عندك الوقت اللي باين فالعداد.',state?.game_mode==='quick'?'night_quick':'night').finally(() => setNightIntroReady(true));
+      void presentNarration(state!.id+':'+state!.round+':night','هبط الليل على المخيم. آ المسكون، دابا جا دورك. اختار ضحية وحدة فالسر، عندك الوقت اللي باين فالعداد.',state?.game_mode==='quick'?'night_quick':'night');
+      setNightIntroReady(true);
     } else if (phase === 'morning') {
       stopNightAmbience(); stopDiscussionAmbience(); startMorningAmbience(); onNightMute(false);
       const latest = [...(state?.events ?? [])].reverse().find(e => e.event_type === 'night_resolved');
