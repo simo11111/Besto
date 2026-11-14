@@ -35,10 +35,12 @@ function RoleMark({ role, size = 22 }: { role: HauntedRole; size?: number }) {
 function AnimeCampCharacter({ gender, seed }: { gender: 'male' | 'female'; seed: string }) {
   const female = gender === 'female';
   const variant = Math.abs(Array.from(seed || 'camp').reduce((sum, char) => sum + char.charCodeAt(0), 0)) % 2;
-  const left = female ? '-100%' : '0%';
-  const top = variant ? '-100%' : '0%';
-  return <div className={'haunted-anime-art is-'+(female?'female':'male')} role="img" aria-label={female?'شخصية أنمي':'شخصية أنمي'} style={{position:'relative',overflow:'hidden'}}> 
-    <img loading="lazy" decoding="async" src="https://gtsdrmfvtialuxhfxtvz.supabase.co/storage/v1/object/public/avatars/game-assets/haunted-anime-sprites-v1.png" alt="" style={{position:'absolute',width:'200%',height:'200%',maxWidth:'none',left,top,objectFit:'fill'}} />
+  // The atlas is a 4-column x 2-row sheet: male row first, female row second.
+  const column = variant % 4;
+  const left = '-' + (column * 100) + '%';
+  const top = female ? '-100%' : '0%';
+  return <div className={'haunted-anime-art is-'+(female?'female':'male')} role="img" aria-label={female?'شخصية أنمي':'شخصية أنمي'} style={{position:'relative',overflow:'hidden'}}>
+    <img loading="lazy" decoding="async" src="https://gtsdrmfvtialuxhfxtvz.supabase.co/storage/v1/object/public/avatars/game-assets/haunted-anime-sprites-v1.png" alt="" style={{position:'absolute',width:'400%',height:'200%',maxWidth:'none',left,top,objectFit:'fill'}} />
   </div>;
 }
 
@@ -124,8 +126,7 @@ export default function HauntedCampGame(props: Props) {
     if (phase === 'night') {
       preloadHauntedAnnouncements(); stopDiscussionAmbience(); startNightAmbience(); onNightMute(true);
       setNightIntroReady(false);
-      setNightIntroReady(true);
-      void presentNarration(state!.id+':'+state!.round+':night', state?.game_mode==='quick'?'هبط الليل على المخيم... آ المسكون، دورك دابا. عندك 30 ثانية تختار ضحية وحدة فالسر.':'هبط الليل على المخيم... آ المسكون، عندك 30 ثانية تختار ضحية وحدة فالسر.', state?.game_mode==='quick'?'night_quick':'night');
+      void presentNarration(state!.id+':'+state!.round+':night','هبط الليل على المخيم. آ المسكون، دابا جا دورك. اختار ضحية وحدة فالسر، عندك الوقت اللي باين فالعداد.',state?.game_mode==='quick'?'night_quick':'night').finally(() => setNightIntroReady(true));
     } else if (phase === 'morning') {
       stopNightAmbience(); stopDiscussionAmbience(); startMorningAmbience(); onNightMute(false);
       const latest = [...(state?.events ?? [])].reverse().find(e => e.event_type === 'night_resolved');
@@ -183,8 +184,8 @@ export default function HauntedCampGame(props: Props) {
     if (count <= previousEventCountRef.current) return;
     const fresh = state.events.slice(previousEventCountRef.current);
     fresh.forEach(event => {
-      if (event.event_type === 'faqih_turn_opened' && myRole !== 'faqih') { void presentNarration(state.id+':'+event.round+':faqih-public', 'آ سكان المخيم، المسكون اختار الضحية ديالو. دابا جا دور الفقيه! آ الفقيه، اختار شكون بغيتي تحمي وتنقذ. عندك 20 ثانية، والاختيار ديالو سري.'); }
-      if (event.event_type === 'bot_chat' && !event.payload.system && soundOn && event.payload.message) { const botName=event.payload.system?'الراوي':state.players.find(player=>player.user_id===String(event.payload.bot_user_id))?.username||'واحد من سكان المخيم'; speakHauntedAnnouncement(botName+' كيقول: '+String(event.payload.message)); }
+      if (event.event_type === 'faqih_turn_opened' && myRole !== 'faqih') { void presentNarration(state.id+':'+event.round+':faqih-public','المسكون اختار الضحية. دابا جا دور الفقيه باش يحمي لاعب واحد. الاختيار ديالو سري، وعندو عشرين ثانية.'); }
+      if (event.event_type === 'bot_chat' && !event.payload.system && soundOn && event.payload.message) { const botName=state.players.find(player=>player.user_id===String(event.payload.bot_user_id))?.username||'واحد من سكان المخيم'; void speakHauntedAnnouncement(botName+' كيقول: '+String(event.payload.message)); }
       if (event.event_type === 'vote_tied' && soundOn) void playHauntedAnnouncementSegment('tie','كاين تعادل فالأصوات. غادي نعاودو التصويت بين المرشحين. اختارو بعناية.');
       if (event.event_type === 'vote_tie_resolved' && soundOn) speakHauntedAnnouncement('بقى التعادل، وما خرج حتى واحد من المخيم.');
       if (event.event_type === 'player_ejected' && state.status !== 'ended') { playHauntedSound('eject'); const id=String(event.payload.ejected_user_id||''); const name=state.players.find(player=>player.user_id===id)?.username||'واحد من السكان'; if(soundOn)void playHauntedAnnouncementSegment('ejected','تحسم التصويت. واحد من سكان المخيم خرج من اللعبة.',name); }
@@ -241,6 +242,7 @@ export default function HauntedCampGame(props: Props) {
       <div className="haunted-scene-smoke" aria-hidden="true"><i/><i/><i/><i/></div>
       <div className="haunted-campfire" aria-hidden="true"><i/><b/><em/><span/><strong/></div>
       <div className="haunted-scene-embers" aria-hidden="true"><i/><i/><i/><i/><i/><i/><i/><i/><i/><i/></div>
+      {state.status==='night'&&isAlive&&nightIntroReady&&((myRole==='haunter'&&!state.my_night_target)||(myRole==='faqih'&&haunterChosen&&!state.my_night_target))&&<motion.div className="haunted-turn-center" initial={reduceMotion?false:{opacity:0,scale:.92,y:12}} animate={{opacity:1,scale:1,y:0}} transition={{duration:reduceMotion?0.01:.28}} role="status" aria-live="assertive"><span>{myRole==='faqih'?<Shield size={22}/>:<Skull size={22}/>}</span><b>{myRole==='faqih'?'دابا جا دورك آ الفقيه':'آ المسكون، اختار الضحية ديالك'}</b><small>{myRole==='faqih'?'اختار لاعب حي تحميه قبل ما يسالي الوقت.':'اختار لاعب حي واحد فالسر قبل ما يسالي الوقت.'}</small><em>{secondsLeft} ثانية باقية</em></motion.div>}
       {state.status==='night'&&isAlive&&((myRole==='haunter'&&!state.my_night_target)||(myRole==='faqih'&&haunterChosen&&!state.my_night_target))&&<motion.div className={'haunted-night-callout '+(myRole==='faqih'?'is-faqih':'is-haunter')} initial={reduceMotion?false:{opacity:0,scale:.94,y:8}} animate={{opacity:1,scale:1,y:0}} transition={{duration:reduceMotion?0.01:.24}} role="status" aria-live="assertive">
         <span>{myRole==='faqih'?<Shield size={18}/>:<Skull size={18}/>}</span>
         <div><b>{myRole==='faqih'?'دابا جا دور الفقيه':'آ المسكون، اختار الضحية ديالك'}</b><small>{myRole==='faqih'?'اختار شكون بغيتي تعتق هاد الليلة.':'ضغط على الشخصية اللي بغيتي تقتل.'}</small></div>
