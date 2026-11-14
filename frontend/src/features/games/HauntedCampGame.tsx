@@ -164,7 +164,7 @@ export default function HauntedCampGame(props: Props) {
     const key = state.id + ':' + state.round;
     if (previousHaunterChoiceRef.current === key) return;
     previousHaunterChoiceRef.current = key;
-    void presentNarration(key+(myRole==='faqih'?':faqih':':faqih-public'), myRole==='faqih'?'آ الفقيه، دابا جا دورك! المسكون اختار الضحية، وعندك 20 ثانية باش تختار لاعب حي تحميه. ضغط على الشخصية ديالو، والاختيار ديالك سري.':'المسكون اختار الضحية ديالو. دابا جا دور الفقيه، عندو 20 ثانية باش يحمي واحد من سكان المخيم.');
+    void presentNarration(key+(myRole==='faqih'?':faqih':':faqih-public'), myRole==='faqih'?'آ الفقيه، دابا جا دورك! المسكون اختار الضحية، وعندك 20 ثانية باش تختار لاعب حي تحميه. ضغط على الشخصية ديالو، والاختيار ديالك سري.':'المسكون اختار الضحية ديالو. دابا جا دور الفقيه، عندو 20 ثانية باش يحمي واحد من سكان المخيم.', 'faqih_awake');
   }, [state?.id, state?.round, state?.status, myRole, haunterChosen, nightIntroReady, soundOn, state?.my_night_target]);
   useEffect(() => {
     if (!state || state.status !== 'day') return;
