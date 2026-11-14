@@ -37,6 +37,8 @@ let narratorAudio: HTMLAudioElement | null = null;
 let faqihAudio: HTMLAudioElement | null = null;
 let narratorAudioReady = false;
 let faqihAudioReady = false;
+let activeNarratorAudio: HTMLAudioElement | null = null;
+let activeNarratorResolve: (() => void) | null = null;
 async function ensureNarratorAudio() {
   if (typeof window === 'undefined') return false;
   if (narratorAudioReady) return true;
@@ -74,11 +76,35 @@ async function playNarratorAudio(segment: 'night' | 'faqih' = 'night') {
   const player = segment === 'faqih' ? faqihAudio : narratorAudio;
   if (!ready || !player) return false;
   try {
-    player.pause();
-    player.currentTime = 0;
-    player.playbackRate = 1;
-    await player.play();
-    return true;
+    [narratorAudio, faqihAudio].forEach(audio => { if (audio && audio !== player) { audio.pause(); audio.currentTime = 0; } });
+    if (activeNarratorAudio && activeNarratorAudio !== player) {
+      activeNarratorAudio.pause(); activeNarratorAudio.currentTime = 0; activeNarratorResolve?.();
+    }
+    player.pause(); player.currentTime = 0; player.playbackRate = 1;
+    activeNarratorAudio = player;
+    return await new Promise<boolean>(resolve => {
+      let settled = false;
+      let timeout: number | null = null;
+      const finish = (played: boolean) => {
+        if (settled) return;
+        settled = true;
+        if (timeout !== null) window.clearTimeout(timeout);
+        player.removeEventListener('ended', onEnded);
+        player.removeEventListener('error', onError);
+        if (activeNarratorAudio === player) activeNarratorAudio = null;
+        if (activeNarratorResolve === finishResolve) activeNarratorResolve = null;
+        resolve(played);
+      };
+      const finishResolve = () => finish(false);
+      const onEnded = () => finish(true);
+      const onError = () => finish(false);
+      activeNarratorResolve = finishResolve;
+      player.addEventListener('ended', onEnded, { once: true });
+      player.addEventListener('error', onError, { once: true });
+      void player.play().catch(() => finish(false));
+      const fallbackMs = Number.isFinite(player.duration) && player.duration > 0 ? player.duration * 1000 + 2500 : 30000;
+      timeout = window.setTimeout(() => finish(player.ended), Math.min(Math.max(fallbackMs, 8000), 45000));
+    });
   } catch { return false; }
 }
 
@@ -91,6 +117,10 @@ let currentSpeechResolve: (() => void) | null = null;
 /** Stop the current utterance and resolve every queued promise cleanly. */
 export function stopHauntedNarrator() {
   speechGeneration++;
+  [narratorAudio, faqihAudio].forEach(audio => { if (audio) { audio.pause(); audio.currentTime = 0; } });
+  activeNarratorAudio = null;
+  activeNarratorResolve?.();
+  activeNarratorResolve = null;
   const pending = speechQueue.splice(0);
   pending.forEach(item => item.resolve());
   const activeResolve = currentSpeechResolve;
