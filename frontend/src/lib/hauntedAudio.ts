@@ -39,6 +39,7 @@ let narratorAudioReady = false;
 let faqihAudioReady = false;
 let activeNarratorAudio: HTMLAudioElement | null = null;
 let activeNarratorResolve: (() => void) | null = null;
+let narratorClipBusy = false;
 async function ensureNarratorAudio() {
   if (typeof window === 'undefined') return false;
   if (narratorAudioReady) return true;
@@ -76,6 +77,9 @@ async function playNarratorAudio(segment: 'night' | 'faqih' = 'night') {
   const player = segment === 'faqih' ? faqihAudio : narratorAudio;
   if (!ready || !player) return false;
   try {
+    // Drain queued device speech first, then reserve the narrator channel for this MP3.
+    while (speechBusy || speechQueue.length || narratorClipBusy) await new Promise(resolve => window.setTimeout(resolve, 80));
+    narratorClipBusy = true;
     [narratorAudio, faqihAudio].forEach(audio => { if (audio && audio !== player) { audio.pause(); audio.currentTime = 0; } });
     if (activeNarratorAudio && activeNarratorAudio !== player) {
       activeNarratorAudio.pause(); activeNarratorAudio.currentTime = 0; activeNarratorResolve?.();
@@ -93,7 +97,9 @@ async function playNarratorAudio(segment: 'night' | 'faqih' = 'night') {
         player.removeEventListener('error', onError);
         if (activeNarratorAudio === player) activeNarratorAudio = null;
         if (activeNarratorResolve === finishResolve) activeNarratorResolve = null;
+        narratorClipBusy = false;
         resolve(played);
+        speakNext();
       };
       const finishResolve = () => finish(false);
       const onEnded = () => finish(true);
@@ -117,6 +123,7 @@ let currentSpeechResolve: (() => void) | null = null;
 /** Stop the current utterance and resolve every queued promise cleanly. */
 export function stopHauntedNarrator() {
   speechGeneration++;
+  narratorClipBusy = false;
   [narratorAudio, faqihAudio].forEach(audio => { if (audio) { audio.pause(); audio.currentTime = 0; } });
   activeNarratorAudio = null;
   activeNarratorResolve?.();
@@ -188,7 +195,7 @@ function chooseNarratorVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoi
 
 /** Speak one queued announcement at a time; no external TTS service or paid API. */
 function speakNext() {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window) || speechBusy || !speechQueue.length) return;
+  if (typeof window === 'undefined' || !('speechSynthesis' in window) || speechBusy || narratorClipBusy || !speechQueue.length) return;
   const synth = window.speechSynthesis;
   if (synth.paused) synth.resume();
   const item = speechQueue.shift();
