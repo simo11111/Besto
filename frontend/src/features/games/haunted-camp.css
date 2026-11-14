@@ -1512,10 +1512,6 @@
 .haunted-shell,.haunted-shell *{min-width:0;max-width:100%;}
 .haunted-shell{width:100%;max-width:100vw;overflow-x:clip;}
 .haunted-shell[class*="haunted-phase-"]{width:100vw;max-width:100vw;overflow-x:hidden;}
-.haunted-camp-scene{background:#080d1a!important;isolation:isolate;}
-.haunted-scene-backdrop{position:absolute;inset:0;z-index:0;width:100%;height:100%;display:block;object-fit:cover;object-position:center 58%;pointer-events:none;}
-.haunted-camp-scene:before,.haunted-camp-scene:after{display:none!important;}
-.haunted-camp-scene>.haunted-scene-sun,.haunted-camp-scene>.haunted-scene-moon,.haunted-camp-scene>.haunted-scene-stars,.haunted-camp-scene>.haunted-scene-tent,.haunted-camp-scene>.haunted-scene-ground,.haunted-camp-scene>.haunted-scene-firelight,.haunted-camp-scene>.haunted-scene-smoke,.haunted-camp-scene>.haunted-campfire,.haunted-camp-scene>.haunted-scene-embers{display:none!important;}
 .haunted-camp-ring{z-index:4!important;}
 .haunted-camp-chat,.haunted-chat-messages,.haunted-chat-line,.haunted-chat-body{min-width:0;max-width:100%;}
 .haunted-camp-chat .haunted-chat-messages{width:100%;overflow-x:hidden;}
