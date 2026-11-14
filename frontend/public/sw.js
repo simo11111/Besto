@@ -1,5 +1,5 @@
-const CACHE='night-camp-shell-v44';
-const SHELL=['/','/manifest.webmanifest','/night-camp-icon.svg?v=20261113c','/night-camp-icon.svg','/night-camp-icon-192.png'];
+const CACHE='night-camp-shell-v47';
+const SHELL=['/','/manifest.webmanifest','/night-camp-icon.svg?v=20261114b','/night-camp-icon.svg','/night-camp-icon-192.png'];
 const AUDIO_RE=/\.(?:mp3|ogg|wav)$/i;
 const STATIC_RE=/\.(?:js|css|woff2?|png|svg|webp|avif)$/i;
 
