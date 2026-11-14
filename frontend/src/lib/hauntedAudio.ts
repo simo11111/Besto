@@ -33,8 +33,11 @@ export function playHauntedSound(name: Exclude<HauntedSound, 'night'> | 'night')
 }
 
 const NARRATOR_AUDIO_URL = 'https://gtsdrmfvtialuxhfxtvz.supabase.co/storage/v1/object/public/game-assets/audio/narrator-night-v4.mp3';
+const FAQIH_AUDIO_URL = 'https://gtsdrmfvtialuxhfxtvz.supabase.co/storage/v1/object/public/game-assets/audio/narrator-faqih-v1.mp3';
 let narratorAudio: HTMLAudioElement | null = null;
+let faqihAudio: HTMLAudioElement | null = null;
 let narratorAudioReady = false;
+let faqihAudioReady = false;
 async function ensureNarratorAudio() {
   if (typeof window === 'undefined') return false;
   if (narratorAudioReady) return true;
@@ -51,13 +54,31 @@ async function ensureNarratorAudio() {
     return true;
   } catch { return false; }
 }
-async function playNarratorAudio() {
-  if (!await ensureNarratorAudio() || !narratorAudio) return false;
+async function ensureFaqihAudio() {
+  if (typeof window === 'undefined') return false;
+  if (faqihAudioReady) return true;
   try {
-    narratorAudio.pause();
-    narratorAudio.currentTime = 0;
-    narratorAudio.playbackRate = 1.12;
-    await narratorAudio.play();
+    const response = await fetch('https://gtsdrmfvtialuxhfxtvz.supabase.co/functions/v1/cache-haunted-announcements', { cache: 'no-store' });
+    if (!response.ok) return false;
+    const payload = await response.json();
+    if (!payload?.ready || !payload?.faqih_url) return false;
+    faqihAudio = new Audio(payload.faqih_url || FAQIH_AUDIO_URL);
+    faqihAudio.preload = 'auto';
+    faqihAudio.volume = 0.98;
+    faqihAudioReady = true;
+    faqihAudio.load();
+    return true;
+  } catch { return false; }
+}
+async function playNarratorAudio(segment: 'night' | 'faqih' = 'night') {
+  const ready = segment === 'faqih' ? await ensureFaqihAudio() : await ensureNarratorAudio();
+  const player = segment === 'faqih' ? faqihAudio : narratorAudio;
+  if (!ready || !player) return false;
+  try {
+    player.pause();
+    player.currentTime = 0;
+    player.playbackRate = 1;
+    await player.play();
     return true;
   } catch { return false; }
 }
@@ -245,7 +266,11 @@ export async function playHauntedAnnouncementSegment(
 ): Promise<void> {
   if (typeof window === 'undefined' || !getSoundEnabled()) return;
   if (_segment === 'night' || _segment === 'night_quick') {
-    const played = await playNarratorAudio();
+    const played = await playNarratorAudio('night');
+    if (played) return;
+  }
+  if (_segment === 'faqih_awake') {
+    const played = await playNarratorAudio('faqih');
     if (played) return;
   }
   await speakHauntedAnnouncement(fallbackText);
@@ -256,4 +281,6 @@ export function preloadHauntedAnnouncements() {
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     try { void chooseNarratorVoice(window.speechSynthesis.getVoices()); } catch { /* best effort */ }
   }
+  void ensureNarratorAudio();
+  void ensureFaqihAudio();
 }
