@@ -32,8 +32,7 @@ export function playHauntedSound(name: Exclude<HauntedSound, 'night'> | 'night')
   else audioManager.play(name, 0.7);
 }
 
-const NARRATOR_AUDIO_URL = 'https://gtsdrmfvtialuxhfxtvz.supabase.co/storage/v1/object/public/game-assets/audio/narrator-night-v4.mp3';
-const FAQIH_AUDIO_URL = 'https://gtsdrmfvtialuxhfxtvz.supabase.co/storage/v1/object/public/game-assets/audio/narrator-faqih-v1.mp3';
+const NARRATOR_CACHE_URL = 'https://gtsdrmfvtialuxhfxtvz.supabase.co/functions/v1/cache-haunted-narrator';
 let narratorAudio: HTMLAudioElement | null = null;
 let faqihAudio: HTMLAudioElement | null = null;
 let narratorAudioReady = false;
@@ -42,11 +41,11 @@ async function ensureNarratorAudio() {
   if (typeof window === 'undefined') return false;
   if (narratorAudioReady) return true;
   try {
-    const response = await fetch('https://gtsdrmfvtialuxhfxtvz.supabase.co/functions/v1/cache-haunted-narrator', { cache: 'no-store' });
+    const response = await fetch(NARRATOR_CACHE_URL, { cache: 'no-store' });
     if (!response.ok) return false;
     const payload = await response.json();
-    if (!payload?.ready) return false;
-    narratorAudio = new Audio(NARRATOR_AUDIO_URL);
+    if (!payload?.ready || !payload?.url) return false;
+    narratorAudio = new Audio(payload.url);
     narratorAudio.preload = 'auto';
     narratorAudio.volume = 0.96;
     narratorAudioReady = true;
@@ -58,11 +57,11 @@ async function ensureFaqihAudio() {
   if (typeof window === 'undefined') return false;
   if (faqihAudioReady) return true;
   try {
-    const response = await fetch('https://gtsdrmfvtialuxhfxtvz.supabase.co/functions/v1/cache-haunted-announcements', { cache: 'no-store' });
+    const response = await fetch(NARRATOR_CACHE_URL, { cache: 'no-store' });
     if (!response.ok) return false;
     const payload = await response.json();
     if (!payload?.ready || !payload?.faqih_url) return false;
-    faqihAudio = new Audio(payload.faqih_url || FAQIH_AUDIO_URL);
+    faqihAudio = new Audio(payload.faqih_url);
     faqihAudio.preload = 'auto';
     faqihAudio.volume = 0.98;
     faqihAudioReady = true;
